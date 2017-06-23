@@ -42,8 +42,8 @@ class BaseKeSearchIndexerHook{
             curl_setopt ($ch, CURLOPT_STDERR, $fp);
         }
         curl_setopt($ch, CURLOPT_POST, 0 ); //
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );    // don't give anything back (important in TYPO3!)
-        curl_setopt($ch, CURLOPT_HEADER, $withHeader );            // leider muss ich das komplett zurÃ¼ck holen, weil ich sonst nicht den HTTP response Code ( Fehler / OK ) zurÃ¼ck bekomme ..
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );    // don't give anything back (sometimes important in TYPO3!)
+        curl_setopt($ch, CURLOPT_HEADER, $withHeader );            // with HTTP response Code ( Fehler / OK ) ??? ..
         curl_setopt($ch, CURLOPT_VERBOSE, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0 );
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);

@@ -42,7 +42,7 @@ class AllplanShopIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSe
         // ToDo Put tags to Indexer object
         $indexerConfig['tags'] = "#shop#" ;
 
-        // For testing  enabele the next command ... something like this should come from ws call
+        // For testing  disable the next command getJsonFile()  .. ... something like this should come from that call
         $xmlFromUrl = '<?xml version="1.0" encoding="UTF-8"?>
     <urlset>
     <url>
@@ -52,7 +52,7 @@ class AllplanShopIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSe
         <changefreq>daily</changefreq>
     </url>
     <url>
-        <loc>http://shop-dev.allplan.com/Bimplus-Optionen/Bimplus-100-GB-Speicher-100.html</loc>
+        <loc>http://shop.allplan.com/Bimplus-Optionen/Bimplus-100-GB-Speicher-100.html</loc>
         <priority>1.0</priority>
         <lastmod>2017-06-21T11:27:46+00:00</lastmod>
         <changefreq>daily</changefreq>

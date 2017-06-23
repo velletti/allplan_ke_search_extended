@@ -33,16 +33,14 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
     public function main(&$indexerConfig, &$indexerObject) {
         // rendered by an agent every 4 hours
-        // http://212.29.3.155//hotline/FAQ_HOTD.nsf/0/05421C80A7EB2CE2C1257480004DDA2E/\$File/FAQIDs.xml?OpenElement
-        // or
-        // http://212.29.3.155/hotline/FAQ_HOTD.nsf/DummySitemap.xml?OpenFileResource
+        // http:// IP of the news Server see doku/hotline/FAQ_HOTD.nsf/0/05421C80A7EB2CE2C1257480004DDA2E/\$File/FAQIDs.xml?OpenElement
 
         $url = $indexerObject->externalUrl  ;
         $debug = "url: " . ($url) ;
         // ToDo Put tags to Indexer object
         $indexerConfig['tags'] = "#allplanfaq#" ;
 
-        // For testing  enabele the next command ... something like this should come from ws call
+        // For testing  disable  the next command ... something like this should come from next ws call
         $xmlFromUrl = '<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
         <url>
@@ -126,8 +124,6 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                         $debug .= "<hr>url loc: " . $urlSingle ;
 
                         // https://connect.allplan.com/index.php?&id=380&L=1&tx_nemsolution_pi1[docID]=000171ca&tx_nemsolution_pi1[action]=index&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1
-                        // https://connect.allplan.com/index.php?L=1&id=380&tx_nemsolution_pi1[dokID]=000171CA&tx_nemsolution_pi1[action]=index&tx_nemsolution_pi1[controller]=Solution
-                        // result hould look like:
                         $singleFaq = $this->getJsonFile( $urlSingle   , "" , array ( "Accept: application/json" , "Content-type:application/json" ) , FALSE ) ;
                         $singleFaq = json_decode($singleFaq) ;
                         $debug .= "<hr>" . var_export( $singleFaq , true ) ;
