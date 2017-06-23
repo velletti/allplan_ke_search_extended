@@ -65,12 +65,12 @@ class AllplanShopIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSe
 
         $xml2 = simplexml_load_string ($xmlFromUrl  ) ;
 
+        // this file dies the magic to import the html CODe to a DOM Object
             include_once(__DIR__ . "/simple_html_dom.php") ;
             // see details ..
             // http://www.phpbuilder.com/columns/PHP_HTML_DOM_parser/PHPHTMLDOMParser.cc_09-07-2011.php3
 
             $htmlParser = new \simple_html_dom();
-
 
 
         $debug .= "<hr>xlm2 from string:<br>" . substr( var_export( $xml2 , true ) , 0 , 200 )  . " .... " . strlen( $xml2 ) . " chars .. <hr />" ;
