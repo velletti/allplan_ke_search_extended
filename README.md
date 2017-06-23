@@ -3,6 +3,8 @@
 this is used in productive env. of our website. 
 We think, that these indexers are so specific, that they cannot be used by someone else, but are a cool a "best pratice" Example.
 
+to see it work, visit :
+https://www.allplan.com/de/suchergebnisse/
 
 Some special Indexer we need for the TYPO3 extension ke_search:
 
