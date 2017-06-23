@@ -1,0 +1,21 @@
+<TaskOptions>
+  <TaskOptions>
+    <option name="arguments" value="../allplan/allplan/http/typo3conf/ext/allplan_ke_search_extended" />
+    <option name="checkSyntaxErrors" value="true" />
+    <option name="description" />
+    <option name="exitCodeBehavior" value="ALWAYS" />
+    <option name="fileExtension" value="*" />
+    <option name="immediateSync" value="true" />
+    <option name="name" value="copy allplan ke search extended" />
+    <option name="output" value="" />
+    <option name="outputFilters">
+      <array />
+    </option>
+    <option name="outputFromStdout" value="false" />
+    <option name="program" value="C:/web/allplan/Allplan/scripts/dev/copy_ke_search_extended.bat" />
+    <option name="scopeName" value="Changed Files" />
+    <option name="trackOnlyRoot" value="false" />
+    <option name="workingDir" value="C:/web/repos/" />
+    <envs />
+  </TaskOptions>
+</TaskOptions>
