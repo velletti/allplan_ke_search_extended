@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.0" xmlns:t3="http://typo3.org/schemas/xliff">
+	<file t3:id="1424776442" source-language="en" datatype="plaintext" original="messages" date="2011-10-17T20:22:35Z" product-name="recycler">
+		<header />
+		<body>
+			<trans-unit id="indexerTaskTitle">
+				<source>Indexing process for ke_search (Allplan Extended)</source>
+			</trans-unit>
+			<trans-unit id="indexerTaskDescription">
+				<source>Allplan extended version of Original tast! This task updates the ke_search index. But you can have more than one Sheduler Task with options</source>
+			</trans-unit>
+			<trans-unit id="indexerTaskPeriod">
+				<source>Delete entries older than (in days)</source>
+			</trans-unit>
+			<trans-unit id="indexerTaskTCA">
+				<source>Indexer Configurations</source>
+			</trans-unit>
+			<trans-unit id="indexerTaskDescriptionTables">
+				<source>Indexer Configurations: %s</source>
+			</trans-unit>
+			<trans-unit id="indexerTaskDescriptionDays">
+				<source>Older than %d days(s)</source>
+			</trans-unit>
+			<trans-unit id="indexerTaskErrorPeriod">
+				<source>The period has to be an integer and greater than zero or -1 (means endless) .</source>
+			</trans-unit>
+			<trans-unit id="indexerTaskLang">
+                <source>Select the Language you want to set for all Entries found by this indexer (default empty)</source>
+            </trans-unit>
+            <trans-unit id="indexerTaskExternalUrl">
+                <source>external URL for Indexer if needed ( f.e. help.allplan.com/.../ )</source>
+            </trans-unit>
+            <trans-unit id="indexerTaskStoragePid">
+                <source>Overwrite Storage Page ID with this PageUid (leave empt or enter only an INT</source>
+            </trans-unit>
+
+
+			<trans-unit id="indexerTaskErrorTCAempty">
+				<source>You have to select at least one Indexer Configuration.</source>
+			</trans-unit>
+			<trans-unit id="indexerTaskErrorTCANotSet">
+				<source>The Indexer Configuration(s) %s  does not exist.</source>
+			</trans-unit>
+			<trans-unit id="indexerTaskErrorStoragePid">
+                <source>Storage Pid should be empty OR an int Value ( Page ID or the Sysfolder where you want to store the indexer Entries.</source>
+            </trans-unit>
+
+		</body>
+	</file>
+</xliff>
