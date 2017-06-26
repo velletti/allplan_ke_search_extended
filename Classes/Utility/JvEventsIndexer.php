@@ -39,16 +39,19 @@ class JvEventsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearc
         // $db->store_lastBuiltQuery = true;
 
         // Get the data from tx_jvevents_domain_model_event
-        $fields = 'uid, name, teaser, description, sys_language_uid , start_date , end_date';
-        $table = 'tx_jvevents_domain_model_event';
-        $where = 'pid IN (' . $this->getTreeList($indexerConfig['startingpoints_recursive']) . ') ';
+        $fields = 'event.uid, event.name , event.teaser, event.description, event.sys_language_uid , event.start_date , event.end_date';
+        $fields .= ',org.name as oname, loc.city as city, loc.zip, loc.street_and_nr , loc.name as lname, loc.description as ldesc , org.description as odesc' ;
+        $table = 'tx_jvevents_domain_model_event as event ';
+        $table .= "LEFT JOIN tx_jvevents_domain_model_organizer as org ON event.organizer = org.uid 
+                LEFT JOIN tx_jvevents_domain_model_location as loc ON event.location = loc.uid " ;
+        $where = 'event.pid IN (' . $this->getTreeList($indexerConfig['startingpoints_recursive']) . ') ';
         $where.= 'AND ';
         $where.= 'start_date > ' . time();
         $where.= \TYPO3\CMS\Backend\Utility\BackendUtility::BEenableFields($table);
         $where.= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table);
 
-        // echo "Select " . $fields . " FROM " . $table . " WHERE " . $where ;
-        // die;
+         // echo "Select " . $fields . " FROM " . $table . " WHERE " . $where ;
+         // die;
 
         $res = $db->exec_SELECTquery($fields,$table,$where);
         $resCount = $db->sql_num_rows($res);
@@ -57,17 +60,25 @@ class JvEventsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearc
 
         if($resCount) {
             $resCount = 0 ;
-            while(($record = $db->sql_fetch_assoc($res))) {
+            while(( $record = $db->sql_fetch_assoc($res))) {
                 $resCount++ ;
                 // Prepare data for the indexer
                 $title = $record['name'];
                 $abstract = '';
-                $teaser = $record['teaser'];
+                $abstract = $record['teaser'];
                 $description = $record['description'];
 
-                $content = $title . PHP_EOL . nl2br($teaser) . PHP_EOL . nl2br($description);
+                $content = $title . PHP_EOL . nl2br($abstract) . PHP_EOL . nl2br($description);
+                $content .=  PHP_EOL . $record['lname']
+                    . PHP_EOL . $record['zip'] . " " . $record['city'] . " " . $record['street_and_nr']
+                    . PHP_EOL . $record['odesc']  ;
+                $content .=  PHP_EOL . $record['oname'] . PHP_EOL . $record['odesc']  ;
 
-                $tags = '';
+                // echo $content ;
+                // var_dump( $record ) ;
+                // die ;
+
+                    $tags = '';
                 $sys_language_uid = $record['sys_language_uid'];
                 $sortdate = $record['start_date'];
                 $endtime = $record['end_date'];
