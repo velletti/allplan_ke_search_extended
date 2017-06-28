@@ -56,17 +56,19 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
         $debug .= "<hr>xlm2 from string:<br>" . substr( var_export( $xml2 , true ) , 0 , 200 )  . " .... " . strlen( $xml2 ) . " chars .. <hr />" ;
         $count = 0 ;
-        $lastRunRow = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordRaw( "tx_kesearch_index" , "`type` = 'allplanfaq' ORDER BY starttime DESC ") ;
+        $lastRunRow = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordRaw( "tx_kesearch_index" , "`type` = 'allplanfaq' ORDER BY sortdate DESC ") ;
         $lastRun = "2014-12-12" ;
-        if( is_array($lastRunRow )) {
-            $lastRun = date( "Y-m-d" , $lastRunRow['sorttime'] ) ;
-            $debug .="<hr> Lastrun from DB = " . $lastRun;
-        }
         if( $indexerObject->period > 365 ) {
-            $lastRun = date( "Y-m-d" , time() - ( 60 * 60 * 24 * ( $indexerObject->period - 365 )) ) ;
+            $lastRun = date( "Y-m-d" , time() - ( 60 * 60 * 24 * ( $indexerObject->period -1 )) ) ;
             $debug .="<hr> Lastrun from Indexer config Field Period  = " . $lastRun;
 
         }
+
+        if( is_array($lastRunRow )) {
+            $lastRun = date( "Y-m-d" , $lastRunRow['sortdate'] ) ;
+            $debug .="<hr> Lastrun from DB = " . $lastRun;
+        }
+
 
         if( is_object($xml2)) {
             $debug .="<hr> xml2 is Object" ;
@@ -200,7 +202,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             0,						// endtime (not used here)
             '',						// fe_group (not used here)
             false ,					// debug only?
-            array( 'sortdate' => $single['sortdate'] , 'orig_uid' => $single['uid'] )				// additional fields added by hooks
+            array( 'sortdate' => $single['sortdate'] , 'orig_uid' => $single['uid'] , 'servername' => $_SERVER['SERVER_NAME']  )				// additional fields added by hooks
         );
 
     }

@@ -21,11 +21,11 @@ class KeSearchIndexerHook extends BaseKeSearchIndexerHook{
 		$params['items'][] = $newArray;
 		unset($newArray);
 
-		// Forum Test
+		// Forum
 		// =================================================================================================================================
 		$newArray = [
-			'Forum test',
-			'forumtest',
+			'Allplan Forum ',
+			'allplanforum',
 			\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath('allplan_ke_search_extended') . '/Resources/Public/Icons/indexer-jv_events.gif'
 		];
 		$params['items'][] = $newArray;
@@ -91,11 +91,11 @@ class KeSearchIndexerHook extends BaseKeSearchIndexerHook{
                 $content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' events where indexed.</p>';
                 break ;
 
-            case 'forum' :
+            case 'allplanforum' :
                 /** @var \Allplan\AllplanKeSearchExtended\Utility\AllplanHelpIndexer $helpIndexer */
                 $helpIndexer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance("Allplan\\AllplanKeSearchExtended\\Utility\\ForumIndexer") ;
                 $resCount = $helpIndexer->main($indexerConfig, $indexerObject);
-                $content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' events where indexed.</p>';
+                $content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' Forum Entries where indexed.</p>';
                 break ;
 
             case 'onlinehelp' :

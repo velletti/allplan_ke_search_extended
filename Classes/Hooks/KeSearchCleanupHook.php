@@ -19,7 +19,11 @@ class KeSearchCleanupHook {
 
                 break ;
             case 'allplanfaq' :
-                $where .= " AND type = 'allplanfaq' AND starttime < " . ( time() - ( 60 * 60 * 24 * $pObj->period ) ) ;
+                $where .= " AND ( type = 'allplanfaq' or type = 'allplanfaqSP' ) AND tstamp < " . ( time() - ( 60 * 60 * 24 * $pObj->period ) ) ;
+                break ;
+
+            case 'allplanforum' :
+                $where .= " AND ( type = 'allplanforum' or type = 'allplanforumSP' )  AND tstamp < " . ( time() - ( 60 * 60 * 24 * ( $pObj->period + 100 ) ) ) ;
 
                 break ;
 
@@ -32,7 +36,7 @@ class KeSearchCleanupHook {
         if ( $pObj->language != '' ) {
             $where .= " AND language = " . $pObj->language[0] ;
         }
-
+        $where .= " AND ( servername ='" . $_SERVER['SERVER_NAME'] . "' OR servername = '' ) ";
 
         if ( $pObj->storagePid ) {
             $where .= " AND pid = " . $pObj->storagePid ;

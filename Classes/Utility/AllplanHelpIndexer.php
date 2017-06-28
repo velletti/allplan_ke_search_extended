@@ -82,7 +82,8 @@ class AllplanHelpIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSe
         // The following should be filled (in accordance with the documentation), see also:
         // http://www.typo3-macher.de/facettierte-suche-ke-search/dokumentation/ein-eigener-indexer/
         $additionalFields = array(
-            'orig_uid' => $single['uid']
+            'orig_uid' => $single['uid'] ,
+            'servername' => $_SERVER['SERVER_NAME']
         );
 
         // take storage PID form indexexer Configuration or overwrite it with storagePid From Indexer Task ??

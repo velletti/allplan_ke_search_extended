@@ -99,7 +99,8 @@ class JvEventsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearc
                 // http://www.typo3-macher.de/facettierte-suche-ke-search/dokumentation/ein-eigener-indexer/
                 $additionalFields = array(
                     'orig_uid' => $record['uid'] ,
-                    'sortdate' => $sortdate
+                    'sortdate' => $sortdate ,
+                    'servername' => $_SERVER['SERVER_NAME']
                 );
 
                 $indexerObject->storeInIndex(

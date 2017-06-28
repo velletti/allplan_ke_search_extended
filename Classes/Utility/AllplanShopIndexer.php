@@ -248,7 +248,7 @@ class AllplanShopIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSe
             0,						// endtime (not used here)
             '',						// fe_group (not used here)
             false ,					// debug only?
-            array( 'sortdate' => $single['sortdate'] , 'orig_uid' => $single['uid'] )				// additional fields added by hooks
+            array( 'sortdate' => $single['sortdate'] , 'orig_uid' => $single['uid'] , 'servername' => $_SERVER['SERVER_NAME'] )				// additional fields added by hooks
         );
 
     }

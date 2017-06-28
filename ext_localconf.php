@@ -14,6 +14,16 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyPageContentFields'][]
 // manipulate content from these custom field(s)
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyContentFromContentElement'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchIndexerHook';
 
+// add servername to link and as "Creator" filter for easier sync between allplan and Connect
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['registerAdditionalFields'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchRegisterAdditionalFieldsHook';
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyContentIndexEntry'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchModifyContentIndexEntryHook';
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyPagesIndexEntry'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchModifyPagesIndexEntryHook';
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyAddressIndexEntry'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchModifyAddressIndexEntryHook';
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyExtNewsIndexEntry'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchModifyExtNewsIndexEntryHook';
+
+
+
+
 
 // register custom filter renderer hook
 # $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['customFilterRenderer'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchIndexerHook';
