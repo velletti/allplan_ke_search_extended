@@ -3,7 +3,7 @@
 #
 # Table structure for table 'tx_kesearch_allplan_url_ids'
 #
-CREATE TABLE tx_kesearch_allplan_faq_ids (
+CREATE TABLE tx_kesearch_allplan_url_ids (
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
 	sys_language_uid int(11) DEFAULT '0' NOT NULL,
@@ -17,4 +17,4 @@ CREATE TABLE tx_kesearch_allplan_faq_ids (
 
 CREATE TABLE tx_kesearch_index (
    servername VARCHAR(40) DEFAULT '',
-)
+) ;
