@@ -15,6 +15,6 @@ CREATE TABLE tx_kesearch_allplan_faq_ids (
 	KEY notes (notes_id)
 ) ENGINE=MyISAM;
 
-CREATE TABLE tx_kesearch_index {
+CREATE TABLE tx_kesearch_index (
    servername VARCHAR(40) DEFAULT '',
-}
+)
