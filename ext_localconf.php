@@ -14,6 +14,9 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyPageContentFields'][]
 // manipulate content from these custom field(s)
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyContentFromContentElement'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchIndexerHook';
 
+// manipulate the pagebrowser
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['pagebrowseAdditionalMarker'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchPageBrowserHook' ;
+
 // add servername to link and as "Creator" filter for easier sync between allplan and Connect
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['registerAdditionalFields'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchRegisterAdditionalFieldsHook';
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyContentIndexEntry'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchModifyContentIndexEntryHook';
