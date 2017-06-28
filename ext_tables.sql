@@ -9,7 +9,7 @@ CREATE TABLE tx_kesearch_allplan_url_ids (
 	sys_language_uid int(11) DEFAULT '0' NOT NULL,
 	deleted tinyint(4) DEFAULT '0' NOT NULL,
 	hidden tinyint(4) DEFAULT '0' NOT NULL,
-	notes_id varchar(60) ,
+	notes_id varchar(60) DEFAULT NULL,
 
 	PRIMARY KEY (uid),
 	KEY notes (notes_id)
