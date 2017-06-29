@@ -42,16 +42,26 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
 
 
         // ToDo  Enhence the Query to respect Access Rights, get language from Forum and much more !!!
-        $fields = 'p.uid, u.username, p.text, t.subject , f.displayed_pid , f.title , p.topic , f.sys_language_uid , p.tstamp , f.uid as forumUid ';
+        $fields = 'p.uid, u.username, p.text, t.subject , f.displayed_pid , f.title , p.topic , f.sys_language_uid , p.tstamp , f.uid as forumUid d.filename ';
+        $fields .= ' CASE 
+   WHEN  ( SELECT a.operation  from tx_mmforum_domain_model_forum_access as a 
+where a.forum = t.forum and a.operation = "read" and ( a.affected_group = 1 or a.login_level = 0 or a.login_level = 1 ) 
+ LIMIT 1 ) = "read"
+   THEN 
+	    "allplanforum" 
+	ELSE 
+	    "allplanforumsp" 
+ END as entryType' ;
         $table = 'tx_mmforum_domain_model_forum_post as p';
         $table .= ' LEFT JOIN tx_mmforum_domain_model_forum_topic as t on (t.uid = p.topic)';
         $table .= ' LEFT JOIN tx_mmforum_domain_model_forum_forum as f on (t.forum = f.uid)';
         $table .= ' LEFT JOIN tx_mmforum_domain_model_forum_access as a on (t.forum = a.forum)';
+        $table .= ' LEFT JOIN tx_mmforum_domain_model_forum_attachment as d on (p.uid = d.post)';
         $table .= ' LEFT JOIN fe_users as u on (p.author = u.uid)';
 
         $where = ' p.pid=67 and  p.deleted=0 and  t.deleted=0 and  f.deleted=0';
         $where .= " AND a.operation = 'read'   " ;
-        $where .= " AND  ( a.login_level = 0   OR  ( a.login_level = 2  and a.affected_group = 1 ) OR  ( a.login_level = 2  and a.affected_group = 3 ) ) " ;
+        $where .= " AND  ( a.login_level = 0   OR  a.login_level = 1   OR  ( a.login_level = 2  and a.affected_group = 1 ) OR  ( a.login_level = 2  and a.affected_group = 3 ) ) " ;
 
         $debug = "[KE search Indexer] Indexer Forum Entries starts " . PHP_EOL ;
 
