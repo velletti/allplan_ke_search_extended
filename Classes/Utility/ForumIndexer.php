@@ -42,7 +42,7 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
 
 
         // ToDo  Enhence the Query to respect Access Rights, get language from Forum and much more !!!
-        $fields = 'p.uid, u.username, p.text, t.subject , f.displayed_pid , f.title , p.topic , f.sys_language_uid , p.tstamp , f.uid as forumUid d.filename ';
+        $fields = 'p.uid, u.username, p.text, t.subject , f.displayed_pid , f.title , p.topic , f.sys_language_uid , p.tstamp , f.uid as forumUid, d.filename ';
         $fields .= ' CASE 
    WHEN  ( SELECT a.operation  from tx_mmforum_domain_model_forum_access as a 
 where a.forum = t.forum and a.operation = "read" and ( a.affected_group = 1 or a.login_level = 0 or a.login_level = 1 ) 
@@ -106,7 +106,7 @@ where a.forum = t.forum and a.operation = "read" and ( a.affected_group = 1 or a
                 $abstract = '';
 
                 $content = $record['title'] . PHP_EOL . $title . PHP_EOL . $record['text'] . PHP_EOL . "user:" .$record['username'];
-
+                $content .=  PHP_EOL . "File:" . $record['filename']  ;
 
                 // ToDo  Adjust settings , field infos and parameters
                 $tags = '#forum#';
@@ -150,7 +150,8 @@ where a.forum = t.forum and a.operation = "read" and ( a.affected_group = 1 or a
   // https://connect.allplan.com/index.php?id=39&tx_mmforum_pi1[controller]=Topic&tx_mmforum_pi1[action]=show&tx_mmforum_pi1[topic]=39962&tx_mmforum_pi1[forum]=6&tx_mmforum_pi1[@widget_0][currentPage]=1&L=1#post_267529
 
 
-                $type = "allplanforum" ;
+                $type = $record['entryType'];
+
 
                 $indexerObject->storeInIndex(
                     $pid  ,			// folder, where the indexer is stored (not where the data records are stored!)
