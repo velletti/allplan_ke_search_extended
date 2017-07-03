@@ -37,7 +37,14 @@ class KeSearchCleanupHook {
         if ( $pObj->language != '' ) {
             $where .= " AND language = " . $pObj->language[0] ;
         }
-        $where .= " AND ( servername ='" . $_SERVER['SERVER_NAME'] . "' OR servername = '' ) ";
+        $server = $_SERVER['SERVER_NAME'] ;
+        if( $server == "connect-typo3.allplan.com") {
+            $server = "connect.allplan.com" ;
+        }
+        if( $server == "www-typo3.allplan.com") {
+            $server = "www.allplan.com" ;
+        }
+        $where .= " AND ( servername ='" . $server . "' OR servername = '' ) ";
 
         if ( $pObj->storagePid ) {
             $where .= " AND pid = " . $pObj->storagePid ;
