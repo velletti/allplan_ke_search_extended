@@ -15,20 +15,20 @@ class KeSearchCleanupHook {
 	    $content = "\n In Cleanup Hook: Got $" . "where = " . $where ;
         switch ($pObj->indexerConfig['type']) {
             case 'onlinehelp' :
-                $where .= " AND type = 'allplanhelp' ";
+                $where .= " AND `type` = 'allplanhelp' ";
 
                 break ;
             case 'allplanfaq' :
-                $where .= " AND ( type = 'allplanfaq' or type = 'allplanfaqSP' ) AND tstamp < " . ( time() - ( 60 * 60 * 24 * $pObj->period ) ) ;
+                $where .= " AND ( `type` = 'allplanfaq' or `type` = 'allplanfaqSP' ) AND tstamp < " . ( time() - ( 60 * 60 * 24 * $pObj->period ) ) ;
                 break ;
 
             case 'allplanforum' :
-                $where .= " AND ( type = 'allplanforum' or type = 'allplanforumSP' )  AND tstamp < " . ( time() - ( 60 * 60 * 24 * ( $pObj->period + 100 ) ) ) ;
+                $where .= " AND ( `type` LIKE 'allplanforu%' )  AND tstamp < " . ( time() - ( 60 * 60 * 24 * ( $pObj->period ) ) ) ;
 
                 break ;
 
             default :
-                $where .= " AND type = '" . $pObj->indexerConfig['type'] .  "' ";
+                $where .= " AND `type` = '" . $pObj->indexerConfig['type'] .  "' ";
                 break ;
 
         }

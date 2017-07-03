@@ -42,26 +42,17 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
 
 
         // ToDo  Enhence the Query to respect Access Rights, get language from Forum and much more !!!
-        $fields = 'p.uid, u.username, p.text, t.subject , f.displayed_pid , f.title , p.topic , f.sys_language_uid , p.tstamp , f.uid as forumUid, d.filename ';
-        $fields .= ' CASE 
-   WHEN  ( SELECT a.operation  from tx_mmforum_domain_model_forum_access as a 
-where a.forum = t.forum and a.operation = "read" and ( a.affected_group = 1 or a.login_level = 0 or a.login_level = 1 ) 
- LIMIT 1 ) = "read"
-   THEN 
-	    "allplanforum" 
-	ELSE 
-	    "allplanforumsp" 
- END as entryType' ;
+        $fields = 'p.uid, u.username, p.text, t.subject , f.displayed_pid , f.title , p.topic , f.sys_language_uid , p.crdate , p.tstamp , f.uid as forumUid  ';
+
         $table = 'tx_mmforum_domain_model_forum_post as p';
         $table .= ' LEFT JOIN tx_mmforum_domain_model_forum_topic as t on (t.uid = p.topic)';
         $table .= ' LEFT JOIN tx_mmforum_domain_model_forum_forum as f on (t.forum = f.uid)';
-        $table .= ' LEFT JOIN tx_mmforum_domain_model_forum_access as a on (t.forum = a.forum)';
-        $table .= ' LEFT JOIN tx_mmforum_domain_model_forum_attachment as d on (p.uid = d.post)';
+
         $table .= ' LEFT JOIN fe_users as u on (p.author = u.uid)';
 
         $where = ' p.pid=67 and  p.deleted=0 and  t.deleted=0 and  f.deleted=0';
-        $where .= " AND a.operation = 'read'   " ;
-        $where .= " AND  ( a.login_level = 0   OR  a.login_level = 1   OR  ( a.login_level = 2  and a.affected_group = 1 ) OR  ( a.login_level = 2  and a.affected_group = 3 ) ) " ;
+  //      $where .= " AND a.operation = 'read'   " ;
+  //      $where .= " AND  ( a.login_level = 0   OR  a.login_level = 1   OR  ( a.login_level = 2  and a.affected_group = 1 ) OR  ( a.login_level = 2  and a.affected_group = 3 ) ) " ;
 
         $debug = "[KE search Indexer] Indexer Forum Entries starts " . PHP_EOL ;
 
@@ -80,7 +71,7 @@ where a.forum = t.forum and a.operation = "read" and ( a.affected_group = 1 or a
             $lastRun = mktime( 0 ,0 ,0 , date("m") , date("d") , date("Y") -10 ) ;
         }
 
-        $where .= " AND p.tstamp > " . $lastRun  ;
+        $where .= " AND ( p.tstamp > " . $lastRun . " OR p.crdate > " . $lastRun . " ) ";
 
         $debug .= "SELECT " . $fields . PHP_EOL . " FROM " . $table . " WHERE " . $where  . PHP_EOL . PHP_EOL ;
 
@@ -105,10 +96,20 @@ where a.forum = t.forum and a.operation = "read" and ( a.affected_group = 1 or a
                 $title = $record['subject'];
                 $abstract = '';
 
-                $content = $record['title'] . PHP_EOL . $title . PHP_EOL . $record['text'] . PHP_EOL . "user:" .$record['username'];
-                $content .=  PHP_EOL . "File:" . $record['filename']  ;
+                // name des Forums, Betreff des Topics und dann der Text ...
+                $content = $record['title'] . PHP_EOL . $title . PHP_EOL . $record['text'] ;
 
-                // ToDo  Adjust settings , field infos and parameters
+                if( $record['username'] ) {
+                    $content .=  PHP_EOL . "User:" .$record['username'];
+                }
+
+                $attachmentRows = $db->exec_SELECTquery('filename ' , "post = " . $record['uid']  );
+
+                while(($attachmentRow = $db->sql_fetch_assoc($attachmentRows))) {
+                    $content .=  PHP_EOL . "File:" . $attachmentRow['filename']  ;
+                }
+
+
                 $tags = '#forum#';
 
                 switch ($record['sys_language_uid']) {
@@ -128,30 +129,52 @@ where a.forum = t.forum and a.operation = "read" and ( a.affected_group = 1 or a
 
                 $starttime = 0;
                 $endtime = 0;
-                $feGroup = '';
                 $debugOnly = false;
-
-                #$parameters = '&tx_jvevents_events[event]=' . intval($record['uid'] . '&');
-
 
                 // The following should be filled (in accordance with the documentation), see also:
                 // http://www.typo3-macher.de/facettierte-suche-ke-search/dokumentation/ein-eigener-indexer/
+
                 $additionalFields = array(
                     'orig_uid' => $record['uid'] ,
                     'sortdate' => $record['tstamp'] ,
                     'servername' => $_SERVER['SERVER_NAME']
                 );
-
+                if ( $additionalFields['sortdate'] == 0  ) {
+                    $additionalFields['sortdate'] = $record['crdate'] ;
+                }
+                if ( $additionalFields['servername'] == "connect-typo3.allplan.com"  ) {
+                    $additionalFields['servername'] =  "connect.allplan.com"  ;
+                }
 
 
                 // ToDo  Adjust Target URL, must be an external URL
                 $url =  "https://connect.allplan.com/index.php?id=" . $record['displayed_pid'] . "&L=" . $record['sys_language_uid'] ;
                 $url .= "&tx_mmforum_pi1[controller]=Topic&tx_mmforum_pi1[action]=show&tx_mmforum_pi1[topic]=" . $record['topic'] . "&tx_mmforum_pi1[forum]="  . $record['forumUid'] ;
-  // https://connect.allplan.com/index.php?id=39&tx_mmforum_pi1[controller]=Topic&tx_mmforum_pi1[action]=show&tx_mmforum_pi1[topic]=39962&tx_mmforum_pi1[forum]=6&tx_mmforum_pi1[@widget_0][currentPage]=1&L=1#post_267529
 
+                // get FE Groups and decide if we store show this public or allow access only for specific fe_groups
 
-                $type = $record['entryType'];
+                $type = "allplanforumlocked" ;
+                $feGroup = '' ;
+                $accessData = $db->exec_SELECTquery('login_level , affected_group' ,'tx_mmforum_domain_model_forum_access' ,
+                    "operation = 'read' AND forum = " . $record['forumUid'] , '' , 'affected_group DESC ' );
+                $feGroupsArray = array() ;
 
+                while(($access = $db->sql_fetch_assoc($accessData))) {
+                    if ($access['login_level'] == 0 ||  $access['login_level'] == 1  ) {
+                        $type = "allplanforum" ;
+                    } else {
+                        if ( $access['affected_group'] == 3 ) {
+                            $type = "allplanforumsp" ;
+                        }
+                        if ( $access['affected_group'] == 1 ) {
+                            $type = "allplanforum" ;
+                        }
+                        $feGroupsArray[] =  $access['affected_group'] ;
+                    }
+                }
+                if ( $type == "allplanforumlocked"  && count( $feGroupsArray)> 0) {
+                    $feGroup = implode("," , $feGroupsArray ) ;
+                }
 
                 $indexerObject->storeInIndex(
                     $pid  ,			// folder, where the indexer is stored (not where the data records are stored!)
@@ -165,7 +188,7 @@ where a.forum = t.forum and a.operation = "read" and ( a.affected_group = 1 or a
                     $sys_language_uid,				// sys_language_uid
                     $starttime,						// starttime (not used here)
                     $endtime,						// endtime (not used here)
-                    $feGroup,						// fe_group (not used here)
+                    $feGroup,						// fe_group
                     $debugOnly,						// debug only?
                     $additionalFields				// additional fields added by hooks
                 );
