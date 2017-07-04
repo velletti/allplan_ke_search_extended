@@ -70,6 +70,9 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
         if ( intval( $lastRun ) < 100000  ) {
             $lastRun = mktime( 0 ,0 ,0 , date("m") , date("d") , date("Y") -10 ) ;
         }
+        // remove 2 Seconds : We can write > Condition instead of  >= AND we will get also posts if they are writnen in the same second.
+        $lastRun = $lastRun - 2 ;
+
         $sortDate = "crdate" ;
         $whereTime = " AND ( p.crdate > " . $lastRun . " ) ";
 
