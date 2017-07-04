@@ -51,8 +51,8 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
         $table .= ' LEFT JOIN fe_users as u on (p.author = u.uid)';
 
         $where = ' p.pid=67 and  p.deleted=0 and  t.deleted=0 and  f.deleted=0';
-  //      $where .= " AND a.operation = 'read'   " ;
-  //      $where .= " AND  ( a.login_level = 0   OR  a.login_level = 1   OR  ( a.login_level = 2  and a.affected_group = 1 ) OR  ( a.login_level = 2  and a.affected_group = 3 ) ) " ;
+        //      $where .= " AND a.operation = 'read'   " ;
+        //      $where .= " AND  ( a.login_level = 0   OR  a.login_level = 1   OR  ( a.login_level = 2  and a.affected_group = 1 ) OR  ( a.login_level = 2  and a.affected_group = 3 ) ) " ;
 
         $debug = "[KE search Indexer] Indexer Forum Entries starts " . PHP_EOL ;
 
@@ -102,7 +102,7 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
 
         if($resCount) {
             $this->logToSystem( $debug  ) ;
-            $debug = 'Indexing the following posts: ' ;
+            $debug = '' ;
             $count = 0 ;
             $tagsFound = 0 ;
             while(($record = $db->sql_fetch_assoc($res))){
@@ -110,7 +110,10 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
                 // Prepare data for the indexer
                 $title = $record['subject'];
                 $abstract = '';
-                $debug .= $record['uid'] . ", " ;
+                if( $debug == '' ) {
+                    $debug = 'Indexing the following posts: ' . $record['uid'] . " - ";
+                }
+
                 // echo "<br>" . $debug ;
                 // name des Forums, Betreff des Topics und dann der Text ...
                 $content = $record['title'] . PHP_EOL . $title . PHP_EOL . $record['text'] . PHP_EOL ;
@@ -168,7 +171,7 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
                     'servername' => $_SERVER['SERVER_NAME']
                 );
 
-                if ( $additionalFields['servername'] == "connect-typo3.allplan.com"  ) {
+                if ( $additionalFields['servername'] == "connect-typo3.allplan.com"  ||  substr($additionalFields['servername'] , 6 , 13)  == "ims-firmen.de" ) {
                     $additionalFields['servername'] =  "connect.allplan.com"  ;
                 }
 
@@ -206,7 +209,7 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
                     $pid  ,			// folder, where the indexer is stored (not where the data records are stored!)
                     $record['subject'],							// title in the result list
                     $type ,				        // content type
-                     $url ,	// uid of the targetpage (see indexer-config in the backend)
+                    $url ,	// uid of the targetpage (see indexer-config in the backend)
                     $content, 						// below the title in the result list
                     $tags,							// tags (not used here)
                     '' ,						// additional typolink-parameters, e.g. '&tx_jvevents_events[event]=' . $record['uid'];
@@ -221,12 +224,14 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
 
                 $count++ ;
                 if ( $count > 9999 ) {
+                    $debug = ' ' . $record['uid'] . " ! ";
                     $this->logToSystem( $debug . $TagDebug . " | Tags found: " . $tagsFound ) ;
                     return intval($count);
                 }
             }
 
         }
+        $debug = ' ' . $record['uid'] . " ! ";
         $this->logToSystem( $debug . $TagDebug . " | Tags found: " . $tagsFound ) ;
         return intval($count);
     }
