@@ -17,26 +17,49 @@ class KeSearchCleanupHook {
         switch ($pObj->indexerConfig['type']) {
             case 'onlinehelp' :
                 $where .= " AND `type` = 'allplanhelp' ";
+                if ( $pObj->storagePid ) {
+                    $where .= " AND pid = " . $pObj->storagePid ;
 
+                } else {
+                    $where .= " AND pid = " . $pObj->indexerConfig['pid'] ;
+                }
+                if ( $pObj->language != '' ) {
+                    $where .= " AND language = " . $pObj->language[0] ;
+                }
                 break ;
             case 'allplanfaq' :
                 $where .= " AND ( `type` = 'allplanfaq' or `type` = 'allplanfaqsp' ) AND tstamp < " . ( time() - ( 60 * 60 * 24 * $pObj->period ) ) ;
+                if ( $pObj->storagePid ) {
+                    $where .= " AND pid = " . $pObj->storagePid ;
+
+                } else {
+                    $where .= " AND pid = " . $pObj->indexerConfig['pid'] ;
+                }
+                if ( $pObj->language != '' ) {
+                    $where .= " AND language = " . $pObj->language[0] ;
+                }
                 break ;
 
             case 'allplanforum' :
                 $where .= " AND ( `type` = 'allplanforum' or `type` = 'allplanforumsp' or `type` = 'allplanforumlocked' )  AND tstamp < " . ( time() - ( 60 * 60 * 24 * ( $pObj->period ) ) ) ;
-
                 break ;
 
             default :
                 $where .= " AND `type` = '" . $pObj->indexerConfig['type'] .  "' ";
+                if ( $pObj->storagePid ) {
+                    $where .= " AND pid = " . $pObj->storagePid ;
+
+                } else {
+                    $where .= " AND pid = " . $pObj->indexerConfig['pid'] ;
+                }
+                if ( $pObj->language != '' ) {
+                    $where .= " AND language = " . $pObj->language[0] ;
+                }
                 break ;
 
         }
 
-        if ( $pObj->language != '' ) {
-            $where .= " AND language = " . $pObj->language[0] ;
-        }
+
         $server = $_SERVER['SERVER_NAME'] ;
         if( $server == "connect-typo3.allplan.com") {
             $server = "connect.allplan.com" ;
@@ -46,12 +69,7 @@ class KeSearchCleanupHook {
         }
         $where .= " AND ( servername ='" . $server . "' OR servername = '' ) ";
 
-        if ( $pObj->storagePid ) {
-            $where .= " AND pid = " . $pObj->storagePid ;
 
-        } else {
-            $where .= " AND pid = " . $pObj->indexerConfig['pid'] ;
-        }
         return $content . "\n After Cleanup Hook: Now $" . "where = " . $where ;
     }
 

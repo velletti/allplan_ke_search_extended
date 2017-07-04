@@ -60,7 +60,7 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
         if( $indexerObject->period > 365 ) {
             $lastRun = time() - ( 60 * 60 * 24 * ( $indexerObject->period  ))  ;
         }
-        $lastRunRow = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordRaw( "tx_kesearch_index" , "`type` like 'allplanforu%' ORDER BY starttime DESC") ;
+        $lastRunRow = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordRaw( "tx_kesearch_index" , "`type` like 'allplanforu%' ORDER BY sortdate DESC") ;
 
 
         if( is_array($lastRunRow )) {
@@ -70,14 +70,23 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
         if ( intval( $lastRun ) < 100000  ) {
             $lastRun = mktime( 0 ,0 ,0 , date("m") , date("d") , date("Y") -10 ) ;
         }
-
-        $where .= " AND ( p.tstamp > " . $lastRun . " OR p.crdate > " . $lastRun . " ) ";
-
-        $debug .= "SELECT " . $fields . PHP_EOL . " FROM " . $table . " WHERE " . $where  . PHP_EOL . PHP_EOL ;
+        $sortDate = "crdate" ;
+        $whereTime = " AND ( p.crdate > " . $lastRun . " ) ";
 
 
-        $res = $db->exec_SELECTquery($fields,$table,$where , '' , 'p.tstamp ASC'  );
+        $debug .= " | SELECT " . $fields . PHP_EOL . " FROM " . $table . " WHERE " . $where . $whereTime . PHP_EOL . PHP_EOL ;
+
+        $res = $db->exec_SELECTquery($fields,$table,$where . $whereTime , '' , 'p.crdate ASC'  );
         $resCount = $db->sql_num_rows($res);
+
+        if( $resCount == 0 ) {
+            $whereTime = " AND p.tstamp > " . $lastRun ;
+            $sortDate = "tstamp" ;
+            $res = $db->exec_SELECTquery($fields,$table,$where . $whereTime, '' , 'p.crdate ASC'  );
+            $debug .= " | SELECT " . $fields . PHP_EOL . " FROM " . $table . " WHERE " . $where . $whereTime . PHP_EOL . PHP_EOL ;
+            $resCount = $db->sql_num_rows($res);
+        }
+
         $debug .= "SELECT will have " . $resCount . " hits !  ( only posts after " .  date( "d.m.Y H:i" , $lastRun ) . " ) ". PHP_EOL  ;
 
         if( $db->store_lastBuiltQuery === true )  {
@@ -89,21 +98,37 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
 
 
         if($resCount) {
+            $this->logToSystem( $debug  ) ;
+            $debug = 'Indexing the following posts: ' ;
             $count = 0 ;
+            $tagsFound = 0 ;
             while(($record = $db->sql_fetch_assoc($res))){
 
                 // Prepare data for the indexer
                 $title = $record['subject'];
                 $abstract = '';
-
+                $debug .= $record['uid'] . ", " ;
+                // echo "<br>" . $debug ;
                 // name des Forums, Betreff des Topics und dann der Text ...
-                $content = $record['title'] . PHP_EOL . $title . PHP_EOL . $record['text'] ;
+                $content = $record['title'] . PHP_EOL . $title . PHP_EOL . $record['text'] . PHP_EOL ;
 
+                $content .=  PHP_EOL . "Topic:" .$record['topic'];
                 if( $record['username'] ) {
                     $content .=  PHP_EOL . "User:" .$record['username'];
                 }
+                $tagFrom = 'tx_mmforum_domain_model_forum_tag_topic as mm  '
+                    . 'LEFT JOIN tx_mmforum_domain_model_forum_tag as t on (t.uid = mm.uid_foreign ) ' ;
+                $tagRows = $db->exec_SELECTquery('t.name as name' , $tagFrom , "mm.uid_local = " . $record['topic']  );
+                if (  $db->sql_num_rows($tagRows) > 0 ) {
+                    $content .=  PHP_EOL . "Tag: "   ;
+                    while(($tagRow = $db->sql_fetch_assoc($tagRows))) {
+                        $content .=   " " . $tagRow['name']  ;
+                        $tagsFound ++ ;
+                    }
+                }
+                $TagDebug = " Tag SELECT  t.name as name FROM " . $tagFrom . " WHERE  mm.uid_foreign =  " . $record['topic']   ;
 
-                $attachmentRows = $db->exec_SELECTquery('filename ' , "post = " . $record['uid']  );
+                $attachmentRows = $db->exec_SELECTquery('filename ' , 'tx_mmforum_domain_model_forum_attachment' , "post = " . $record['uid']  );
 
                 while(($attachmentRow = $db->sql_fetch_assoc($attachmentRows))) {
                     $content .=  PHP_EOL . "File:" . $attachmentRow['filename']  ;
@@ -136,12 +161,10 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
 
                 $additionalFields = array(
                     'orig_uid' => $record['uid'] ,
-                    'sortdate' => $record['tstamp'] ,
+                    'sortdate' => $record[$sortDate] ,
                     'servername' => $_SERVER['SERVER_NAME']
                 );
-                if ( $additionalFields['sortdate'] == 0  ) {
-                    $additionalFields['sortdate'] = $record['crdate'] ;
-                }
+
                 if ( $additionalFields['servername'] == "connect-typo3.allplan.com"  ) {
                     $additionalFields['servername'] =  "connect.allplan.com"  ;
                 }
@@ -194,14 +217,14 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
                 );
 
                 $count++ ;
-                if ( $count > 999 ) {
-                    $this->logToSystem( $debug ) ;
+                if ( $count > 9999 ) {
+                    $this->logToSystem( $debug . $TagDebug . " | Tags found: " . $tagsFound ) ;
                     return intval($count);
                 }
             }
 
         }
-        $this->logToSystem( $debug ) ;
+        $this->logToSystem( $debug . $TagDebug . " | Tags found: " . $tagsFound ) ;
         return intval($count);
     }
     private function logToSystem( $text ) {
