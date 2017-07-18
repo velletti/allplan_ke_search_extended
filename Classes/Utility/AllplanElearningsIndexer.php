@@ -78,10 +78,15 @@ class AllplanElearningsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\Ba
                 $debugOnly = false;
 
                 $parameters = [
-                    'tx_marit_elearning[download]=' . intval( $record['uid'] ),
-                    'tx_marit_elearning[action]=show',
-                    'tx_marit_elearning[controller]=Download'
+                    'tx_marit_elearning[lesson]=' . intval( $record['uid'] ),
+                    'tx_marit_elearning[action]=single',
+                    'tx_marit_elearning[controller]=Lesson'
                 ];
+
+                // https://connect.local/en/learn/featured/play-a-video.html?tx_maritelearning_pi1%5Blesson%5D=102&
+                // &tx_maritelearning_pi1%5Bsys_language_uid%5D=0&tx_maritelearning_pi1%5Baction%5D=single
+                //&tx_maritelearning_pi1%5Bcontroller%5D=Lesson&cHash=e4dc73713b0043f46ab2cb6baff4b013
+
                 $origId = $record['l18n_parent'] ;
                 $feGroup = $record['fe_group'] ;
                 unset($recordOrig) ;

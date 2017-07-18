@@ -80,9 +80,14 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
 
                 $parameters = [
                     'tx_marit_elearning[lesson]=' . intval( $record['uid'] ),
-                    'tx_marit_elearning[action]=show',
-                    'tx_marit_elearning[controller]=Lesson'
+                    'tx_marit_elearning[action]=single',
+                    'tx_marit_elearning[controller]=Download'
                 ];
+
+                // https://connect.allplan.com/de/training/dokumente.html?tx_maritelearning_pi1%5Bdownload%5D=2701
+                // &tx_maritelearning_pi1%5BdownloadCat%5D=&tx_maritelearning_pi1%5Baction%5D=single&tx_maritelearning_pi1%5Bcontroller%5D=Download&cHash=26cd946f09ee1762121db6d4f03cb9ed
+
+
                 $origId = $record['l18n_parent'] ;
                 $feGroup = $record['fe_group'] ;
                 unset($recordOrig) ;
