@@ -125,8 +125,10 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
                     $additionalFields['sortdate'] = intval( $sortdate )  ;
                     //  $additionalFields['sortdate'] = $sortdate->getTimestamp() ;
                 }
+                $pid = $indexerObject->storagePid > 0 ? $indexerObject->storagePid  : $indexerConfig['pid'] ;
+
                 $indexerObject->storeInIndex(
-                    $indexerConfig['pid'],			// folder, where the indexer Data is stored
+                    $pid ,			// folder, where the indexer Data is stored
                     $title,							// title in the result list
                     'documentations',				    // content type Important
                     $indexerConfig['targetpid'],	// uid of the targetpage (see indexer-config in the backend)

@@ -125,9 +125,9 @@ class AllplanElearningsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\Ba
                    //  $additionalFields['sortdate'] = $sortdate->getTimestamp() ;
                 }
 
-
+                $pid = $indexerObject->storagePid > 0 ? $indexerObject->storagePid  : $indexerConfig['pid'] ;
                 $indexerObject->storeInIndex(
-                    $indexerConfig['pid'],			// folder, where the indexer Data is stored
+                    $pid ,			// folder, where the indexer Data is stored
                     $title,							// title in the result list
                     'lessons',				    // content type Important
                     $indexerConfig['targetpid'],	// uid of the targetpage (see indexer-config in the backend)
