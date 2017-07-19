@@ -45,8 +45,8 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
         $where = \TYPO3\CMS\Backend\Utility\BackendUtility::BEenableFields($table);
         $where.= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table);
 
-         echo "Select " . $fields . " FROM " . $table . " WHERE " . $where ;
-         die;
+        // echo "Select " . $fields . " FROM " . $table . " WHERE " . $where ;
+        //  die;
 
         $res = $db->exec_SELECTquery($fields,$table,$where);
         $resCount = $db->sql_num_rows($res);
