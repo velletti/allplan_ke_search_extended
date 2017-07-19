@@ -40,7 +40,7 @@ class AllplanElearningsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\Ba
         // $db->store_lastBuiltQuery = true;
 
         $fields = '*';
-        $table = 'tx_maritelearning_domain_model_lesson as lesson ';
+        $table = 'tx_maritelearning_domain_model_lesson';
         $where = \TYPO3\CMS\Backend\Utility\BackendUtility::BEenableFields($table);
         $where.= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table);
 
@@ -78,9 +78,9 @@ class AllplanElearningsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\Ba
                 $debugOnly = false;
 
                 $parameters = [
-                    'tx_marit_elearning[lesson]=' . intval( $record['uid'] ),
-                    'tx_marit_elearning[action]=single',
-                    'tx_marit_elearning[controller]=Lesson'
+                    'tx_maritelearning_pi1[lesson]=' . intval( $record['uid'] ),
+                    'tx_maritelearning_pi1[action]=single',
+                    'tx_maritelearning_pi1[controller]=Lesson'
                 ];
 
                 // https://connect.local/en/learn/featured/play-a-video.html?tx_maritelearning_pi1%5Blesson%5D=102&
@@ -126,11 +126,18 @@ class AllplanElearningsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\Ba
                 }
 
                 $pid = $indexerObject->storagePid > 0 ? $indexerObject->storagePid  : $indexerConfig['pid'] ;
+
+                $url = "https://" . $_SERVER['SERVER_NAME'] . "/index.php?id=" . $indexerConfig['targetpid'] . "&" .  implode( "&" , $parameters ) ;
+                if($sys_language_uid > -1 ) {
+                    $url .= "&L=" . $sys_language_uid ;
+                }
+
+
                 $indexerObject->storeInIndex(
                     $pid ,			// folder, where the indexer Data is stored
                     $title,							// title in the result list
                     'lessons',				    // content type Important
-                    $indexerConfig['targetpid'],	// uid of the targetpage (see indexer-config in the backend)
+                    $url ,	// uid of the targetpage (see indexer-config in the backend)
                     $content, 						// below the title in the result list
                     $tags,							// tags (not used here)
                     '&' . implode('&', $parameters),						// additional typolink-parameters, e.g. '&tx_jvevents_events[event]=' . $record['uid'];

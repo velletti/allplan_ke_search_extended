@@ -42,13 +42,15 @@ class JvEventsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearc
         $fields = 'event.uid, event.name , event.teaser, event.description, event.sys_language_uid , event.start_date , event.end_date';
         $fields .= ',org.name as oname, loc.city as city, loc.zip, loc.street_and_nr , loc.name as lname, loc.description as ldesc , org.description as odesc' ;
         $table = 'tx_jvevents_domain_model_event as event ';
-        $table .= "LEFT JOIN tx_jvevents_domain_model_organizer as org ON event.organizer = org.uid 
-                LEFT JOIN tx_jvevents_domain_model_location as loc ON event.location = loc.uid " ;
+
         $where = 'event.pid IN (' . $this->getTreeList($indexerConfig['startingpoints_recursive']) . ') ';
         $where.= 'AND ';
         $where.= 'start_date > ' . time();
         $where.= \TYPO3\CMS\Backend\Utility\BackendUtility::BEenableFields($table);
         $where.= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table);
+
+        $table .= "LEFT JOIN tx_jvevents_domain_model_organizer as org ON event.organizer = org.uid 
+                LEFT JOIN tx_jvevents_domain_model_location as loc ON event.location = loc.uid " ;
 
          // echo "Select " . $fields . " FROM " . $table . " WHERE " . $where ;
          // die;

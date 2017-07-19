@@ -40,13 +40,13 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
         // $db->store_lastBuiltQuery = true;
 
         $fields = '*';
-        $table = 'tx_maritelearning_domain_model_download as download ';
+        $table = 'tx_maritelearning_domain_model_download ';
 
         $where = \TYPO3\CMS\Backend\Utility\BackendUtility::BEenableFields($table);
         $where.= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table);
 
-        // echo "Select " . $fields . " FROM " . $table . " WHERE " . $where ;
-        // die;
+         echo "Select " . $fields . " FROM " . $table . " WHERE " . $where ;
+         die;
 
         $res = $db->exec_SELECTquery($fields,$table,$where);
         $resCount = $db->sql_num_rows($res);
@@ -69,7 +69,7 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
                 $content = $title . PHP_EOL . nl2br($abstract) . PHP_EOL . nl2br($description);
 
 
-                $tags = '#videos#';
+                $tags = '#pdf#,#downloads#';
                 $sys_language_uid = $record['sys_language_uid'] ;
 
                 /** @var \DateTime $sortdate */
@@ -79,9 +79,9 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
                 $debugOnly = false;
 
                 $parameters = [
-                    'tx_marit_elearning[lesson]=' . intval( $record['uid'] ),
-                    'tx_marit_elearning[action]=single',
-                    'tx_marit_elearning[controller]=Download'
+                    'tx_maritelearning_pi1[download]=' . intval( $record['uid'] ),
+                    'tx_maritelearning_pi1[action]=single',
+                    'tx_maritelearning_pi1[controller]=Download'
                 ];
 
                 // https://connect.allplan.com/de/training/dokumente.html?tx_maritelearning_pi1%5Bdownload%5D=2701
@@ -127,11 +127,15 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
                 }
                 $pid = $indexerObject->storagePid > 0 ? $indexerObject->storagePid  : $indexerConfig['pid'] ;
 
+                $url = "https://" . $_SERVER['SERVER_NAME'] . "/index.php?id=" . $indexerConfig['targetpid'] ."&" .  implode( "&" , $parameters ) ;
+                if($sys_language_uid > -1 ) {
+                    $url .= "&L=" . $sys_language_uid ;
+                }
                 $indexerObject->storeInIndex(
                     $pid ,			// folder, where the indexer Data is stored
                     $title,							// title in the result list
                     'documentations',				    // content type Important
-                    $indexerConfig['targetpid'],	// uid of the targetpage (see indexer-config in the backend)
+                    $url ,	// uid of the targetpage (see indexer-config in the backend)
                     $content, 						// below the title in the result list
                     $tags,							// tags (not used here)
                     '&' . implode('&', $parameters),						// additional typolink-parameters, e.g. '&tx_jvevents_events[event]=' . $record['uid'];
