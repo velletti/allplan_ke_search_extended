@@ -40,7 +40,7 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
         // $db->store_lastBuiltQuery = true;
 
         $fields = '*';
-        $table = 'tx_maritelearning_domain_model_download ';
+        $table = 'tx_maritelearning_domain_model_download';
 
         $where = \TYPO3\CMS\Backend\Utility\BackendUtility::BEenableFields($table);
         $where.= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table);
