@@ -40,6 +40,13 @@ class KeSearchCleanupHook {
                 }
                 break ;
 
+            case 'lessons' :
+                $where .= " AND ( `type` = 'lessons' or `type` = 'lessonslocked' )  AND tstamp < " . ( time() - ( 60 * 60 * 24 * ( $pObj->period ) ) ) ;
+                break ;
+            case 'documentations' :
+                $where .= " AND ( `type` = 'documentation' or `type` = 'documentationlocked' )  AND tstamp < " . ( time() - ( 60 * 60 * 24 * ( $pObj->period ) ) ) ;
+                break ;
+
             case 'allplanforum' :
                 $where .= " AND ( `type` = 'allplanforum' or `type` = 'allplanforumsp' or `type` = 'allplanforumlocked' )  AND tstamp < " . ( time() - ( 60 * 60 * 24 * ( $pObj->period ) ) ) ;
                 break ;

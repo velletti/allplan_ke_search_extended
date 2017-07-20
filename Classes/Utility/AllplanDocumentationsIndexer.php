@@ -42,10 +42,12 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
         $fields = '*';
         $table = 'tx_maritelearning_domain_model_download';
 
-        $where = \TYPO3\CMS\Backend\Utility\BackendUtility::BEenableFields($table);
-        $where.= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table);
+        //$where = 'pid IN (' . $this->getTreeList($indexerConfig['startingpoints_recursive']) . ') ';
+        $where = '1=1 ';
+        $where .= \TYPO3\CMS\Backend\Utility\BackendUtility::BEenableFields($table);
+        $where .= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table);
 
-        // echo "Select " . $fields . " FROM " . $table . " WHERE " . $where ;
+       //  echo "Select " . $fields . " FROM " . $table . " WHERE " . $where ;
         //  die;
 
         $res = $db->exec_SELECTquery($fields,$table,$where);
@@ -68,6 +70,7 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
 
                 $content = $title . PHP_EOL . nl2br($abstract) . PHP_EOL . nl2br($description);
 
+                $content .=  $this->getFileContent($db , $record['uid'] ) ;
 
                 $tags = '#pdf#,#downloads#';
                 $sys_language_uid = $record['sys_language_uid'] ;
@@ -83,6 +86,9 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
                     'tx_maritelearning_pi1[action]=single',
                     'tx_maritelearning_pi1[controller]=Download'
                 ];
+
+
+
 
                 // https://connect.allplan.com/de/training/dokumente.html?tx_maritelearning_pi1%5Bdownload%5D=2701
                 // &tx_maritelearning_pi1%5BdownloadCat%5D=&tx_maritelearning_pi1%5Baction%5D=single&tx_maritelearning_pi1%5Bcontroller%5D=Download&cHash=26cd946f09ee1762121db6d4f03cb9ed
@@ -134,7 +140,7 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
                 $indexerObject->storeInIndex(
                     $pid ,			// folder, where the indexer Data is stored
                     $title,							// title in the result list
-                    'documentations',				    // content type Important
+                    'documentation',				    // content type Important
                     $url ,	// uid of the targetpage (see indexer-config in the backend)
                     $content, 						// below the title in the result list
                     $tags,							// tags (not used here)
@@ -153,5 +159,44 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
         // echo "ResCount: " . $resCount . "<hr>" ;
         // die;
         return intval($resCount);
+    }
+
+    public function getFileContent($db , $uid) {
+
+        $fields = "sys_file.uid, sys_file.missing,
+sys_file.identifier, sys_file.name , sys_file.sha1, sys_file.creation_date, sys_file.modification_date" ;
+
+        $table = "sys_file
+LEFT JOIN sys_file_reference ON ( sys_file_reference.uid_local = sys_file.uid )" ;
+
+        $where = "sys_file.missing = 0 AND 
+sys_file_reference.fieldname = \"tx_maritelearning_domain_model_download_download\" and
+sys_file_reference.uid_foreign =" ;
+
+        $resSingle = $db->exec_SELECTquery($fields,$table,$where  . $uid );
+        $FileRecord = $db->sql_fetch_assoc($resSingle) ;
+
+        $file = PATH_site . "fileadmin" . $FileRecord['identifier'] ;
+        $className = 'tx_kesearch_indexer_filetypes_pdf' ;
+
+        // check if class exists
+        if (class_exists($className) && file_exists( $file )) {
+            // make instance
+            $fileObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($className);
+            // check if new object has interface implemented
+            if ($fileObj instanceof tx_kesearch_indexer_filetypes) {
+                // Do the check if a file has already been indexed at this early point in order
+                // to skip the time expensive "get content" process which includes calls to external tools
+                // fetch the file content directly from the index
+                echo " is class  " ;
+                $fileContent = $fileObj->getContent( $file );
+                // remove line breaks from content in order to identify
+                // additional content (which will have trailing linebreaks)
+                return  "Filename: " . $FileRecord['name'] .  str_replace("\n", ' ', $fileContent);
+
+            } else {
+                return '' ;
+            }
+        }
     }
 }

@@ -41,8 +41,11 @@ class AllplanElearningsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\Ba
 
         $fields = '*';
         $table = 'tx_maritelearning_domain_model_lesson';
-        $where = \TYPO3\CMS\Backend\Utility\BackendUtility::BEenableFields($table);
-        $where.= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table);
+
+        // $where = 'pid IN (' . $this->getTreeList($indexerConfig['startingpoints_recursive']) . ') ';
+        $where = '1=1 ';
+        $where .= \TYPO3\CMS\Backend\Utility\BackendUtility::BEenableFields($table);
+        $where .= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table);
 
         // echo "Select " . $fields . " FROM " . $table . " WHERE " . $where ;
         // die;
