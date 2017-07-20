@@ -127,13 +127,17 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
                     'sortdate' => 0  ,
                     'servername' => $_SERVER['SERVER_NAME']
                 );
+                if ( $additionalFields['servername'] == "connect-typo3.allplan.com"  ||  substr($additionalFields['servername'] , 6 , 13)  == "ims-firmen.de" ) {
+                    $additionalFields['servername'] =  "connect.allplan.com"  ;
+                }
+
                 if( $sortdate > 0 )  {
                     $additionalFields['sortdate'] = intval( $sortdate )  ;
                     //  $additionalFields['sortdate'] = $sortdate->getTimestamp() ;
                 }
                 $pid = $indexerObject->storagePid > 0 ? $indexerObject->storagePid  : $indexerConfig['pid'] ;
 
-                $url = "https://" . $_SERVER['SERVER_NAME'] . "/index.php?id=" . $indexerConfig['targetpid'] ."&" .  implode( "&" , $parameters ) ;
+                $url = "https://" . $additionalFields['servername'] . "/index.php?id=" . $indexerConfig['targetpid'] ."&" .  implode( "&" , $parameters ) ;
                 if($sys_language_uid > -1 ) {
                     $url .= "&L=" . $sys_language_uid ;
                 }
