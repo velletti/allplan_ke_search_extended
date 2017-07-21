@@ -40,6 +40,17 @@ class KeSearchIndexerHook extends BaseKeSearchIndexerHook{
         ];
         $params['items'][] = $newArray;
         unset($newArray);
+        // contentserve downloads ..
+        // =================================================================================================================================
+        $newArray = [
+            'Allplan ContentServe downloads',
+            'contentserve',
+            \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath('allplan_ke_search_extended') . '/Resources/Public/Icons/indexer-allplan-ce.png'
+        ];
+        $params['items'][] = $newArray;
+        unset($newArray);
+
+
         // Forum
         // =================================================================================================================================
         $newArray = [
@@ -152,6 +163,13 @@ class KeSearchIndexerHook extends BaseKeSearchIndexerHook{
 
                 $resCount = $elearningIndexer->main($indexerConfig, $indexerObject);
                 $content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' Elearning Documentation entries where indexed.</p>';
+                break;
+            case 'contentserve' :
+                /** @var \Allplan\AllplanKeSearchExtended\Utility\AllplanShopIndexer $elearningIndexer */
+                $contentIndexer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance("Allplan\\AllplanKeSearchExtended\\Utility\\AllplanContentserveIndexer");
+
+                $resCount = $contentIndexer->main($indexerConfig, $indexerObject);
+                $content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' Contentserve  entries where indexed.</p>';
                 break;
         }
 

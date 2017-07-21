@@ -1,0 +1,193 @@
+<?php
+namespace Allplan\AllplanKeSearchExtended\Utility;
+/***************************************************************
+ *  Copyright notice
+ *
+ *  (c) 2017 Jörg velletti (allplan) <jVelletti@allplan.com>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
+
+class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIndexerHook
+{
+    /**
+     * @param array $indexerConfig configuration from TYPO3 backend
+     * @param \tx_kesearch_indexer $indexerObject reference to the indexer class
+     * @return int
+     */
+
+    public function main(&$indexerConfig, &$indexerObject) {
+        $indexerConfig['tags'] = "#contentserve#" ;
+
+        $BaseUrl = "https://" . $_SERVER['SERVER_NAME'] . "/en/content/show-single-content.html?tx_nemjvgetcontent_pi1[func]=SHOWITEM&no_cache=1"
+            . "&tx_nemjvgetcontent_pi1[token]=75f99e11fa7f86fa85329aa36268d753&tx_nemjvgetcontent_pi1[filter_favorite]=2&tx_nemjvgetcontent_pi1[json]=1" ;
+
+
+        $result = array() ;
+        $count = 0 ;
+        // derzeit sind 1300 item in der Contentserve db .. darum gehen wir einfahc mal durch bis zur max ID und ein wieng mehr ..
+        $lngs = array( 1 => "DEU" , 4 => "FRA" , 2 => "ITA" , 18 => "ESP" , 14=> "RUS" , 3 => "CZE") ;
+        for( $i=0 ; $i <  2000 ; $i++ ) {
+            $url = $BaseUrl . "&tx_nemjvgetcontent_pi1[WLA]=ENU&tx_nemjvgetcontent_pi1[pid]=" .  $i ;
+            $json = $this->getJsonFile($url) ;
+
+            if( is_array($json)) {
+                if($json['error']  < 1 ) {
+
+                    if( $this->putToIndex( $json , $indexerObject , $indexerConfig , 0 ) ) {
+                        $count++ ;
+                        foreach ( $lngs as $lng => $WLA) {
+                            $url = $BaseUrl . "&tx_nemjvgetcontent_pi1[WLA]=" . $WLA . "&tx_nemjvgetcontent_pi1[pid]=" .  $i ;
+                            $json = $this->getJsonFile($url) ;
+                            if( is_array($json)) {
+                                if($json['error']  < 1 ) {
+
+                                    if( $this->putToIndex( $json , $indexerObject , $indexerConfig , $lng ) ) {
+                                        if ( $WLA == "DEU") {
+                                            $this->putToIndex( $json , $indexerObject , $indexerConfig , 6 ) ;
+                                            $this->putToIndex( $json , $indexerObject , $indexerConfig , 7 ) ;
+
+                                        }
+                                        $count++ ;
+                                    }
+
+                                }
+                            }
+                            // ToDo Disable  next lines .. only needed for faster dev Process ..
+                            //   if ( $count > 20 ) {
+                            //       return $count ;
+                            //   }
+
+                        }
+                    }
+
+                }
+            }
+
+
+        }
+
+        return $count ;
+    }
+    protected function putToIndex(array $single , \tx_kesearch_indexer $indexerObject , array  $indexerConfig , $language ) {
+        if ($single['Header']['RESULTS'] == 0 ) {
+            return false ;
+        }
+
+
+        // Prepare data for the indexer
+        $content = str_replace( '"' , "" ,  $single['CPs'][0]['LABEL_CP'] ) . PHP_EOL
+            . str_replace( '"' , "" ,  $single['CPs'][0]['LTX_CP'] ) ;
+        $content .= PHP_EOL . $single['CPs'][0]['CP_ADE']  ;
+        $content .= PHP_EOL . "ID: " . $single['CPs'][0]['CP_IDI']  . PHP_EOL ;
+
+
+
+        $cfs = '' ;
+        $kats = array() ;
+        $filetypes = array() ;
+        $CF_ADE = array() ;
+        $DES_CF = array() ;
+        $CF_ADE = array() ;
+        $PRO_CF = array() ;
+        $APV_CF = array() ;
+        if( is_array(  $single['CPs'][0]['LINK_CP']  )) {
+            foreach ( $single['CPs'][0]['LINK_CP'] as $cfile ) {
+                $cfs .= $cfile['CF_IDI'] . "," ;
+                $temp = $cfile['FILETYPE'] ;
+                $filetypes[$temp] = $cfile['FILETYPE'] ;
+
+                // +++++ Read  the values with Additional Attributes
+                $temp = $cfile['CF_ADE'] ;
+                $CF_ADE[$temp] = $cfile['CF_ADE'] ;
+
+                $temp = $cfile['DES_CF'] ;
+                $DES_CF[$temp] = $cfile['DES_CF'] ;
+
+                $temp = $cfile['PRO_CF'] ;
+                $PRO_CF[$temp] = $cfile['PRO_CF'] ;
+
+                $temp = $cfile['APV_CF'] ;
+                $APV_CF[$temp] = $cfile['APV_CF'] ;
+
+                foreach ( $cfile['KAT_CF']  as $kat ) {
+                    $id = $kat['KAT_KEY'] ;
+                    $kats[$id] = $id . " - "  . $kat['KAT_LABEL'] ;
+
+                }
+
+            }
+        }
+
+
+        // Add the Additional Attributes  but make them unique ...
+
+        $content .=  PHP_EOL .  implode ( PHP_EOL , $kats ) ;
+        array_unique($filetypes) ;
+        $content .=  PHP_EOL .  implode( PHP_EOL , $filetypes ) ;
+
+        array_unique($DES_CF) ;
+        $content .=  PHP_EOL .  implode( PHP_EOL , $DES_CF ) ;
+        array_unique($CF_ADE) ;
+        $content .=   PHP_EOL . implode( PHP_EOL , $CF_ADE ) ;
+        array_unique($PRO_CF) ;
+        $content .=   PHP_EOL . implode( PHP_EOL , $PRO_CF ) ;
+        array_unique($APV_CF) ;
+        $content .=  PHP_EOL .  implode( PHP_EOL , $APV_CF ) ;
+
+        $t = $single['CPs'][0]['CP_DTA'] ;
+        /** @var \DateTime $datum */
+        $datum =  new \DateTime($single['CPs'][0]['CP_DTA']);
+        // The following should be filled (in accordance with the documentation), see also:
+        // http://www.typo3-macher.de/facettierte-suche-ke-search/dokumentation/ein-eigener-indexer/
+        $additionalFields = array(
+            'orig_uid' => $single['CPs'][0]['CP_IDI'] ,
+            'servername' => $_SERVER['SERVER_NAME'] ,
+            'sortdate' => $datum->getTimestamp()
+        );
+
+        // take storage PID form indexexer Configuration or overwrite it with storagePid From Indexer Task ??
+        $pid = $indexerObject->storagePid > 0 ? $indexerObject->storagePid  : $indexerConfig['pid'] ;
+        // todo .. fill URL with correct  uid of single page from
+        $url = "https://connect.allplan.com/index.php?id=314&tx_nemjvgetcontent_pi1[func]=SHOWITEM&no_cache=1&type=999&"
+            . '&L=' . $language  ;
+        $url .= "&tx_nemjvgetcontent_pi1[pid]=" . $single['CPs'][0]['CP_IDI'] ;
+        $url .= "&tx_nemjvgetcontent_pi1[cf_ids]=" . $cfs  ;
+
+
+        return $indexerObject->storeInIndex(
+            $pid ,			                // folder, where the indexer data should be stored (not where the data records are stored!)
+            str_replace( '"' , "" ,  $single['CPs'][0]['LABEL_CP'] ) ,							    // title in the result list
+            'contentserve',				                    // content type ( useful, if you want to use additionalResultMarker)
+            $url ,	// uid of the targetpage (see indexer-config in the backend)
+            $content, 						                // below the title in the result list
+            $indexerConfig['tags'] ,						// tags (not used here)
+            '_blank' ,                                      // additional params for the link
+            $single['CPs'][0]['LTX_CP'] ,			// abstract
+            $language ,				    // sys_language_uid
+            0,						    // starttime (not used here)
+            0,						    // endtime (not used here)
+            '' ,						// fe_group (not used here)
+            false ,					    // debug only?
+            $additionalFields				// additional fields added by hooks
+        );
+
+    }
+
+
+}
