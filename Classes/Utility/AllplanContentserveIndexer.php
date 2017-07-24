@@ -33,8 +33,11 @@ class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\
 
     public function main(&$indexerConfig, &$indexerObject) {
         $indexerConfig['tags'] = "#contentserve#" ;
-
-        $BaseUrl = "https://" . $_SERVER['SERVER_NAME'] . "/en/content/show-single-content.html?tx_nemjvgetcontent_pi1[func]=SHOWITEM&no_cache=1"
+        $server = $_SERVER['SERVER_NAME'] ;
+        if( $server == "connect-typo3.allplan.com" ||  $server == "k2591.ims-firmen.de" ||  $server == '' ) {
+            $server = "connect.allplan.com" ;
+        }
+        $BaseUrl = "https://" . $server . "/en/content/show-single-content.html?tx_nemjvgetcontent_pi1[func]=SHOWITEM&no_cache=1"
             . "&tx_nemjvgetcontent_pi1[token]=75f99e11fa7f86fa85329aa36268d753&tx_nemjvgetcontent_pi1[filter_favorite]=2&tx_nemjvgetcontent_pi1[json]=1" ;
 
 
@@ -163,8 +166,8 @@ class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\
 
         // take storage PID form indexexer Configuration or overwrite it with storagePid From Indexer Task ??
         $pid = $indexerObject->storagePid > 0 ? $indexerObject->storagePid  : $indexerConfig['pid'] ;
-        // todo .. fill URL with correct  uid of single page from
-        $url = "https://connect.allplan.com/index.php?id=314&tx_nemjvgetcontent_pi1[func]=SHOWITEM&no_cache=1&type=999&"
+        // correct  uid of single page from is 359
+        $url = "https://connect.allplan.com/index.php?id=" . $pid . "&tx_nemjvgetcontent_pi1[func]=SHOWITEM&no_cache=1&type=999&"
             . '&L=' . $language  ;
         $url .= "&tx_nemjvgetcontent_pi1[pid]=" . $single['CPs'][0]['CP_IDI'] ;
         $url .= "&tx_nemjvgetcontent_pi1[cf_ids]=" . $cfs  ;
