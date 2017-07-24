@@ -176,7 +176,7 @@ class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\
 
 
         // correct  uid of single page from is 359
-        $url = "https://" . $server . "/index.php?id=" . $pidLink . "&tx_nemjvgetcontent_pi1[func]=SHOWITEM&no_cache=1&type=999&"
+        $url = "https://" . $server . "/index.php?id=" . $pidLink . "&tx_nemjvgetcontent_pi1[func]=SHOWITEM&no_cache=1"
             . '&L=' . $language  ;
         $url .= "&tx_nemjvgetcontent_pi1[pid]=" . $single['CPs'][0]['CP_IDI'] ;
         $url .= "&tx_nemjvgetcontent_pi1[cf_ids]=" . $cfs  ;
