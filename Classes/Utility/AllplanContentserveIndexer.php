@@ -156,11 +156,17 @@ class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\
         $t = $single['CPs'][0]['CP_DTA'] ;
         /** @var \DateTime $datum */
         $datum =  new \DateTime($single['CPs'][0]['CP_DTA']);
+
+        $server = $_SERVER['SERVER_NAME'] ;
+        if( $server == "connect-typo3.allplan.com" ||  $server == "k2591.ims-firmen.de" ||  $server == '' ) {
+            $server = "connect.allplan.com" ;
+        }
+
         // The following should be filled (in accordance with the documentation), see also:
         // http://www.typo3-macher.de/facettierte-suche-ke-search/dokumentation/ein-eigener-indexer/
         $additionalFields = array(
             'orig_uid' => $single['CPs'][0]['CP_IDI'] ,
-            'servername' => $_SERVER['SERVER_NAME'] ,
+            'servername' => $server ,
             'sortdate' => $datum->getTimestamp()
         );
 
@@ -168,8 +174,9 @@ class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\
         $pid = $indexerObject->storagePid > 0 ? $indexerObject->storagePid  : $indexerConfig['pid'] ;
         $pidLink = $indexerConfig['targetpid']> 0 ? $indexerConfig['targetpid']  : 359 ;
 
+
         // correct  uid of single page from is 359
-        $url = "https://connect.allplan.com/index.php?id=" . $pidLink . "&tx_nemjvgetcontent_pi1[func]=SHOWITEM&no_cache=1&type=999&"
+        $url = "https://" . $server . "/index.php?id=" . $pidLink . "&tx_nemjvgetcontent_pi1[func]=SHOWITEM&no_cache=1&type=999&"
             . '&L=' . $language  ;
         $url .= "&tx_nemjvgetcontent_pi1[pid]=" . $single['CPs'][0]['CP_IDI'] ;
         $url .= "&tx_nemjvgetcontent_pi1[cf_ids]=" . $cfs  ;
