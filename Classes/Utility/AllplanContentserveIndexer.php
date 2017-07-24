@@ -166,8 +166,10 @@ class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\
 
         // take storage PID form indexexer Configuration or overwrite it with storagePid From Indexer Task ??
         $pid = $indexerObject->storagePid > 0 ? $indexerObject->storagePid  : $indexerConfig['pid'] ;
+        $pidLink = $indexerConfig['targetpid']> 0 ? $indexerConfig['targetpid']  : 359 ;
+
         // correct  uid of single page from is 359
-        $url = "https://connect.allplan.com/index.php?id=" . $pid . "&tx_nemjvgetcontent_pi1[func]=SHOWITEM&no_cache=1&type=999&"
+        $url = "https://connect.allplan.com/index.php?id=" . $pidLink . "&tx_nemjvgetcontent_pi1[func]=SHOWITEM&no_cache=1&type=999&"
             . '&L=' . $language  ;
         $url .= "&tx_nemjvgetcontent_pi1[pid]=" . $single['CPs'][0]['CP_IDI'] ;
         $url .= "&tx_nemjvgetcontent_pi1[cf_ids]=" . $cfs  ;
