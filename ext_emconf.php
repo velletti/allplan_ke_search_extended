@@ -21,4 +21,5 @@ $EM_CONF[$_EXTKEY] = [
         'conflicts' => [],
         'suggests' => [],
     ],
+	'_md5_values_when_last_written' => '',
 ];
