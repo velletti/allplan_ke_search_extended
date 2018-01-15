@@ -35,7 +35,7 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyExtNewsIndexEntry'][]
 // (displays images of tt_news and news in this example)
 # $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['additionalResultMarker'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchIndexerHook';
 
-$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifySearchWords'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchModifiySearchWordsHook' ;
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifySearchWords'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchModifySearchWordsHook' ;
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['cleanup'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchCleanupHook' ;
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['initials'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchInitialsHook' ;
 
