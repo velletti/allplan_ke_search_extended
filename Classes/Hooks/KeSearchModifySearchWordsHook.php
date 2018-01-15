@@ -1,7 +1,7 @@
 <?php
 namespace Allplan\AllplanKeSearchExtended\Hooks;
 
-class KeSearchModifiySearchWordsHook {
+class KeSearchModifySearchWordsHook {
 
 	/**
 	 * Modify search input => sets default to AND-search (+)
