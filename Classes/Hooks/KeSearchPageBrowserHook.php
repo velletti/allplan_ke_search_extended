@@ -4,7 +4,7 @@ namespace Allplan\AllplanKeSearchExtended\Hooks;
 
 class KeSearchPageBrowserHook{
 
-	public function pagebrowseAdditionalMarker(&$markerArray, &$params){
+	public function OLD_XXX_pagebrowseAdditionalMarker(&$markerArray, &$params){
 
 		// print_r($markerArray);
 		// die();

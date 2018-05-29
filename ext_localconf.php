@@ -15,7 +15,8 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyPageContentFields'][]
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyContentFromContentElement'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchIndexerHook';
 
 // manipulate the pagebrowser
-$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['pagebrowseAdditionalMarker'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchPageBrowserHook' ;
+// Not needed anymore, since ke_search 2.7.0 we have a fluid based pagination
+// $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['pagebrowseAdditionalMarker'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchPageBrowserHook' ;
 
 // add servername to link and as "Creator" filter for easier sync between allplan and Connect
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['registerAdditionalFields'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchRegisterAdditionalFieldsHook';
