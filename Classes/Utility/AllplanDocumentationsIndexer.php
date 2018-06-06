@@ -80,9 +80,10 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
                 $endtime = 0 ;
                 $feGroup = '';
                 $debugOnly = false;
+                $origId = $record['l18n_parent'] ;
 
                 $parameters = [
-                    'tx_maritelearning_pi1[download]=' . intval( $record['uid'] ),
+                    'tx_maritelearning_pi1[download]=' . intval( $record['l18n_parent']> 0 ? $record['l18n_parent'] : $record['uid'] ),
                     'tx_maritelearning_pi1[action]=single',
                     'tx_maritelearning_pi1[controller]=Download'
                 ];
