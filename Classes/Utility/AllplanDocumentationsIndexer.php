@@ -53,7 +53,7 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
         $res = $db->exec_SELECTquery($fields,$table,$where);
         $resCount = $db->sql_num_rows($res);
 
-        // echo "ResCount: " . $resCount . "<hr>" ;
+        //  echo "ResCount: " . $resCount . "<hr>" ;
         $origData = array() ;
 
         if($resCount) {
@@ -89,6 +89,9 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
                 ];
 
 
+                // var_dump( $parameters) ;
+                // echo "<hr>" ;
+                // var_dump( record['l18n_parent'] ) ;
 
 
                 // https://connect.allplan.com/de/training/dokumente.html?tx_maritelearning_pi1%5Bdownload%5D=2701
@@ -159,7 +162,6 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
                     $additionalFields				// additional fields added by hooks
                 );
             }
-
         }
         // echo "ResCount: " . $resCount . "<hr>" ;
         // die;
