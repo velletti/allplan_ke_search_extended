@@ -53,7 +53,7 @@ class AllplanElearningsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\Ba
         $res = $db->exec_SELECTquery($fields,$table,$where);
         $resCount = $db->sql_num_rows($res);
 
-        // echo "ResCount: " . $resCount . "<hr>" ;
+        //  echo "ResCount: " . $resCount . "<hr> in Line: " . __LINE__ ;
         $origData = array() ;
 
         if($resCount) {
@@ -123,7 +123,7 @@ class AllplanElearningsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\Ba
                     'sortdate' => 0  ,
                     'servername' => $_SERVER['SERVER_NAME']
                 );
-                if ( $additionalFields['servername'] == "connect-typo3.allplan.com"  ||  substr($additionalFields['servername'] , 6 , 13)  == "ims-firmen.de" ) {
+                if ( $additionalFields['servername'] == "connect-typo3.allplan.com"  ||  substr($additionalFields['servername'] , -13 , 13)  == "psmanaged.com" ) {
                     $additionalFields['servername'] =  "connect.allplan.com"  ;
                 }
                 if( $sortdate > 0 )  {

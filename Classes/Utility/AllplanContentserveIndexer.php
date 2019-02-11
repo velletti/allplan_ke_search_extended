@@ -34,7 +34,7 @@ class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\
     public function main(&$indexerConfig, &$indexerObject) {
         $indexerConfig['tags'] = "#contentserve#" ;
         $server = $_SERVER['SERVER_NAME'] ;
-        if( $server == "connect-typo3.allplan.com" ||  $server == "k2591.ims-firmen.de" ||  $server == '' ) {
+        if( $server == "connect-typo3.allplan.com" ||  $server == "vm5012934.psmanaged.com" ||  $server == '' ||  $server == "connect"  ) {
             $server = "connect.allplan.com" ;
         }
         $BaseUrl = "https://" . $server . "/en/content/show-single-content.html?tx_nemjvgetcontent_pi1[func]=SHOWITEM&no_cache=1"
@@ -158,7 +158,7 @@ class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\
         $datum =  new \DateTime($single['CPs'][0]['CP_DTA']);
 
         $server = $_SERVER['SERVER_NAME'] ;
-        if( $server == "connect-typo3.allplan.com" ||  $server == "k2591.ims-firmen.de" ||  $server == '' ) {
+        if( $server == "connect-typo3.allplan.com" ||  $server == "vm5012934.psmanaged.com" ||  $server == '' ||  $server == "connect" ) {
             $server = "connect.allplan.com" ;
         }
 

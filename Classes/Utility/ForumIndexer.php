@@ -171,7 +171,7 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
                     'servername' => $_SERVER['SERVER_NAME']
                 );
 
-                if ( $additionalFields['servername'] == "connect-typo3.allplan.com"  ||  substr($additionalFields['servername'] , 6 , 13)  == "ims-firmen.de" ) {
+                if ( $additionalFields['servername'] == "connect-typo3.allplan.com"  ||  substr($additionalFields['servername'] , -13 , 13)  == "psmanaged.com" ) {
                     $additionalFields['servername'] =  "connect.allplan.com"  ;
                 }
 

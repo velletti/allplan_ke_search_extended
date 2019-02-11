@@ -86,17 +86,17 @@ class AllplanKesearchIndexerTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask 
         } else {
             // check lock time
             $lockTime = $indexer->registry->get($nameSpace, $registryKey );
+
             $compareTime = time() - (60*60*12);
-            if ( substr( $_SERVER['SERVER_NAME'] , -6 , 6 ) == ".local") {
-                $compareTime = time() +10 ;
-            }
-            if ($lockTime < $compareTime) {
+
+            if ($lockTime < $compareTime || substr( $_SERVER['SERVER_NAME'] , -6 , 6 ) == ".local" ) {
                 // lock is older than 12 hours - remove
                 $indexer->registry->remove($nameSpace , $registryKey );
                 $indexer->registry->set($nameSpace, $registryKey , time());
             } else {
                 throw new \RuntimeException(
-                    'You can\'t start the indexer twice. Please wait while first indexer process ' . $nameSpace  . " -> " . $registryKey .  ' is currently running' ,
+                    'You can\'t start the indexer twice. Please wait while first indexer process ' . $nameSpace  . " -> " . $registryKey
+                    .  ' is currently running : Locktime:' . date("d.m.Y H:i:s" , $lockTime ) . " > " . date("d.m.Y H:i:s" , $compareTime )  ,
                     1493994395218 
                 );
                 return false ;

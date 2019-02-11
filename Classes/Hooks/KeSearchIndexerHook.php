@@ -91,7 +91,7 @@ class KeSearchIndexerHook extends BaseKeSearchIndexerHook{
         $params['items'][] = $newArray;
         unset($newArray);
 
-        // print_r($GLOBALS['TCA']['tx_kesearch_indexerconfig']['columns']);
+       // print_r($GLOBALS['TCA']['tx_kesearch_indexerconfig']['columns']);
 
     }
 

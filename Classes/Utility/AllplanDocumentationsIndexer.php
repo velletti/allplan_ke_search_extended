@@ -52,8 +52,8 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
 
         $res = $db->exec_SELECTquery($fields,$table,$where);
         $resCount = $db->sql_num_rows($res);
-
-        //  echo "ResCount: " . $resCount . "<hr>" ;
+    //         echo "ResCount: " . $resCount . "<hr>" ;
+    //     die;
         $origData = array() ;
 
         if($resCount) {
@@ -76,17 +76,26 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
                 $sys_language_uid = $record['sys_language_uid'] ;
 
                 /** @var \DateTime $sortdate */
-                $sortdate = $record['date']   ;
+                $sortdate = $record['tstamp']   ;
                 $endtime = 0 ;
                 $feGroup = '';
                 $debugOnly = false;
-                $origId = $record['l18n_parent'] ;
 
-                $parameters = [
-                    'tx_maritelearning_pi1[download]=' . intval( $record['l18n_parent']> 0 ? $record['l18n_parent'] : $record['uid'] ),
-                    'tx_maritelearning_pi1[action]=single',
-                    'tx_maritelearning_pi1[controller]=Download'
-                ];
+                if( intval( $record['l18n_parent'])  > 0  ) {
+                    $parameters = [
+                        'tx_maritelearning_pi1[download]=' . intval( $record['l18n_parent'] ),
+                        'tx_maritelearning_pi1[action]=single',
+                        'tx_maritelearning_pi1[controller]=Download'
+                    ];
+                } else {
+                    $parameters = [
+                        'tx_maritelearning_pi1[download]=' . intval( $record['uid'] ),
+                        'tx_maritelearning_pi1[action]=single',
+                        'tx_maritelearning_pi1[controller]=Download'
+                    ];
+
+                }
+
 
 
                 // var_dump( $parameters) ;
@@ -131,7 +140,7 @@ class AllplanDocumentationsIndexer extends \Allplan\AllplanKeSearchExtended\Hook
                     'sortdate' => 0  ,
                     'servername' => $_SERVER['SERVER_NAME']
                 );
-                if ( $additionalFields['servername'] == "connect-typo3.allplan.com"  ||  substr($additionalFields['servername'] , 6 , 13)  == "ims-firmen.de" ) {
+                if ( $additionalFields['servername'] == "connect-typo3.allplan.com"  ||  substr($additionalFields['servername'] , -13 , 13)  == "psmanaged.com" ) {
                     $additionalFields['servername'] =  "connect.allplan.com"  ;
                 }
 

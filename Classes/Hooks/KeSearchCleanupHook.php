@@ -68,10 +68,10 @@ class KeSearchCleanupHook {
 
 
         $server = $_SERVER['SERVER_NAME'] ;
-        if( $server == "connect-typo3.allplan.com" ||  $server == "k2591.ims-firmen.de") {
+        if( $server == "connect-typo3.allplan.com" ||  $server == "vm5012934.psmanaged.com" ||  $server == "connect" ) {
             $server = "connect.allplan.com" ;
         }
-        if( $server == "www-typo3.allplan.com" ||  $server == "k2530.ims-firmen.de" ) {
+        if( $server == "www-typo3.allplan.com" ||  $server == "vm5012986.psmanaged.com" ||   $server == "allplan" ) {
             $server = "www.allplan.com" ;
         }
         $where .= " AND ( servername ='" . $server . "' OR servername = '' ) ";
