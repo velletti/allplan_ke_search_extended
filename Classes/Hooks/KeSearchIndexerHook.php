@@ -10,13 +10,14 @@ class KeSearchIndexerHook extends BaseKeSearchIndexerHook{
      * @param mixed $pObj
      */
     public function registerIndexerConfiguration(&$params, $pObj) {
-
+        $iconPath = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::siteRelPath('allplan_ke_search_extended') . '/Resources/Public/Icons/' ;
+        
         // Events (jv_events)
         // =================================================================================================================================
         $newArray = [
             'Events (jv_events)',
             'jv_events',
-            \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath('allplan_ke_search_extended') . '/Resources/Public/Icons/indexer-jv_events.gif'
+            $iconPath . 'indexer-jv_events.gif'
         ];
         $params['items'][] = $newArray;
         unset($newArray);
@@ -26,7 +27,7 @@ class KeSearchIndexerHook extends BaseKeSearchIndexerHook{
         $newArray = [
             'Allplan Lessions (marit_elearning)',
             'lessions',
-            \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath('marit_elearning') . '/Resources/Public/Icons/icon_tx_maritelearning_domain_model_lesson.gif'
+            $iconPath . 'indexer-video-lesson.png'
         ];
         $params['items'][] = $newArray;
         unset($newArray);
@@ -36,7 +37,7 @@ class KeSearchIndexerHook extends BaseKeSearchIndexerHook{
         $newArray = [
             'Allplan Training Dokumentation (marit_elearning)',
             'documentation',
-            \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath('marit_elearning') . '/Resources/Public/Icons/icon_tx_maritelearning_domain_model_lesson.gif'
+            $iconPath . 'indexer-pdf-lesson.png'
         ];
         $params['items'][] = $newArray;
         unset($newArray);
@@ -45,7 +46,7 @@ class KeSearchIndexerHook extends BaseKeSearchIndexerHook{
         $newArray = [
             'Allplan ContentServe downloads',
             'contentserve',
-            \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath('allplan_ke_search_extended') . '/Resources/Public/Icons/indexer-allplan-ce.png'
+            $iconPath . 'indexer-content-downloads.png'
         ];
         $params['items'][] = $newArray;
         unset($newArray);
@@ -56,7 +57,7 @@ class KeSearchIndexerHook extends BaseKeSearchIndexerHook{
         $newArray = [
             'Allplan Forum ',
             'allplanforum',
-            \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath('allplan_ke_search_extended') . '/Resources/Public/Icons/indexer-jv_events.gif'
+            $iconPath . 'indexer-forum.png'
         ];
         $params['items'][] = $newArray;
         unset($newArray);
@@ -66,7 +67,7 @@ class KeSearchIndexerHook extends BaseKeSearchIndexerHook{
         $newArray = [
             'Allplan Online Help',
             'onlinehelp',
-            \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath('allplan_ke_search_extended') . '/Resources/Public/Icons/indexer-allplan-ce.png'
+            $iconPath . 'indexer-allplan-help.png'
         ];
         $params['items'][] = $newArray;
         unset($newArray);
@@ -76,7 +77,7 @@ class KeSearchIndexerHook extends BaseKeSearchIndexerHook{
         $newArray = [
             'Allplan Support FAQs',
             'supportfaq',
-            \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath('allplan_ke_search_extended') . '/Resources/Public/Icons/indexer-allplan-ce.png'
+            $iconPath . 'indexer-allplan-faq.png'
         ];
         $params['items'][] = $newArray;
         unset($newArray);
@@ -86,7 +87,7 @@ class KeSearchIndexerHook extends BaseKeSearchIndexerHook{
         $newArray = [
             'Allplan Shop',
             'shop',
-            \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath('allplan_ke_search_extended') . '/Resources/Public/Icons/indexer-allplan-ce.png'
+            $iconPath . 'indexer-allplan-shop.png'
         ];
         $params['items'][] = $newArray;
         unset($newArray);
