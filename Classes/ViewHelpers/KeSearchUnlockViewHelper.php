@@ -1,6 +1,10 @@
 <?php
 namespace Allplan\AllplanKeSearchExtended\ViewHelpers;
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+
 /**
  * KeSearchUnlockViewHelper
  * @package TYPO3
@@ -85,7 +89,36 @@ class KeSearchUnlockViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstract
         }
         if( $foundNone ) {
             $content = "<div class='well well-info'> <h4>Found no running ke search indexer</h4></div>" ;
+            if (class_exists(\TYPO3\CMS\Core\Database\ConnectionPool::class)) {
+                /** @var \TYPO3\CMS\Core\Database\Query\QueryBuilder $queryBuilder */
+                $queryBuilder = (new ConnectionPool())->getConnectionForTable('tx_kesearch_index')->createQueryBuilder();
+                $allResult = $queryBuilder->select('type', 'tstamp')
+                    ->from('tx_kesearch_index')
+                    ->groupBy('type')
+                    ->orderBy('type', 'ASC')
+                    ->addOrderBy('tstamp', 'DESC')
+                    ->execute()
+                    ->fetchAll();
+
+                $content .= "<div class=\"typo3-fullDoc\">" ;
+                    $content .= "<div class=\"row\" style='font-weight: bold'>" ;
+                        $content .= "<div class='col-xs-4'> Type </div> " ;
+                        $content .= "<div class='col-xs-4'> Last Indexed Document </div> " ;
+                        $content .= "<div class='col-xs-4'>  </div> " ;
+                    $content .= "</div> " ;
+
+                    foreach ($allResult as $key => $row ) {
+
+                        $content .= "<div class=\"row\">" ;
+                            $content .= "<div class='col-xs-4'> " . $row['type'] . "</div> " ;
+                            $content .= "<div class='col-xs-4'> " . date( "d.m.Y - H:i" , $row['tstamp'] ) . "</div> " ;
+                            $content .= "<div class='col-xs-4'> " . "</div> " ;
+                        $content .= "</div> " ;
+                    }
+                $content .= "</div> " ;
+            }
         }
+
         $content .= "</div> " ;
 
 
