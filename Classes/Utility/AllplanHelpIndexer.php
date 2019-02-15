@@ -79,11 +79,19 @@ class AllplanHelpIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSe
         // Prepare data for the indexer
         $content = $single['title'] . PHP_EOL . nl2br($single['text']) ;
 
+        $server = $_SERVER['SERVER_NAME'] ;
+        if( $server == "connect-typo3.allplan.com" ||  $server == "vm5012934.psmanaged.com" ||  $server == "connect" ) {
+            $server = "connect.allplan.com" ;
+        }
+        if( $server == "www-typo3.allplan.com" ||  $server == "vm5012986.psmanaged.com" ||   $server == "allplan" ||   $server == "www") {
+            $server = "www.allplan.com" ;
+        }
+
         // The following should be filled (in accordance with the documentation), see also:
         // http://www.typo3-macher.de/facettierte-suche-ke-search/dokumentation/ein-eigener-indexer/
         $additionalFields = array(
             'orig_uid' => $single['uid'] ,
-            'servername' => $_SERVER['SERVER_NAME']
+            'servername' => $server
         );
 
         // take storage PID form indexexer Configuration or overwrite it with storagePid From Indexer Task ??

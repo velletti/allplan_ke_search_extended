@@ -96,13 +96,19 @@ class JvEventsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearc
                     'tx_jvevents_events[action]=show',
                     'tx_jvevents_events[controller]=Event'
                 ];
-
+                $server = $_SERVER['SERVER_NAME'] ;
+                if( $server == "connect-typo3.allplan.com" ||  $server == "vm5012934.psmanaged.com" ||  $server == "connect" ) {
+                    $server = "connect.allplan.com" ;
+                }
+                if( $server == "www-typo3.allplan.com" ||  $server == "vm5012986.psmanaged.com" ||   $server == "allplan" ||   $server == "www") {
+                    $server = "www.allplan.com" ;
+                }
                 // The following should be filled (in accordance with the documentation), see also:
                 // http://www.typo3-macher.de/facettierte-suche-ke-search/dokumentation/ein-eigener-indexer/
                 $additionalFields = array(
                     'orig_uid' => $record['uid'] ,
                     'sortdate' => $sortdate ,
-                    'servername' => $_SERVER['SERVER_NAME']
+                    'servername' => $server
                 );
 
                 $indexerObject->storeInIndex(

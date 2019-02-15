@@ -233,7 +233,13 @@ class AllplanShopIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSe
         // take storage PID form indexexer Configuration ... Hard Coded by Language !!!
         $pid =  $indexerConfig['pid'] ;
 
-
+        $server = $_SERVER['SERVER_NAME'] ;
+        if( $server == "connect-typo3.allplan.com" ||  $server == "vm5012934.psmanaged.com" ||  $server == "connect" ) {
+            $server = "connect.allplan.com" ;
+        }
+        if( $server == "www-typo3.allplan.com" ||  $server == "vm5012986.psmanaged.com" ||   $server == "allplan" ||   $server == "www") {
+            $server = "www.allplan.com" ;
+        }
         return $indexerObject->storeInIndex(
             $pid ,			                // folder, where the indexer data should be stored (not where the data records are stored!)
             $single['title'] ,							    // title in the result list
@@ -248,7 +254,7 @@ class AllplanShopIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSe
             0,						// endtime (not used here)
             '',						// fe_group (not used here)
             false ,					// debug only?
-            array( 'sortdate' => $single['sortdate'] , 'orig_uid' => $single['uid'] , 'servername' => $_SERVER['SERVER_NAME'] )				// additional fields added by hooks
+            array( 'sortdate' => $single['sortdate'] , 'orig_uid' => $single['uid'] , 'servername' => $server )				// additional fields added by hooks
         );
 
     }
