@@ -102,7 +102,7 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
 
         if($resCount) {
             $this->logToSystem( $debug  ) ;
-            $debug = '' ;
+            $debug2 = '' ;
             $count = 0 ;
             $tagsFound = 0 ;
             while(($record = $db->sql_fetch_assoc($res))){
@@ -110,11 +110,11 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
                 // Prepare data for the indexer
                 $title = $record['subject'];
                 $abstract = '';
-                if( $debug == '' ) {
-                    $debug = 'Indexing the following posts: ' . $record['uid'] . " - ";
+                if( $debug2 == '' ) {
+                    $debug2 = 'Indexing the following posts: ' . $record['uid'] . " - ";
                 }
 
-                // echo "<br>" . $debug ;
+                // echo "<br>" . $debug2 ;
                 // name des Forums, Betreff des Topics und dann der Text ...
                 $content = $record['title'] . PHP_EOL . $title . PHP_EOL . $record['text'] . PHP_EOL ;
 
@@ -224,14 +224,15 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
 
                 $count++ ;
                 if ( $count > 9999 ) {
-                    $debug = ' ' . $record['uid'] . " ! ";
-                    $this->logToSystem( $debug . $TagDebug . " | Tags found: " . $tagsFound ) ;
+                    $debug2 .= ' ' . $record['uid'] . " ! ";
+                    $this->logToSystem( $debug2 . $TagDebug . " | Tags found: " . $tagsFound ) ;
                     return intval($count);
                 }
             }
 
         }
-        $debug = ' ' . $record['uid'] . " ! ";
+        $debug .= ' ' . $record['uid'] . " ! ";
+
         $this->logToSystem( $debug . $TagDebug . " | Tags found: " . $tagsFound ) ;
         return intval($count);
     }

@@ -23,20 +23,20 @@ class KeSearchCleanupHook {
                 } else {
                     $where .= " AND pid = " . $pObj->indexerConfig['pid'] ;
                 }
-                if ( $pObj->language != '' ) {
-                    $where .= " AND language = " . $pObj->language[0] ;
+                if ( is_array( $pObj->language ) && $pObj->language[0] != '' ) {
+                    $where .= " AND language = " . intval( $pObj->language[0]) ;
                 }
                 break ;
-            case 'allplanfaq' :
-                $where .= " AND ( `type` = 'allplanfaq' or `type` = 'allplanfaqsp' ) AND tstamp < " . ( time() - ( 60 * 60 * 24 * $pObj->period ) ) ;
+            case 'supportfaq' :
+                $where .= " AND ( `type` = 'supportfaq' or `type` = 'supportfaq' ) AND tstamp < " . ( time() - ( 60 * 60 * 24 * $pObj->period ) ) ;
                 if ( $pObj->storagePid ) {
                     $where .= " AND pid = " . $pObj->storagePid ;
 
                 } else {
                     $where .= " AND pid = " . $pObj->indexerConfig['pid'] ;
                 }
-                if ( $pObj->language != '' ) {
-                    $where .= " AND language = " . $pObj->language[0] ;
+                if ( is_array( $pObj->language ) && $pObj->language[0] != '' ) {
+                    $where .= " AND language = " . intval( $pObj->language[0]) ;
                 }
                 break ;
 
@@ -59,8 +59,8 @@ class KeSearchCleanupHook {
                 } else {
                     $where .= " AND pid = " . $pObj->indexerConfig['pid'] ;
                 }
-                if ( $pObj->language != '' ) {
-                    $where .= " AND language = " . $pObj->language[0] ;
+                if ( is_array( $pObj->language ) && $pObj->language[0] != '' ) {
+                    $where .= " AND language = " . intval( $pObj->language[0]) ;
                 }
                 break ;
 

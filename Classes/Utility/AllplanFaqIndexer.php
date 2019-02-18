@@ -34,6 +34,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
     public function main(&$indexerConfig, &$indexerObject) {
         // rendered by an agent every 4 hours
         // http:// IP of the news Server see doku/hotline/FAQ_HOTD.nsf/0/05421C80A7EB2CE2C1257480004DDA2E/\$File/FAQIDs.xml?OpenElement
+        // http://212.29.3.155/hotline/FAQ_HOTD.nsf/0/05421C80A7EB2CE2C1257480004DDA2E/\$File/FAQIDs.xml?OpenElement
 
         $url = $indexerObject->externalUrl  ;
         $debug = "url: " . ($url) ;
@@ -55,6 +56,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $xml2 = simplexml_load_string ($xmlFromUrl  ) ;
 
         $debug .= "<hr>xlm2 from string:<br>" . substr( var_export( $xml2 , true ) , 0 , 200 )  . " .... " . strlen( $xml2 ) . " chars .. <hr />" ;
+
         $count = 0 ;
         $lastRunRow = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordRaw( "tx_kesearch_index" , "`type` = 'allplanfaq' ORDER BY sortdate DESC ") ;
         $lastRun = "2014-12-12" ;
@@ -118,14 +120,15 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                             $indexlang = $lang  ;
                         }
                         $urlSingle = $urlSingleArray['scheme'] . "://" . $urlSingleArray['host'] . "/index.php?" ;
-                        $urlSingle .= "&id=380&L=" . $lang ;
+                        $urlSingle .= "&id=5566&L=" . $lang ;
                         $urlSingle .= "&tx_nemsolution_pi1[dokID]=" . str_replace( ".html" , "" , substr( $urlSingleArray['path'] , strpos( strtolower( $urlSingleArray['path'] ) , "faqid") + 6 ) ) ;
-                        $urlSingle .= "&tx_nemsolution_pi1[action]=index&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1" ;
+                        $urlSingle .= "&tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1" ;
 
 
                         $debug .= "<hr>url loc: " . $urlSingle ;
 
-                        // https://connect.allplan.com/index.php?&id=380&L=1&tx_nemsolution_pi1[docID]=000171ca&tx_nemsolution_pi1[action]=index&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1
+
+                        // https://connect.allplan.com/index.php?&id=5566&L=1&tx_nemsolution_pi1[docID]=000171ca&tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1
                         $singleFaq = $this->getJsonFile( $urlSingle   , "" , array ( "Accept: application/json" , "Content-type:application/json" ) , FALSE ) ;
                         $singleFaq = json_decode($singleFaq) ;
                         $debug .= "<hr>" . var_export( $singleFaq , true ) ;
@@ -188,17 +191,15 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $pid =  $indexerConfig['pid'] ;
 
         $server = $_SERVER['SERVER_NAME'] ;
-        if( $server == "connect-typo3.allplan.com" ||  $server == "vm5012934.psmanaged.com" ||  $server == "connect" ) {
-            $server = "connect.allplan.com" ;
-        }
         if( $server == "www-typo3.allplan.com" ||  $server == "vm5012986.psmanaged.com" ||   $server == "allplan" ||   $server == "www") {
             $server = "www.allplan.com" ;
+        } else {
+            $server = "connect.allplan.com" ;
         }
-
         return $indexerObject->storeInIndex(
             $pid ,			                // folder, where the indexer data should be stored (not where the data records are stored!)
             $single['STRSUBJECT'] ,							    // title in the result list
-            'allplanfaq',				                    // content type ( useful, if you want to use additionalResultMarker)
+            'supportfaq',				                    // content type ( useful, if you want to use additionalResultMarker)
             $single['url']                              ,	// uid of the targetpage (see indexer-config in the backend)
             strip_tags ( $single['STRTEXT'] ) , 						                // below the title in the result list
             $indexerConfig['tags'] . $single['tags'] ,						// tags
