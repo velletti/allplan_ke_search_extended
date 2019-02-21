@@ -22,6 +22,9 @@ namespace Allplan\AllplanKeSearchExtended\Utility;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+
 
 class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIndexerHook
 {
@@ -32,36 +35,24 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
      */
 
     public function main(&$indexerConfig, &$indexerObject) {
-        /**
-         * @var $db \TYPO3\CMS\Core\Database\DatabaseConnection
-         */
-        $db = $GLOBALS['TYPO3_DB'];
-        // $db->store_lastBuiltQuery = true;
-
-        // Get the data from tx_jvevents_domain_model_event
-
-
-        // ToDo  Enhence the Query to respect Access Rights, get language from Forum and much more !!!
-        $fields = 'p.uid, u.username, p.text, t.subject , f.displayed_pid , f.title , p.topic , f.sys_language_uid , p.crdate , p.tstamp , f.uid as forumUid  ';
-
-        $table = 'tx_mmforum_domain_model_forum_post as p';
-        $table .= ' LEFT JOIN tx_mmforum_domain_model_forum_topic as t on (t.uid = p.topic)';
-        $table .= ' LEFT JOIN tx_mmforum_domain_model_forum_forum as f on (t.forum = f.uid)';
-
-        $table .= ' LEFT JOIN fe_users as u on (p.author = u.uid)';
-
-        $where = ' p.pid=67 and  p.deleted=0 and  t.deleted=0 and  f.deleted=0';
-        //      $where .= " AND a.operation = 'read'   " ;
-        //      $where .= " AND  ( a.login_level = 0   OR  a.login_level = 1   OR  ( a.login_level = 2  and a.affected_group = 1 ) OR  ( a.login_level = 2  and a.affected_group = 3 ) ) " ;
 
         $debug = "[KE search Indexer] Indexer Forum Entries starts " . PHP_EOL ;
 
+        /**
+         * @var ConnectionPool $connectionPool
+         */
+        $connectionPool = GeneralUtility::makeInstance( ConnectionPool::class);
+        $queryBuilder = $connectionPool->getQueryBuilderForTable('tx_kesearch_index');
 
+        $lastRunQuery = $queryBuilder->select( 'sortdate' )->from('tx_kesearch_index' )->where( $queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter( 'allplanforu%' )) )->setMaxResults(1)->orderBy('sortdate' , 'DESC') ;
+
+        $debug .= "Query LastRun : " . $lastRunQuery->getSQL() ;
+
+        $lastRunRow = $lastRunQuery->execute()->fetch() ;
+        $debug .= "Result: " . var_export( $lastRunRow , true ) ;
         if( $indexerObject->period > 365 ) {
             $lastRun = time() - ( 60 * 60 * 24 * ( $indexerObject->period  ))  ;
         }
-        $lastRunRow = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordRaw( "tx_kesearch_index" , "`type` like 'allplanforu%' ORDER BY sortdate DESC") ;
-
 
         if( is_array($lastRunRow )) {
             $debug .= "Last Forumsentry in Index: index UID: " . $lastRunRow['uid'] . " POST uid: " .  $lastRunRow['orig_uid']  . PHP_EOL . " Sortdate: " . date ( "d.m.Y H:i" , $lastRunRow['sortdate']  ) . PHP_EOL . PHP_EOL;
@@ -73,182 +64,237 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
         // remove 2 Seconds : We can write > Condition instead of  >= AND we will get also posts if they are writnen in the same second.
         $lastRun = $lastRun - 2 ;
 
-        $sortDate = "crdate" ;
-        $whereTime = " AND ( p.crdate > " . $lastRun . " ) ";
+        $debug .= "We will set LastRun to : " . date( "d.m.Y H:i:s" , $lastRun) ;
 
 
-        $debug .= " | SELECT " . $fields . PHP_EOL . " FROM " . $table . " WHERE " . $where . $whereTime . " ORDER By p.crdate ASC LIMIT 0,9999" .  PHP_EOL . PHP_EOL ;
 
-        $res = $db->exec_SELECTquery($fields,$table,$where . $whereTime , '' , 'p.crdate ASC' , '0,9999' );
-        $resCount = $db->sql_num_rows($res);
 
-        if( $resCount == 0 ) {
-            $whereTime = " AND p.tstamp > " . $lastRun ;
-            $sortDate = "tstamp" ;
-            $res = $db->exec_SELECTquery($fields,$table,$where . $whereTime, '' , 'p.crdate ASC'  );
-            $debug .= " | SELECT " . $fields . PHP_EOL . " FROM " . $table . " WHERE " . $where . $whereTime . PHP_EOL . PHP_EOL ;
-            $resCount = $db->sql_num_rows($res);
+        // ************************** now build the query to get 9999 posts with needed infos *********************************
+
+        $queryBuilder = $connectionPool->getQueryBuilderForTable('tx_mmforum_domain_model_forum_post');
+
+        $resultQuery = $queryBuilder
+            ->select( 'p.uid' , 'u.username' , 'p.text' ,'t.subject' , 'f.displayed_pid' , 'f.title' , 'p.topic' , 'f.sys_language_uid' , 'p.crdate' , 'p.tstamp' , 'f.uid AS forumUid' )
+            ->from('tx_mmforum_domain_model_forum_post' , 'p')
+            ->join(
+                'p',
+                'tx_mmforum_domain_model_forum_topic',
+                't',
+                $queryBuilder->expr()->eq('t.uid', $queryBuilder->quoteIdentifier('p.topic'))
+            )->join(
+                't',
+                'tx_mmforum_domain_model_forum_forum',
+                'f',
+                $queryBuilder->expr()->eq('t.forum', $queryBuilder->quoteIdentifier('f.uid'))
+            )->join(
+                'p',
+                'fe_users',
+                'u',
+                $queryBuilder->expr()->eq('p.author', $queryBuilder->quoteIdentifier('u.uid'))
+            )
+
+
+            ->andWhere(
+                $queryBuilder->expr()->eq('p.pid', 67 )
+            )->andWhere(
+                $queryBuilder->expr()->eq('p.deleted', 0 )
+            )->andWhere(
+                $queryBuilder->expr()->eq('t.deleted', 0 )
+            )->andWhere(
+                $queryBuilder->expr()->eq('f.deleted', 0 )
+            )->setMaxResults(9999) ;
+
+        // "sortdate" is needed later on .. so we put it to a Variable
+        $sortDate = "p.crdate" ;
+        $result =  $resultQuery->andWhere( $queryBuilder->expr()->gt('p.crdate', $lastRun   ))
+            ->orderBy( $sortDate , 'ASC')
+            ->execute() ;
+
+
+        if( ! $result->fetch() ) {
+            // all NEW entries since last run are indexed. so wie need to index modified entries ...
+            $sortDate = 'p.tstamp' ;
+            $result =  $resultQuery->andWhere( $queryBuilder->expr()->gt('p.tstamp', $lastRun   ))
+                ->orderBy( $sortDate, 'ASC')
+                ->execute() ;
         }
 
-        $debug .= "SELECT will have " . $resCount . " hits !  ( only posts after " .  date( "d.m.Y H:i" , $lastRun ) . " ) ". PHP_EOL  ;
+        $debug2 = '' ;
+        $count = 0 ;
+        $tagsFound = 0 ;
+        while( $record = $result->fetch()  ) {
 
-        if( $db->store_lastBuiltQuery === true )  {
-            echo $db->debug_lastBuiltQuery . PHP_EOL;
-            echo "<hr>" ;
-            var_dump($lastRunRow) ;
-            die;
-        }
-
-
-        if($resCount) {
-            $this->logToSystem( $debug  ) ;
-            $debug2 = '' ;
-            $count = 0 ;
-            $tagsFound = 0 ;
-            while(($record = $db->sql_fetch_assoc($res))){
-
-                // Prepare data for the indexer
-                $title = $record['subject'];
-                $abstract = '';
-                if( $debug2 == '' ) {
-                    $debug2 = 'Indexing the following posts: ' . $record['uid'] . " - ";
-                }
-
-                // echo "<br>" . $debug2 ;
-                // name des Forums, Betreff des Topics und dann der Text ...
-                $content = $record['title'] . PHP_EOL . $title . PHP_EOL . $record['text'] . PHP_EOL ;
-
-                $content .=  PHP_EOL . "Topic:" .$record['topic'];
-                if( $record['username'] ) {
-                    $content .=  PHP_EOL . "User:" .$record['username'];
-                }
-                $tagFrom = 'tx_mmforum_domain_model_forum_tag_topic as mm  '
-                    . 'LEFT JOIN tx_mmforum_domain_model_forum_tag as t on (t.uid = mm.uid_foreign ) ' ;
-                $tagRows = $db->exec_SELECTquery('t.name as name' , $tagFrom , "mm.uid_local = " . $record['topic']  );
-                if (  $db->sql_num_rows($tagRows) > 0 ) {
-                    $content .=  PHP_EOL . "Tag: "   ;
-                    while(($tagRow = $db->sql_fetch_assoc($tagRows))) {
-                        $content .=   " " . $tagRow['name']  ;
-                        $tagsFound ++ ;
-                    }
-                }
-                $TagDebug = " Tag SELECT  t.name as name FROM " . $tagFrom . " WHERE  mm.uid_foreign =  " . $record['topic']   ;
-
-                $attachmentRows = $db->exec_SELECTquery('filename ' , 'tx_mmforum_domain_model_forum_attachment' , "post = " . $record['uid']  );
-
-                while(($attachmentRow = $db->sql_fetch_assoc($attachmentRows))) {
-                    $content .=  PHP_EOL . "File:" . $attachmentRow['filename']  ;
-                }
-
-
-                $tags = '#forum#';
-
-                switch ($record['sys_language_uid']) {
-                    case 1:
-                        $sys_language_uid = -1 ;
-                        $pid = 5003 ;
-                        break ;
-                    case 0:
-                        $sys_language_uid = 0 ;
-                        $pid = 5004 ;
-                        break ;
-                    default :
-                        $sys_language_uid = $record['sys_language_uid'] ;
-                        $pid = 5005 ;
-                        break ;
-                }
-
-                $starttime = 0;
-                $endtime = 0;
-                $debugOnly = false;
-
-                // The following should be filled (in accordance with the documentation), see also:
-                // http://www.typo3-macher.de/facettierte-suche-ke-search/dokumentation/ein-eigener-indexer/
-
-                $additionalFields = array(
-                    'orig_uid' => $record['uid'] ,
-                    'sortdate' => $record[$sortDate] ,
-                    'servername' => $_SERVER['SERVER_NAME']
-                );
-
-                if ( substr( $additionalFields['servername'],0 , 6 ) == "connect"  ||  substr($additionalFields['servername'] , -13 , 13)  == "psmanaged.com" ) {
-                    $additionalFields['servername'] =  "connect.allplan.com"  ;
-                }
-
-
-                // ToDo  Adjust Target URL, must be an external URL
-                $url =  "https://connect.allplan.com/index.php?id=" . $record['displayed_pid'] . "&L=" . $record['sys_language_uid'] ;
-                $url .= "&tx_mmforum_pi1[controller]=Topic&tx_mmforum_pi1[action]=show&tx_mmforum_pi1[topic]=" . $record['topic'] . "&tx_mmforum_pi1[forum]="  . $record['forumUid'] ;
-
-                // get FE Groups and decide if we store show this public or allow access only for specific fe_groups
-
-                $type = "allplanforumlocked" ;
-                $feGroup = '' ;
-                $accessData = $db->exec_SELECTquery('login_level , affected_group' ,'tx_mmforum_domain_model_forum_access' ,
-                    "operation = 'read' AND forum = " . $record['forumUid'] , '' , 'affected_group DESC ' );
-                $feGroupsArray = array() ;
-
-                while(($access = $db->sql_fetch_assoc($accessData))) {
-                    if ($access['login_level'] == 0 ||  $access['login_level'] == 1  ) {
-                        $type = "allplanforum" ;
-                    } else {
-                        if ( $access['affected_group'] == 3 ) {
-                            $type = "allplanforumsp" ;
-                        }
-                        if ( $access['affected_group'] == 1 ) {
-                            $type = "allplanforum" ;
-                        }
-                        $feGroupsArray[] =  $access['affected_group'] ;
-                    }
-                }
-                if ( $type == "allplanforumlocked"  && count( $feGroupsArray)> 0) {
-                    $feGroup = implode("," , $feGroupsArray ) ;
-                }
-
-                $indexerObject->storeInIndex(
-                    $pid  ,			// folder, where the indexer is stored (not where the data records are stored!)
-                    $record['subject'],							// title in the result list
-                    $type ,				        // content type
-                    $url ,	// uid of the targetpage (see indexer-config in the backend)
-                    $content, 						// below the title in the result list
-                    $tags,							// tags (not used here)
-                    '' ,						// additional typolink-parameters, e.g. '&tx_jvevents_events[event]=' . $record['uid'];
-                    $abstract,						// abstract (not used here)
-                    $sys_language_uid,				// sys_language_uid
-                    $starttime,						// starttime (not used here)
-                    $endtime,						// endtime (not used here)
-                    $feGroup,						// fe_group
-                    $debugOnly,						// debug only?
-                    $additionalFields				// additional fields added by hooks
-                );
-
-                $count++ ;
-                if ( $count > 9999 ) {
-                    $debug2 .= ' ' . $record['uid'] . " ! ";
-                    $this->logToSystem( $debug2 . $TagDebug . " | Tags found: " . $tagsFound ) ;
-                    return intval($count);
-                }
+            // Prepare data for the indexer
+            $title = $record['subject'];
+            $abstract = '';
+            if( $debug2 == '' ) {
+                $debug2 = 'Indexing the following posts: ' . $record['uid'] . " - ";
             }
 
+            // name des Forums, Betreff des Topics und dann der Text ...
+            $content = $record['title'] . PHP_EOL . $title . PHP_EOL . $record['text'] . PHP_EOL ;
+
+            $content .=  PHP_EOL . "Topic:" .$record['topic'];
+            if( $record['username'] ) {
+                $content .=  PHP_EOL . "User:" .$record['username'];
+            }
+
+            $tagqueryBuilder = $connectionPool->getQueryBuilderForTable('tx_mmforum_domain_model_forum_tag_topic');
+
+            $tagQuery = $tagqueryBuilder
+                ->select( 't.name as name' )
+                ->from('tx_mmforum_domain_model_forum_tag_topic' , 'mm')
+                ->join(
+                    'mm',
+                    'tx_mmforum_domain_model_forum_tag',
+                    't',
+                    $tagqueryBuilder->expr()->eq('t.uid', $tagqueryBuilder->quoteIdentifier('mm.uid_foreign')))
+                ->where( $tagqueryBuilder->expr()->eq('mm.uid_local', $record['topic'] ))->execute() ;
+
+            $content .=  PHP_EOL . "Tag: "   ;
+            while( $tagRow = $tagQuery->fetch() ) {
+                $content .=   " " . $tagRow['name']  ;
+                $tagsFound ++ ;
+            }
+
+
+            // $attachmentRows = $db->exec_SELECTquery('filename ' , 'tx_mmforum_domain_model_forum_attachment' , "post = " . $record['uid']  );
+
+            $attachmentRows = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getConnectionForTable('tx_mmforum_domain_model_forum_attachment')
+            ->select(
+                ['filename' ],
+                'tx_mmforum_domain_model_forum_attachment',
+                ['post' =>  $record['uid'] ]
+            );
+
+            while( $attachmentRow = $attachmentRows->fetch() ) {
+                $content .=  PHP_EOL . "File:" . $attachmentRow['filename']  ;
+            }
+
+
+            $tags = '#forum#';
+
+            switch ($record['sys_language_uid']) {
+                case 1:
+                    $sys_language_uid = -1 ;
+                    $pid = 5003 ;
+                    break ;
+                case 0:
+                    $sys_language_uid = 0 ;
+                    $pid = 5004 ;
+                    break ;
+                default :
+                    $sys_language_uid = $record['sys_language_uid'] ;
+                    $pid = 5005 ;
+                    break ;
+            }
+
+            $starttime = 0;
+            $endtime = 0;
+            $debugOnly = false;
+
+            // The following should be filled (in accordance with the documentation), see also:
+            // http://www.typo3-macher.de/facettierte-suche-ke-search/dokumentation/ein-eigener-indexer/
+
+            $additionalFields = array(
+                'orig_uid' => $record['uid'] ,
+                'sortdate' => $record[$sortDate] ,
+                'servername' => $_SERVER['SERVER_NAME']
+            );
+
+            if ( substr( $additionalFields['servername'],0 , 6 ) == "connect"  ||  substr($additionalFields['servername'] , -13 , 13)  == "psmanaged.com" ) {
+                $additionalFields['servername'] =  "connect.allplan.com"  ;
+            }
+
+
+            // ToDo  Adjust Target URL, must be an external URL
+            $url =  "https://connect.allplan.com/index.php?id=" . $record['displayed_pid'] . "&L=" . $record['sys_language_uid'] ;
+            $url .= "&tx_mmforum_pi1[controller]=Topic&tx_mmforum_pi1[action]=show&tx_mmforum_pi1[topic]=" . $record['topic'] . "&tx_mmforum_pi1[forum]="  . $record['forumUid'] ;
+
+            // get FE Groups and decide if we store show this public or allow access only for specific fe_groups
+
+            $type = "allplanforumlocked" ;
+            $feGroup = '' ;
+
+            $accessData = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getConnectionForTable('tx_mmforum_domain_model_forum_attachment')
+            ->select(
+                ['login_level' , 'affected_group'],
+                'tx_mmforum_domain_model_forum_access',
+                ['operation' =>  'read' , 'forum' =>  $record['forumUid']],
+                [],
+                ['affected_group' => 'DESC ']
+            );
+
+
+            $feGroupsArray = array() ;
+
+            while( $access = $accessData->fetch() ) {
+                if ($access['login_level'] == 0 ||  $access['login_level'] == 1  ) {
+                    $type = "allplanforum" ;
+                } else {
+                    if ( $access['affected_group'] == 3 ) {
+                        $type = "allplanforumsp" ;
+                    }
+                    if ( $access['affected_group'] == 1 ) {
+                        $type = "allplanforum" ;
+                    }
+                    $feGroupsArray[] =  $access['affected_group'] ;
+                }
+            }
+            if ( $type == "allplanforumlocked"  && count( $feGroupsArray)> 0) {
+                $feGroup = implode("," , $feGroupsArray ) ;
+            }
+
+            $indexerObject->storeInIndex(
+                $pid  ,			// folder, where the indexer is stored (not where the data records are stored!)
+                $record['subject'],							// title in the result list
+                $type ,				        // content type
+                $url ,	// uid of the targetpage (see indexer-config in the backend)
+                $content, 						// below the title in the result list
+                $tags,							// tags (not used here)
+                '' ,						// additional typolink-parameters, e.g. '&tx_jvevents_events[event]=' . $record['uid'];
+                $abstract,						// abstract (not used here)
+                $sys_language_uid,				// sys_language_uid
+                $starttime,						// starttime (not used here)
+                $endtime,						// endtime (not used here)
+                $feGroup,						// fe_group
+                $debugOnly,						// debug only?
+                $additionalFields				// additional fields added by hooks
+            );
+
+            $count++ ;
+            if ( $count > 999 ) {
+                $debug2 .= ' ' . $record['uid'] . " ! ";
+                $this->logToSystem( $debug2  ) ;
+                break;
+            }
         }
+
         $debug .= ' ' . $record['uid'] . " ! ";
 
-        $this->logToSystem( $debug . $TagDebug . " | Tags found: " . $tagsFound ) ;
+        $this->logToSystem( $debug . " | Tags found: " . $tagsFound ) ;
         return intval($count);
     }
     private function logToSystem( $text ) {
-        $insertFields = array(
-            "action"  => 1 ,
-            "tablename" => "tx_kesearch_index" ,
-            "error" => 0 ,
-            "event_pid" => 0 ,
-            "details" => $text  ,
-            "tstamp" => time() ,
-            "type" => 1 ,
-            "message" => "Indexer Forum Entries " ,
-        ) ;
 
-        $GLOBALS['TYPO3_DB']->exec_INSERTquery("sys_log" , $insertFields ) ;
+
+        GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getConnectionForTable('sys_log')
+            ->insert(
+                'sys_log',
+                [   "action"  => 1 ,
+                    "tablename" => "tx_kesearch_index" ,
+                    "error" => 0 ,
+                    "event_pid" => 0 ,
+                    "details" => $text  ,
+                    "tstamp" => time() ,
+                    "type" => 1 ,
+                    "message" => "Indexer Forum Entries "
+                ]
+            );
+
     }
 
 }
