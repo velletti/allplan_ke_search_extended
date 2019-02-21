@@ -77,9 +77,9 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
         $whereTime = " AND ( p.crdate > " . $lastRun . " ) ";
 
 
-        $debug .= " | SELECT " . $fields . PHP_EOL . " FROM " . $table . " WHERE " . $where . $whereTime . PHP_EOL . PHP_EOL ;
+        $debug .= " | SELECT " . $fields . PHP_EOL . " FROM " . $table . " WHERE " . $where . $whereTime . " ORDER By p.crdate ASC LIMIT 0,9999" .  PHP_EOL . PHP_EOL ;
 
-        $res = $db->exec_SELECTquery($fields,$table,$where . $whereTime , '' , 'p.crdate ASC'  );
+        $res = $db->exec_SELECTquery($fields,$table,$where . $whereTime , '' , 'p.crdate ASC' , '0,9999' );
         $resCount = $db->sql_num_rows($res);
 
         if( $resCount == 0 ) {
