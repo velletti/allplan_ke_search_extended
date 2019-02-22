@@ -265,7 +265,7 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
             );
 
             $count++ ;
-            if ( $count > 999 ) {
+            if ( $count > 9999 ) {
                 $debug2 .= ' ' . $record['uid'] . " ! ";
                 $this->logToSystem( $debug2  ) ;
                 break;
