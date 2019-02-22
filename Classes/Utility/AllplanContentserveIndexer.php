@@ -34,34 +34,49 @@ class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\
     public function main(&$indexerConfig, &$indexerObject) {
         $indexerConfig['tags'] = "#contentserve#" ;
         $server = $_SERVER['SERVER_NAME'] ;
-        if( $server == "connect-typo3.allplan.com" ||  $server == "vm5012934.psmanaged.com" ||  $server == '' ||  $server == "connect"  ) {
+        if( $server == "connect-typo3.allplan.com" ||  $server == "vm5012934.psmanaged.com" ||  $server == '' ||  $server == "connect.allplan.com.ddev.local"  ) {
             $server = "connect.allplan.com" ;
         }
-        $BaseUrl = "https://" . $server . "/en/content/show-single-content.html?tx_nemjvgetcontent_pi1[func]=SHOWITEM&no_cache=1"
+        $BaseUrl = "https://" . $server . "/index.php?id=3121&tx_nemjvgetcontent_pi1[func]=SHOWITEM&no_cache=1"
             . "&tx_nemjvgetcontent_pi1[token]=75f99e11fa7f86fa85329aa36268d753&tx_nemjvgetcontent_pi1[filter_favorite]=2&tx_nemjvgetcontent_pi1[json]=1" ;
 
 
+
+        // https://connect.allplan.com.ddev.local/index.php?id=3121&no_cache=1&tx_nemjvgetcontent_pi1[func]=SHOWITEM&tx_nemjvgetcontent_pi1[token]=75f99e11fa7f86fa85329aa36268d753&tx_nemjvgetcontent_pi1[filter_favorite]=2&tx_nemjvgetcontent_pi1[json]=1&amp;tx_nemjvgetcontent_pi1[WLA]=ENU&amp;tx_nemjvgetcontent_pi1[pid]=0
+        // https://connect.allplan.com.ddev.local/index.php?id=3121&no_cache=1&tx_nemjvgetcontent_pi1[func]=SHOWITEM&tx_nemjvgetcontent_pi1[token]=75f99e11fa7f86fa85329aa36268d753&tx_nemjvgetcontent_pi1[filter_favorite]=2&tx_nemjvgetcontent_pi1[json]=1&&tx_nemjvgetcontent_pi1[WLA]=ENU&tx_nemjvgetcontent_pi1[pid]=101
+        // https://connect.allplan.com.ddev.local/index.php?id=3121&tx_nemjvgetcontent_pi1[func]=SHOWITEM&no_cache=1&tx_nemjvgetcontent_pi1[token]=75f99e11fa7f86fa85329aa36268d753&tx_nemjvgetcontent_pi1[filter_favorite]=2&tx_nemjvgetcontent_pi1[json]=1&tx_nemjvgetcontent_pi1[WLA]=ENU&tx_nemjvgetcontent_pi1[pid]=88
+
         $result = array() ;
         $count = 0 ;
+        $debug = '' ;
         // derzeit sind 1300 item in der Contentserve db .. darum gehen wir einfahc mal durch bis zur max ID und ein wieng mehr ..
         $lngs = array( 1 => "DEU" , 4 => "FRA" , 2 => "ITA" , 18 => "ESP" , 14=> "RUS" , 3 => "CZE") ;
-        for( $i=0 ; $i <  2000 ; $i++ ) {
+        for( $i=1 ; $i <  2000 ; $i++ ) {
             $url = $BaseUrl . "&tx_nemjvgetcontent_pi1[WLA]=ENU&tx_nemjvgetcontent_pi1[pid]=" .  $i ;
-            $json = $this->getJsonFile($url) ;
-
+            $debug .= "CP: " . $i  . " -> URL: " . $url ;
+            //  $url = "http://www.velletti.de" ;
+           //  $json = $this->getJsonFile($url , '' , 'Accept: application/json; charset=utf-8" , "Content-type:application/json' , TRUE  ) ;
+            $json = $this->getJsonFile($url   ) ;
+            $debug .= "response: " . var_export( $json , true ) ;
             if( is_array($json)) {
+                $debug .= " is Array! " ;
                 if($json['error']  < 1 ) {
-
+                    $debug .= " not an error ! " ;
                     if( $this->putToIndex( $json , $indexerObject , $indexerConfig , 0 ) ) {
+                        $debug .= " Englisch is stored  ! " ;
                         $count++ ;
+                        $debug .= " repeading with languages  ! " ;
                         foreach ( $lngs as $lng => $WLA) {
+
                             $url = $BaseUrl . "&tx_nemjvgetcontent_pi1[WLA]=" . $WLA . "&tx_nemjvgetcontent_pi1[pid]=" .  $i ;
                             $json = $this->getJsonFile($url) ;
                             if( is_array($json)) {
+                                $debug .= " tried  language  ! " . $WLA  ;
                                 if($json['error']  < 1 ) {
-
+                                    $debug .= " Got it ! "   ;
                                     if( $this->putToIndex( $json , $indexerObject , $indexerConfig , $lng ) ) {
                                         if ( $WLA == "DEU") {
+                                            $debug .= " adding AT / CH  "  ;
                                             $this->putToIndex( $json , $indexerObject , $indexerConfig , 6 ) ;
                                             $this->putToIndex( $json , $indexerObject , $indexerConfig , 7 ) ;
 
@@ -71,10 +86,11 @@ class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\
 
                                 }
                             }
-                            // ToDo Disable  next lines .. only needed for faster dev Process ..
-                            //   if ( $count > 20 ) {
-                            //       return $count ;
-                            //   }
+                            // next lines are only needed for faster dev Process .
+                               if ( $count > 100  && $_SERVER['SERVER_NAME'] == "connect.allplan.com.ddev.local"  ) {
+                                   // var_dump(  $debug  ) ;
+                                   return $count ;
+                               }
 
                         }
                     }
@@ -91,7 +107,6 @@ class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\
         if ($single['Header']['RESULTS'] == 0 ) {
             return false ;
         }
-
 
         // Prepare data for the indexer
         $content = str_replace( '"' , "" ,  $single['CPs'][0]['LABEL_CP'] ) . PHP_EOL
@@ -182,7 +197,7 @@ class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\
         $url .= "&tx_nemjvgetcontent_pi1[cf_ids]=" . $cfs  ;
 
 
-        return $indexerObject->storeInIndex(
+        $msg = $indexerObject->storeInIndex(
             $pid ,			                // folder, where the indexer data should be stored (not where the data records are stored!)
             str_replace( '"' , "" ,  $single['CPs'][0]['LABEL_CP'] ) ,							    // title in the result list
             'contentserve',				                    // content type ( useful, if you want to use additionalResultMarker)
@@ -198,6 +213,7 @@ class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\
             false ,					    // debug only?
             $additionalFields				// additional fields added by hooks
         );
+        return $msg ;
 
     }
 

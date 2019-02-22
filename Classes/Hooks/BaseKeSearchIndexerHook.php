@@ -29,9 +29,10 @@ class BaseKeSearchIndexerHook{
      * @param string $searchResponse   // send just a part of result if not correct  JSON encoded result
      * @param string $jsonheader        // maybe we need in the Future a different request/ response type
      * @param boolean $withHeader        // with http 200 status or not ... FALSE is easier to hande the response ...
+     * @param integer $timeOut         // timeout in seconds
      * @return string
      */
-    protected function getJsonFile($url , $searchResponse='{"pages"' , $jsonheader = array ( "Accept: application/json" , "Content-type:application/json" ) , $withHeader = TRUE  )
+    protected function getJsonFile($url , $searchResponse='{"pages"' , $jsonheader = array ( "Accept: application/json" , "Content-type:application/json" ) , $withHeader = TRUE  , $timeOut = false )
     {
 
         $ch = curl_init();
@@ -42,12 +43,18 @@ class BaseKeSearchIndexerHook{
             curl_setopt ($ch, CURLOPT_STDERR, $fp);
         }
         curl_setopt($ch, CURLOPT_POST, 0 ); //
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );    // don't give anything back (sometimes important in TYPO3!)
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );        // don't give anything back (sometimes important in TYPO3!)
         curl_setopt($ch, CURLOPT_HEADER, $withHeader );            // with HTTP response Code ( Fehler / OK ) ??? ..
         curl_setopt($ch, CURLOPT_VERBOSE, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0 );
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+        if( $timeOut ) {
+            curl_setopt($ch, CURLOPT_TIMEOUT, intval($timeOut) );                 //timeout in seconds
+        }
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $jsonheader );
+        if( $jsonheader ) {
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $jsonheader );
+        }
 
         $result = curl_exec ($ch);
         curl_close ($ch);
@@ -55,7 +62,7 @@ class BaseKeSearchIndexerHook{
             return $result ;
         }
         $resultarr = explode ( "\n" , $result ) ;
-        // var_dump($result) ;
+       //  var_dump($result) ;
 
         $httpval = explode ( " " , $resultarr[0] ) ;
         if ( $httpval[1] != "200" ) {
