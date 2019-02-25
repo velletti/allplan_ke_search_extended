@@ -102,7 +102,7 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
                 $queryBuilder->expr()->eq('t.deleted', 0 )
             )->andWhere(
                 $queryBuilder->expr()->eq('f.deleted', 0 )
-            )->setMaxResults(9999) ;
+            )->setMaxResults(999) ;
 
         // "sortdate" is needed later on .. so we put it to a Variable
         $sortDate = "p.crdate" ;
@@ -265,7 +265,7 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
             );
 
             $count++ ;
-            if ( $count > 9999 ) {
+            if ( $count > 999 ) {
                 $debug2 .= ' ' . $record['uid'] . " ! ";
                 $this->logToSystem( $debug2  ) ;
                 break;
@@ -274,7 +274,7 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
 
         $debug .= ' ' . $record['uid'] . " ! ";
 
-        $this->logToSystem( $debug . " | Tags found: " . $tagsFound ) ;
+        $this->logToSystem( $debug . " part 2 : " . $debug2 . " | Tags found: " . $tagsFound ) ;
         return intval($count);
     }
     private function logToSystem( $text ) {
