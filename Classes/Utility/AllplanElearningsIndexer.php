@@ -133,7 +133,7 @@ class AllplanElearningsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\Ba
 
                 $pid = $indexerObject->storagePid > 0 ? $indexerObject->storagePid  : $indexerConfig['pid'] ;
 
-                $url = "https://" . $additionalFields['servername'] . "/index.php?id=" . $indexerConfig['targetpid'] . "&" .  implode( "&" , $parameters ) ;
+                $url = "https://connect.allplan.com/index.php?id=" . $indexerConfig['targetpid'] . "&" .  implode( "&" , $parameters ) ;
                 if($sys_language_uid > -1 ) {
                     $url .= "&L=" . $sys_language_uid ;
                 }
