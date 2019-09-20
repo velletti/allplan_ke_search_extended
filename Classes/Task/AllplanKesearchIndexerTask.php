@@ -58,9 +58,14 @@ class AllplanKesearchIndexerTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask 
 
 
 	public function execute() {
+        if (class_exists(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)) {
+            $this->extConf =
+                \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)
+                    ->get('ke_search');
+        } else {
+            $this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['ke_search']);
+        }
 
-		// get extension configuration
-		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['ke_search']);
 
 		// make indexer instance
         /** @var \Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer  $indexer */

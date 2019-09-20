@@ -58,7 +58,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $debug .= "<hr>xlm2 from string:<br>" . substr( var_export( $xml2 , true ) , 0 , 200 )  . " .... " . strlen( $xml2 ) . " chars .. <hr />" ;
 
         $count = 0 ;
-        $lastRunRow = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordRaw( "tx_kesearch_index" , "`type` = 'allplanfaq' ORDER BY sortdate DESC ") ;
+        $lastRunRow = $this->getRecordRaw( "tx_kesearch_index" , "`type` = 'allplanfaq' ORDER BY sortdate DESC ") ;
         $lastRun = "2014-12-12" ;
         if( $indexerObject->period > 365 ) {
             $lastRun = date( "Y-m-d" , time() - ( 60 * 60 * 24 * ( $indexerObject->period -1 )) ) ;

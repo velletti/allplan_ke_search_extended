@@ -250,7 +250,8 @@ class AllplanKesearchIndexerTaskAdditionalFieldProvider implements \TYPO3\CMS\Sc
         }
         if( !$validTca ) {
             $schedulerModule->addMessage(
-                $this->getLanguageService()->sL('LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskErrorTCAempty', true),
+                htmlspecialchars( $this->getLanguageService()->sL('LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskErrorTCAempty'), ENT_COMPAT, 'UTF-8', false)
+                ,
                 FlashMessage::ERROR
             );
         }
@@ -300,7 +301,8 @@ class AllplanKesearchIndexerTaskAdditionalFieldProvider implements \TYPO3\CMS\Sc
             $validPeriod = true;
         } else {
             $schedulerModule->addMessage(
-                $this->getLanguageService()->sL('LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskErrorPeriod', true),
+                htmlspecialchars( $this->getLanguageService()->sL('LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskErrorPeriod'), ENT_COMPAT, 'UTF-8', false)
+                ,
                 FlashMessage::ERROR
             );
             $validPeriod = false;
@@ -322,7 +324,8 @@ class AllplanKesearchIndexerTaskAdditionalFieldProvider implements \TYPO3\CMS\Sc
             $validPeriod = true;
         } else {
             $schedulerModule->addMessage(
-                $this->getLanguageService()->sL('LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskErrorStoragePid', true),
+                htmlspecialchars( $this->getLanguageService()->sL('LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskErrorStoragePid'), ENT_COMPAT, 'UTF-8', false) ,
+
                 FlashMessage::ERROR
             );
             $validPeriod = false;

@@ -1,6 +1,9 @@
 <?php
 namespace Allplan\AllplanKeSearchExtended\Hooks;
 
+use \TYPO3\CMS\Core\Utility\GeneralUtility ;
+use \TYPO3\CMS\Core\Database\Query\QueryHelper ;
+
 class BaseKeSearchIndexerHook{
 
 	/**
@@ -22,6 +25,38 @@ class BaseKeSearchIndexerHook{
 		return $treeList;
 
 	}
+
+    /**
+     * Returns the first record found from $table with $where as WHERE clause
+     * This function does NOT check if a record has the deleted flag set.
+     * $table does NOT need to be configured in $GLOBALS['TCA']
+     * The query used is simply this:
+     * $query = 'SELECT ' . $fields . ' FROM ' . $table . ' WHERE ' . $where;
+     *
+     * @param string $table Table name (not necessarily in TCA)
+     * @param string $where WHERE clause
+     * @param string $fields $fields is a list of fields to select, default is '*'
+     * @return array|bool First row found, if any, FALSE otherwise
+     */
+    public function getRecordRaw($table, $where = '', $fields = '*')
+    {
+        /**
+         * @var \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool
+         */
+        $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class);
+
+        $queryBuilder = $connectionPool->getQueryBuilderForTable($table);
+        $queryBuilder->getRestrictions()->removeAll();
+
+        $row = $queryBuilder
+            ->select(...GeneralUtility::trimExplode(',', $fields, true))
+            ->from($table)
+            ->where(QueryHelper::stripLogicalOperatorPrefix($where))
+            ->execute()
+            ->fetch();
+
+        return $row ?: false;
+    }
 
     /**
      * Returns the Curl Search Index of a specified allplan Online Help

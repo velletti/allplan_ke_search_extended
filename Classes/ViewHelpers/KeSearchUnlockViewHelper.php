@@ -10,7 +10,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
  * @package TYPO3
  * @subpackage Fluid
  */
-class KeSearchUnlockViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper{
+class KeSearchUnlockViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper{
 
 	/**
 	 * Parse content element
@@ -69,7 +69,13 @@ class KeSearchUnlockViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstract
 
                 $parameters = "lockUid=" .$row['uid'] . "&CMD=Unlock";
 
-                $uri = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleUrl('web_KeSearchBackendModule').'&'.$parameters ;
+                // $uri = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleUrl('web_KeSearchBackendModule').'&'.$parameters ;
+
+
+                $uriBuilder = GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
+                $uri = $uriBuilder->buildUriFromRoute('web_KeSearchBackendModule', $parameters);
+
+
                 if (!empty($returnUrl)) {
          //           $uri .= '&returnUrl='.rawurlencode($returnUrl);
                 } else {

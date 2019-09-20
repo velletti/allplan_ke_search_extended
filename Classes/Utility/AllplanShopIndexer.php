@@ -75,7 +75,7 @@ class AllplanShopIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSe
 
         $debug .= "<hr>xlm2 from string:<br>" . substr( var_export( $xml2 , true ) , 0 , 200 )  . " .... " . strlen( $xml2 ) . " chars .. <hr />" ;
         $count = 0 ;
-        $lastRunRow = \TYPO3\CMS\Backend\Utility\BackendUtility::getRecordRaw( "tx_kesearch_index" , "`type` = 'shop' ORDER BY starttime DESC ") ;
+        $lastRunRow = $this->getRecordRaw( "tx_kesearch_index" , "`type` = 'shop' ORDER BY starttime DESC ") ;
         // $lastRun = "2014-12-12" ;
         if( is_array($lastRunRow )) {
             $lastRun = date( "Y-m-d" , $lastRunRow['sorttime'] ) ;
