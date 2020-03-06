@@ -1,5 +1,12 @@
 <?php
 namespace Allplan\AllplanKeSearchExtended\Indexer;
+use TeaminmediasPluswerk\KeSearch\Indexer\IndexerBase;
+use TeaminmediasPluswerk\KeSearch\Indexer\IndexerRunner;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /***************************************************************
 *  Copyright notice
 *
@@ -24,9 +31,6 @@ namespace Allplan\AllplanKeSearchExtended\Indexer;
 ***************************************************************/
 
 
-// include original indexer class
-require_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('ke_search') . 'Classes/indexer/class.tx_kesearch_indexer.php');
-
 /**
  * EXTEND Plugin 'Faceted search' for the 'ke_search' extension.
  *
@@ -36,7 +40,7 @@ require_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('ke_sea
  * @package	TYPO3
  * @subpackage	tx_kesearch
  */
-class AllplanKesearchIndexer extends \tx_kesearch_indexer {
+class AllplanKesearchIndexer extends IndexerRunner {
 
     /**
      * @var array The index Configs records that should be used for scheduler index
@@ -62,16 +66,30 @@ class AllplanKesearchIndexer extends \tx_kesearch_indexer {
 	 */
 	public function getConfigurations() {
 		if ( is_array($this->configs)) {
-            $where = ' hidden=0 AND deleted=0 ';
+
+            /** @var ConnectionPool $connectionPool */
+            $connectionPool = GeneralUtility::makeInstance( "TYPO3\\CMS\\Core\\Database\\ConnectionPool");
+
+            /** @var QueryBuilder $queryBuilder */
+            $queryBuilder = $connectionPool->getConnectionForTable('tx_kesearch_indexerconfig')->createQueryBuilder();
+            $queryBuilder->select('*')
+                ->from('tx_kesearch_indexerconfig') ;
+
+            $expr = $queryBuilder->expr();
+
             $uids = implode("," , $this->configs) ;
-		    if( count( $this->configs) > 1 ) {
-                $where .= ' and uid in(' .$uids . ")" ;
+            if( count( $this->configs) > 1 ) {
+                $queryBuilder->where(
+                    $expr->in('uid', $queryBuilder->createNamedParameter($uids, Connection::PARAM_STr))
+                ) ;
             } else {
-                $where .= ' and uid = ' .$uids  ;
+                $queryBuilder->where(
+                    $expr->eq('uid', $queryBuilder->createNamedParameter($uids, Connection::PARAM_INT))
+                ) ;
             }
 
-            $indexerRows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows("*", 'tx_kesearch_indexerconfig' , $where );
-            return $indexerRows ;
+            return $queryBuilder->execute()->fetchAll();
+
         } else {
 		    return array()  ;
         }

@@ -1,10 +1,15 @@
 <?php
 namespace Allplan\AllplanKeSearchExtended\Hooks;
 
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryHelper;
+use TYPO3\CMS\Core\Database\QueryGenerator;
 use \TYPO3\CMS\Core\Utility\GeneralUtility ;
-use \TYPO3\CMS\Core\Database\Query\QueryHelper ;
 
 class BaseKeSearchIndexerHook{
+
+
+
 
 	/**
 	 * Returns a tree list of pages starting with the $startPageUid
@@ -13,13 +18,13 @@ class BaseKeSearchIndexerHook{
 	 */
 	protected function getTreeList($startPageUid){
 		/**
-		 * @var \TYPO3\CMS\Core\Database\QueryGenerator $queryGenerator
+		 * @var QueryGenerator $queryGenerator
 		 */
 
 		$startPageUid = intval($startPageUid);
 		$depth = 10;
 
-		$queryGenerator = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\QueryGenerator');
+		$queryGenerator = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Database\\QueryGenerator');
 		$treeList = $queryGenerator->getTreeList($startPageUid, $depth, 0, 1);
 
 		return $treeList;
@@ -41,9 +46,9 @@ class BaseKeSearchIndexerHook{
     public function getRecordRaw($table, $where = '', $fields = '*')
     {
         /**
-         * @var \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool
+         * @var ConnectionPool $connectionPool
          */
-        $connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class);
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
 
         $queryBuilder = $connectionPool->getQueryBuilderForTable($table);
         $queryBuilder->getRestrictions()->removeAll();
@@ -51,7 +56,7 @@ class BaseKeSearchIndexerHook{
         $row = $queryBuilder
             ->select(...GeneralUtility::trimExplode(',', $fields, true))
             ->from($table)
-            ->where(QueryHelper::stripLogicalOperatorPrefix($where))
+            ->where($where)
             ->execute()
             ->fetch();
 
@@ -62,10 +67,10 @@ class BaseKeSearchIndexerHook{
      * Returns the Curl Search Index of a specified allplan Online Help
      * @param string $url
      * @param string $searchResponse   // send just a part of result if not correct  JSON encoded result
-     * @param string $jsonheader        // maybe we need in the Future a different request/ response type
+     * @param mixed $jsonheader        // maybe we need in the Future a different request/ response type
      * @param boolean $withHeader        // with http 200 status or not ... FALSE is easier to hande the response ...
-     * @param integer $timeOut         // timeout in seconds
-     * @return string
+     * @param mixed $timeOut         // timeout in seconds
+     * @return string|array
      */
     protected function getJsonFile($url , $searchResponse='{"pages"' , $jsonheader = array ( "Accept: application/json" , "Content-type:application/json" ) , $withHeader = TRUE  , $timeOut = false )
     {
@@ -149,7 +154,7 @@ class BaseKeSearchIndexerHook{
 			]
 		];
 
-		$flexFormDataThis = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array($ttContentRow['pi_flexform']);
+		$flexFormDataThis = GeneralUtility::xml2array($ttContentRow['pi_flexform']);
 		if( is_array( $flexFormDataThis )) {
             $flexFormData = array_merge($flexFormDataThis , $flexFormDataDefault ) ;
         } else {

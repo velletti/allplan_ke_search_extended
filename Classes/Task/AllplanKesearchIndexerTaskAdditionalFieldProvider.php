@@ -14,7 +14,13 @@ namespace Allplan\AllplanKeSearchExtended\Task;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Site\Entity\Site;
+use TYPO3\CMS\Core\Site\SiteFinder;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
@@ -166,10 +172,12 @@ class AllplanKesearchIndexerTaskAdditionalFieldProvider implements \TYPO3\CMS\Sc
         $options[] = '<option' . $selected . ' value="0">(0) - Default Language  </option>';
         if( count( $rows ) > 0 ) {
             foreach ($rows as $key => $row) {
-                $selected = in_array($row['uid'], $selectedConfigs ) ? ' selected="selected"' : '';
-                $hidden = $row['hidden'] == "1" ? ' (inactive!)' : '' ;
-                $tableTitle = $row['title'] ;
-                $options[] = '<option' . $selected . ' value="' . $row['uid'] . '">' . ' (' . $row['uid'] . ') - ' . htmlspecialchars($tableTitle  ) .  $hidden . '</option>';
+                if( $row['uid']  > 0 ) {
+                    $selected = in_array($row['uid'], $selectedConfigs ) ? ' selected="selected"' : '';
+                    $tableTitle = $row['title'] ;
+                    $options[] = '<option' . $selected . ' value="' . $row['uid'] . '">' . ' (' . $row['uid'] . ') - ' . htmlspecialchars($tableTitle  )  . '</option>';
+
+                }
             }
 
         }
@@ -182,22 +190,41 @@ class AllplanKesearchIndexerTaskAdditionalFieldProvider implements \TYPO3\CMS\Sc
     }
 
     protected function getIndexerRecords() {
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance( "TYPO3\\CMS\\Core\\Database\\ConnectionPool");
 
-        $indexerRows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows("uid,title", 'tx_kesearch_indexerconfig' , ' hidden=0 AND deleted=0' );
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = $connectionPool->getConnectionForTable('tx_kesearch_indexerconfig')->createQueryBuilder();
+        $indexerRows = $queryBuilder->select('*')
+            ->from('tx_kesearch_indexerconfig')->execute()->fetchAll() ;
+
+
         if (!count($indexerRows) > 0) {
-            $indexerRows = false ;
+            return false ;
         }
         return $indexerRows ;
     }
 
 
     protected function getLanguageRecords() {
-
-        $indexerRows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows("uid,title, hidden", 'sys_language' , '' );
-        if (!count($indexerRows) > 0) {
-            $indexerRows = false ;
+        $return = [] ;
+        /** @var SiteFinder $siteFinder */
+        $siteFinder = GeneralUtility::makeInstance("TYPO3\\CMS\\Core\\Site\SiteFinder") ;
+        $sites = $siteFinder->getAllSites() ;
+        if( is_array($sites )) {
+            foreach ($sites as $site ) {
+                if( $site && is_array( $site->getConfiguration()["languages"]  )) {
+                    foreach ( $site->getConfiguration()["languages"] as $id => $lng ) {
+                        $uid = $lng['languageId'] ;
+                        $return[$uid] = array( 'uid' => $uid , 'title' => $lng['title'] ) ;
+                    }
+                }
+            }
         }
-        return $indexerRows ;
+        if (!count($return) > 0) {
+            $return = false ;
+        }
+        return $return ;
     }
 
     /**

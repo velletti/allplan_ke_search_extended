@@ -1,6 +1,8 @@
 <?php
 namespace Allplan\AllplanKeSearchExtended\Task;
 
+use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
+
 /***************************************************************
 *  Copyright notice
 *
@@ -24,10 +26,6 @@ namespace Allplan\AllplanKeSearchExtended\Task;
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-
-
-// include indexer class
-// require_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('ke_search') . 'Classes/indexer/class.tx_kesearch_indexer.php');
 
 class AllplanKesearchIndexerTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
 
@@ -68,7 +66,7 @@ class AllplanKesearchIndexerTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask 
 
 
 		// make indexer instance
-        /** @var \Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer  $indexer */
+        /** @var AllplanKesearchIndexer  $indexer */
 		$indexer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Allplan\\AllplanKeSearchExtended\\Indexer\\AllplanKesearchIndexer');
 
         $indexer->configs = $this->configs ;
