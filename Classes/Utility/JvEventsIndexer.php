@@ -1,5 +1,11 @@
 <?php
 namespace Allplan\AllplanKeSearchExtended\Utility;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Expression\ExpressionBuilder;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -32,37 +38,31 @@ class JvEventsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearc
      */
 
     public function main(&$indexerConfig, &$indexerObject) {
-        /**
-         * @var $db \TYPO3\CMS\Core\Database\DatabaseConnection
-         */
-        $db = $GLOBALS['TYPO3_DB'];
-        // $db->store_lastBuiltQuery = true;
 
-        // Get the data from tx_jvevents_domain_model_event
-        $fields = 'event.uid, event.name , event.teaser, event.description, event.sys_language_uid , event.start_date , event.end_date';
-        $fields .= ',org.name as oname, loc.city as city, loc.zip, loc.street_and_nr , loc.name as lname, loc.description as ldesc , org.description as odesc' ;
-        $table = 'tx_jvevents_domain_model_event as event ';
+        /** @var ConnectionPool $connectionPool */
 
-        $where = 'event.pid IN (' . $this->getTreeList($indexerConfig['startingpoints_recursive']) . ') ';
-        $where.= 'AND ';
-        $where.= 'start_date > ' . time();
-        $where.= \TYPO3\CMS\Backend\Utility\BackendUtility::BEenableFields($table);
-        $where.= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table);
+        $connectionPool = GeneralUtility::makeInstance( "TYPO3\\CMS\\Core\\Database\\ConnectionPool");
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = $connectionPool->getQueryBuilderForTable('tx_jvevents_domain_model_event') ;
+        /** @var ExpressionBuilder $expr */
+        $expr = $queryBuilder->expr() ;
 
-        $table .= "LEFT JOIN tx_jvevents_domain_model_organizer as org ON event.organizer = org.uid 
-                LEFT JOIN tx_jvevents_domain_model_location as loc ON event.location = loc.uid " ;
+        $queryBuilder->from('tx_jvevents_domain_model_event' , 'event')
+            ->leftJoin( 'event' , 'tx_jvevents_domain_model_organizer' , "org" , $expr->eq('event' . '.organizer',  'org.uid') )
+            ->leftJoin( 'event' , 'tx_jvevents_domain_model_location' , 'loc' , $expr->eq( 'loc.uid', 'event.location') )
 
-         // echo "Select " . $fields . " FROM " . $table . " WHERE " . $where ;
-         // die;
+            ->select('event.uid','event.name','event.teaser','event.description','event.sys_language_uid','event.start_date','event.end_date')
+            ->addSelect("org.name as oname" ,"loc.city as city" , "loc.zip as zip" , " loc.street_and_nr" , "loc.name as lname")
+            ->addSelect(" loc.description as ldesc" ,"org.description as odesc" )
+            ->where($expr->gt( 'event.start_date', time() ))
+            ->andWhere($expr->in( 'event.pid',  $this->getTreeList($indexerConfig['startingpoints_recursive']) ))
+        ;
 
-        $res = $db->exec_SELECTquery($fields,$table,$where);
-        $resCount = $db->sql_num_rows($res);
-        // echo "ResCount: " . $resCount . "<hr>" ;
-        // echo $db->debug_lastBuiltQuery . PHP_EOL;
+        $res = $queryBuilder->execute()  ;
 
-        if($resCount) {
+        if($res) {
             $resCount = 0 ;
-            while(( $record = $db->sql_fetch_assoc($res))) {
+            while(( $record = $res->fetch() )) {
                 $resCount++ ;
                 // Prepare data for the indexer
                 $title = $record['name'];
