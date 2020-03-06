@@ -2,13 +2,23 @@
 namespace Allplan\AllplanKeSearchExtended\Hooks;
 
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\Query\QueryHelper;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\QueryGenerator;
 use \TYPO3\CMS\Core\Utility\GeneralUtility ;
 
 class BaseKeSearchIndexerHook{
 
+    /**
+     * @param array $insertFields
+     */
+    public function insertSyslog(array $insertFields ) {
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance( "TYPO3\\CMS\\Core\\Database\\ConnectionPool");
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = $connectionPool->getConnectionForTable('sys_log')->createQueryBuilder();
 
+        $queryBuilder->insert("sys_log")->values( $insertFields )->execute() ;
+    }
 
 
 	/**

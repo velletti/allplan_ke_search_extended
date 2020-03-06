@@ -22,6 +22,8 @@ namespace Allplan\AllplanKeSearchExtended\Utility;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+
+use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
@@ -30,7 +32,7 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
 {
     /**
      * @param array $indexerConfig configuration from TYPO3 backend
-     * @param \tx_kesearch_indexer $indexerObject reference to the indexer class
+     * @param AllplanKesearchIndexer $indexerObject reference to the indexer class
      * @return int
      */
 

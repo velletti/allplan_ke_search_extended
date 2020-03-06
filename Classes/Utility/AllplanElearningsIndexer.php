@@ -1,5 +1,10 @@
 <?php
 namespace Allplan\AllplanKeSearchExtended\Utility;
+use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -27,39 +32,27 @@ class AllplanElearningsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\Ba
 {
     /**
      * @param array $indexerConfig configuration from TYPO3 backend
-     * @param \tx_kesearch_indexer $indexerObject reference to the indexer class
+     * @param AllplanKesearchIndexer $indexerObject reference to the indexer class
      * @return int
      */
 
     public function main(&$indexerConfig, &$indexerObject) {
 
-        /**
-         * @var $db \TYPO3\CMS\Core\Database\DatabaseConnection
-         */
-        $db = $GLOBALS['TYPO3_DB'];
-        // $db->store_lastBuiltQuery = true;
 
-        $fields = '*';
-        $table = 'tx_maritelearning_domain_model_lesson';
+        /** @var ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance( "TYPO3\\CMS\\Core\\Database\\ConnectionPool");
 
-        // $where = 'pid IN (' . $this->getTreeList($indexerConfig['startingpoints_recursive']) . ') ';
-        $where = '1=1 ';
-        $where .= \TYPO3\CMS\Backend\Utility\BackendUtility::BEenableFields($table);
-        $where .= \TYPO3\CMS\Backend\Utility\BackendUtility::deleteClause($table);
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = $connectionPool->getConnectionForTable('tx_maritelearning_domain_model_lesson')->createQueryBuilder();
+        $queryBuilder->select('*')->from('tx_maritelearning_domain_model_lesson');
+        $indexerRows = $queryBuilder->execute() ;
 
-        // echo "Select " . $fields . " FROM " . $table . " WHERE " . $where ;
-        // die;
-
-        $res = $db->exec_SELECTquery($fields,$table,$where);
-        $resCount = $db->sql_num_rows($res);
-
-        //  echo "ResCount: " . $resCount . "<hr> in Line: " . __LINE__ ;
         $origData = array() ;
 
-        if($resCount) {
+        if($indexerRows) {
             $resCount = 0 ;
 
-            while(( $record = $db->sql_fetch_assoc($res))) {
+            while(( $record = $indexerRows->fetch() )) {
                 $resCount++ ;
                 // Prepare data for the indexer
 
@@ -97,15 +90,16 @@ class AllplanElearningsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\Ba
                     if( is_array( $origData[$origId] )) {
                         $recordOrig = $origData[$origId] ;
                     } else {
+                        $subQuery = $queryBuilder;
+                        $expr = $subQuery->expr();
+                        $subQuery->where($expr->eq("uid" , $origId )) ;
 
-                        $resSingle = $db->exec_SELECTquery($fields,$table,"uid = " . $origId );
-                        $recordOrig = $db->sql_fetch_assoc($resSingle) ;
+                        $recordOrig = $subQuery->execute()->fetch() ;
                         $origData[$origId]  = $recordOrig ;
+
                     }
                     $feGroup = $recordOrig['fe_group'] ;
                 }
-                // echo "<br>" . $resCount . " LocalizedUid() " . $record['uid']  . " Parent Uid:" . $record['l18n_parent'] . " LNG: " . $sys_language_uid . " orig: " . $recordOrig['uid'];
-                // echo " fe Group : " . $feGroup ;
 
                 $feGroupArray = explode("," , $feGroup ) ;
                 if( in_array("1" , $feGroupArray ) || in_array("3" , $feGroupArray ) || in_array("10" , $feGroupArray ) || in_array("11" , $feGroupArray ) || in_array("8" , $feGroupArray ) ) {
@@ -158,8 +152,20 @@ class AllplanElearningsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\Ba
             }
 
         }
-        // echo "ResCount: " . $resCount . "<hr>" ;
-        // die;
+        $insertFields = array(
+            "action"  => 1 ,
+            "tablename" => "tx_kesearch_index" ,
+            "error" => 0 ,
+            "event_pid" => $pid ,
+            "details" => "Allplan Elearning lessons Indexer had updated / inserted " . $resCount . " entrys" ,
+            "tstamp" => time() ,
+            "type" => 1 ,
+            "message" => var_export($indexerObject , true ) ,
+
+        ) ;
+
+        $this->insertSyslog( $insertFields) ;
+
         return intval($resCount);
     }
 }

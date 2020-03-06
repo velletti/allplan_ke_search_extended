@@ -1,5 +1,11 @@
 <?php
 namespace Allplan\AllplanKeSearchExtended\Utility;
+
+use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -27,7 +33,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 {
     /**
      * @param array $indexerConfig configuration from TYPO3 backend
-     * @param \tx_kesearch_indexer $indexerObject reference to the indexer class
+     * @param AllplanKesearchIndexer $indexerObject reference to the indexer class
      * @return int
      */
 
@@ -37,7 +43,9 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         // http://212.29.3.155/hotline/FAQ_HOTD.nsf/0/05421C80A7EB2CE2C1257480004DDA2E/\$File/FAQIDs.xml?OpenElement
 
         $url = $indexerObject->externalUrl  ;
+
         $debug = "url: " . ($url) ;
+
         // ToDo Put tags to Indexer object
         $indexerConfig['tags'] = "#allplanfaq#" ;
 
@@ -119,6 +127,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                         if (  $indexlang == 0   ) {
                             $indexlang = $lang  ;
                         }
+               //         $urlSingleArray['host'] = "connectv9.allplan.com.ddev.local" ;
                         $urlSingle = $urlSingleArray['scheme'] . "://" . $urlSingleArray['host'] . "/index.php?" ;
                         $urlSingle .= "&id=5566&L=" . $lang ;
                         $urlSingle .= "&tx_nemsolution_pi1[dokID]=" . str_replace( ".html" , "" , substr( $urlSingleArray['path'] , strpos( strtolower( $urlSingleArray['path'] ) , "faqid") + 6 ) ) ;
@@ -129,9 +138,10 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
 
                         // https://connect.allplan.com/index.php?&id=5566&L=1&tx_nemsolution_pi1[docID]=000171ca&tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1
-                        $singleFaq = $this->getJsonFile( $urlSingle   , "" , array ( "Accept: application/json" , "Content-type:application/json" ) , FALSE ) ;
-                        $singleFaq = json_decode($singleFaq) ;
-                        $debug .= "<hr>" . var_export( $singleFaq , true ) ;
+                        $singleFaqRaw = $this->getJsonFile( $urlSingle   , "" , array ( "Accept: application/json" , "Content-type:application/json" ) , FALSE ) ;
+
+                        $singleFaq = json_decode($singleFaqRaw) ;
+            //            $debug .= "<hr>Decoded Json: " . var_export( $singleFaq , true ) ;
                         if( is_object($singleFaq) ) {
                             $single['uid']  = $this->convertIdToINT ( $singleFaq->STRDOK_ID , $indexlang ) ;
                             $debug .= "<br>ID: " . $single['uid'] ;
@@ -151,15 +161,38 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                             $single['url'] = $url->loc  ;
 
                             if( $this->putToIndex( $single , $indexerObject , $indexerConfig) ) {
-                                $debug .= "<hr>" . var_export( $single , true ) ;
+                                $debug .= "<hr>Single= " . var_export( $single , true ) ;
                                 $count++ ;
                             }
+                        } else {
+                            $debug .= "<hr>Error in RAW Json:"  ;
+
+                            switch(json_last_error()) {
+                                case JSON_ERROR_DEPTH:
+                                    $debug .= ' - Maximale Stacktiefe überschritten';
+                                    break;
+                                case JSON_ERROR_STATE_MISMATCH:
+                                    $debug .= ' - Unterlauf oder Nichtübereinstimmung der Modi';
+                                    break;
+                                case JSON_ERROR_CTRL_CHAR:
+                                    $debug .= ' - Unerwartetes Steuerzeichen gefunden';
+                                    break;
+                                case JSON_ERROR_SYNTAX:
+                                    $debug .= ' - Syntaxfehler, ungültiges JSON';
+                                    break;
+                                case JSON_ERROR_UTF8:
+                                    $debug .= ' - Missgestaltete UTF-8 Zeichen, möglicherweise fehlerhaft kodiert';
+                                    break;
+                                default:
+                                    $debug .= ' - Unbekannter Fehler';
+                                    break;
+                            }
+                            $debug .= "<hr>RAW Json:" . htmlentities( $singleFaqRaw  ) ;
                         }
 
                         unset($single) ;
                         unset($singleFaq) ;
                     }
-
                 }
             }
         }
@@ -171,17 +204,19 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             "tablename" => "tx_kesearch_index" ,
             "error" => 0 ,
             "event_pid" => $pid ,
-            "details" => "Allplan FAQ Indexer had updated / inserted " . $i . " entrys" ,
+            "details" => "Allplan FAQ Indexer had updated / inserted " . $count . " entrys" ,
             "tstamp" => time() ,
             "type" => 1 ,
             "message" => $debug ,
 
         ) ;
 
-        $GLOBALS['TYPO3_DB']->exec_INSERTquery("sys_log" , $insertFields ) ;
+        $this->insertSyslog( $insertFields) ;
+
+
         return $count ;
     }
-    protected function putToIndex(array $single , \tx_kesearch_indexer $indexerObject , array  $indexerConfig ) {
+    protected function putToIndex(array $single , AllplanKesearchIndexer $indexerObject , array  $indexerConfig ) {
 
         // Prepare data for the indexer
         $content = $single['title'] . PHP_EOL . nl2br($single['text']) ;
@@ -215,14 +250,39 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
     }
     protected function convertIdToINT( $notes_id , $lang) {
-        $row = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows("uid" , "tx_kesearch_allplan_url_ids" ,
-                        "notes_id = '" . $notes_id . "' AND sys_language_uid = " . intval($lang) . " AND deleted = 0 "  , '' , "" , "1" ) ;
-        if ( count ( $row ) == 0 ) {
-            $data = array( "pid" => 0 , "notes_id" => $notes_id , "sys_language_uid" => intval($lang)  ) ;
-            $GLOBALS['TYPO3_DB']->exec_INSERTquery("tx_kesearch_allplan_url_ids" , $data ) ;
-            $uid = $GLOBALS['TYPO3_DB']->sql_insert_id() ;
+
+        /** @var \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance( "TYPO3\\CMS\\Core\\Database\\ConnectionPool");
+
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = $connectionPool->getConnectionForTable('tx_kesearch_allplan_url_ids')->createQueryBuilder();
+        $queryBuilder->select('uid')
+            ->from('tx_kesearch_allplan_url_ids') ;
+
+        $expr = $queryBuilder->expr();
+        $queryBuilder->where(
+            $expr->eq('notes_id', $queryBuilder->createNamedParameter($notes_id, Connection::PARAM_STR))
+        )->andWhere(
+            $expr->eq('sys_language_uid', $queryBuilder->createNamedParameter(intval($lang), Connection::PARAM_INT))
+        )->setMaxResults(1) ;
+
+
+        $row = $queryBuilder->execute()->fetch();
+
+        if ( $row && count ( $row ) == 0 ) {
+            $uid = $row['uid'] ;
         } else {
-            $uid = $row[0]['uid'] ;
+
+            $data = array( "pid" => 0 , "notes_id" => $notes_id , "sys_language_uid" => intval($lang)  ) ;
+            /** @var QueryBuilder $queryBuilder */
+            $queryBuilder = $connectionPool->getConnectionForTable('tx_kesearch_allplan_url_ids')->createQueryBuilder();
+            /** @var \TYPO3\CMS\Core\Database\Connection $connection */
+            $connection = $connectionPool->getConnectionForTable('tx_kesearch_allplan_url_ids') ;
+
+            $queryBuilder->insert("tx_kesearch_allplan_url_ids")->values( $data)->execute() ;
+
+            $uid = $connection->lastInsertId('tx_kesearch_allplan_url_ids') ;
+
         }
         if ( $uid == 0 ) {
           //  var_dump($notes_id) ;

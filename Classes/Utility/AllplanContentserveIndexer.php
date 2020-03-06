@@ -1,5 +1,7 @@
 <?php
 namespace Allplan\AllplanKeSearchExtended\Utility;
+use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -27,14 +29,14 @@ class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\
 {
     /**
      * @param array $indexerConfig configuration from TYPO3 backend
-     * @param \tx_kesearch_indexer $indexerObject reference to the indexer class
+     * @param AllplanKesearchIndexer $indexerObject reference to the indexer class
      * @return int
      */
 
     public function main(&$indexerConfig, &$indexerObject) {
         $indexerConfig['tags'] = "#contentserve#" ;
         $server = $_SERVER['SERVER_NAME'] ;
-        if( $server == "connect-typo3.allplan.com" ||  $server == "vm5012934.psmanaged.com" ||  $server == '' ||  $server == "connect.allplan.com.ddev.local"  ) {
+        if( $server == "connect-typo3.allplan.com" ||  $server == "vm5012934.psmanaged.com" ||  $server == '' ||  $server == "connectv9.allplan.com.ddev.local"  ) {
             $server = "connect.allplan.com" ;
         }
         $BaseUrl = "https://" . $server . "/index.php?id=3121&tx_nemjvgetcontent_pi1[func]=SHOWITEM&no_cache=1"
@@ -87,7 +89,7 @@ class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\
                                 }
                             }
                             // next lines are only needed for faster dev Process .
-                               if ( $count > 100  && $_SERVER['SERVER_NAME'] == "connect.allplan.com.ddev.local"  ) {
+                               if ( $count > 100  && $_SERVER['SERVER_NAME'] == "connectv9.allplan.com.ddev.local"  ) {
                                    // var_dump(  $debug  ) ;
                                    return $count ;
                                }
@@ -103,7 +105,7 @@ class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\
 
         return $count ;
     }
-    protected function putToIndex(array $single , \tx_kesearch_indexer $indexerObject , array  $indexerConfig , $language ) {
+    protected function putToIndex(array $single , \TeaminmediasPluswerk\KeSearch\Indexer\IndexerRunner $indexerObject , array  $indexerConfig , $language ) {
         if ($single['Header']['RESULTS'] == 0 ) {
             return false ;
         }

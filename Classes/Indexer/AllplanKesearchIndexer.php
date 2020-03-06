@@ -60,6 +60,22 @@ class AllplanKesearchIndexer extends IndexerRunner {
     var $registry;
 
 
+    /**
+     * @var int language
+     */
+    public $language ;
+
+    /**
+     * @var string externalUrl
+     */
+    public $externalUrl ;
+
+    /**
+     * @var int storagePid
+     */
+    public $storagePid ;
+
+
 	/**
 	 * this function returns all indexer configurations found in DB
 	 * independant of PID

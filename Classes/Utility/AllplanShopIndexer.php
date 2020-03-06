@@ -1,5 +1,7 @@
 <?php
 namespace Allplan\AllplanKeSearchExtended\Utility;
+use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -27,7 +29,7 @@ class AllplanShopIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSe
 {
     /**
      * @param array $indexerConfig configuration from TYPO3 backend
-     * @param \tx_kesearch_indexer $indexerObject reference to the indexer class
+     * @param AllplanKesearchIndexer $indexerObject reference to the indexer class
      * @return int
      */
 
@@ -228,7 +230,7 @@ class AllplanShopIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSe
         $GLOBALS['TYPO3_DB']->exec_INSERTquery("sys_log" , $insertFields ) ;
         return $count ;
     }
-    protected function putToIndex(array $single , \tx_kesearch_indexer $indexerObject , array  $indexerConfig ) {
+    protected function putToIndex(array $single , \TeaminmediasPluswerk\KeSearch\Indexer\IndexerRunner $indexerObject , array  $indexerConfig ) {
 
         // take storage PID form indexexer Configuration ... Hard Coded by Language !!!
         $pid =  $indexerConfig['pid'] ;

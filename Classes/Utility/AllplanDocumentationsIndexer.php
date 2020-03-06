@@ -33,7 +33,7 @@ class AllplanDocumentationsIndexer extends BaseKeSearchIndexerHook
 {
     /**
      * @param array $indexerConfig configuration from TYPO3 backend
-     * @param \tx_kesearch_indexer $indexerObject reference to the indexer class
+     * @param AllplanKesearchIndexer $indexerObject reference to the indexer class
      * @return int
      */
 
@@ -160,8 +160,20 @@ class AllplanDocumentationsIndexer extends BaseKeSearchIndexerHook
                 );
             }
         }
-        // echo "ResCount: " . $resCount . "<hr>" ;
-        // die;
+        $insertFields = array(
+            "action"  => 1 ,
+            "tablename" => "tx_kesearch_index" ,
+            "error" => 0 ,
+            "event_pid" => $pid ,
+            "details" => "Allplan PDF Documents  Indexer had updated / inserted " . $resCount . " entrys" ,
+            "tstamp" => time() ,
+            "type" => 1 ,
+            "message" => var_export($indexerObject , true ) ,
+
+        ) ;
+
+        $this->insertSyslog( $insertFields) ;
+
         return intval($resCount);
     }
 

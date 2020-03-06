@@ -27,7 +27,7 @@ class JvEventsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearc
 {
     /**
      * @param array $indexerConfig configuration from TYPO3 backend
-     * @param \tx_kesearch_indexer $indexerObject reference to the indexer class
+     * @param \TeaminmediasPluswerk\KeSearch\Indexer\IndexerRunner $indexerObject reference to the indexer class
      * @return int
      */
 

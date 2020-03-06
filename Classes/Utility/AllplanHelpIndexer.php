@@ -1,5 +1,8 @@
 <?php
 namespace Allplan\AllplanKeSearchExtended\Utility;
+use Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIndexerHook;
+use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
+
 /***************************************************************
  *  Copyright notice
  *
@@ -23,11 +26,11 @@ namespace Allplan\AllplanKeSearchExtended\Utility;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-class AllplanHelpIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIndexerHook
+class AllplanHelpIndexer extends BaseKeSearchIndexerHook
 {
     /**
      * @param array $indexerConfig configuration from TYPO3 backend
-     * @param \tx_kesearch_indexer $indexerObject reference to the indexer class
+     * @param AllplanKesearchIndexer $indexerObject reference to the indexer class
      * @return int
      */
 
@@ -74,7 +77,7 @@ class AllplanHelpIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSe
 
         return $count ;
     }
-    protected function putToIndex(array $single , \tx_kesearch_indexer $indexerObject , array  $indexerConfig ) {
+    protected function putToIndex(array $single , \TeaminmediasPluswerk\KeSearch\Indexer\IndexerRunner $indexerObject , array  $indexerConfig ) {
 
         // Prepare data for the indexer
         $content = $single['title'] . PHP_EOL . nl2br($single['text']) ;
