@@ -66,8 +66,8 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $debug .= "<hr>xlm2 from string:<br>" . substr( var_export( $xml2 , true ) , 0 , 200 )  . " .... " . strlen( $xml2 ) . " chars .. <hr />" ;
 
         $count = 0 ;
-        $lastRunRow = $this->getRecordRaw( "tx_kesearch_index" , "`type` = 'allplanfaq' ORDER BY sortdate DESC ") ;
-        $lastRun = "2014-12-12" ;
+        $lastRunRow = $this->getRecordRaw( "tx_kesearch_index" , "`type` like 'supportfaq%' ORDER BY sortdate DESC ") ;
+        $lastRun = "2016-12-12" ;
         if( $indexerObject->period > 365 ) {
             $lastRun = date( "Y-m-d" , time() - ( 60 * 60 * 24 * ( $indexerObject->period -1 )) ) ;
             $debug .="<hr> Lastrun from Indexer config Field Period  = " . $lastRun;
@@ -97,31 +97,38 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                                 $lang = 1 ;
                                 $indexlang = -1 ;
                                 $indexerConfig['pid'] = 5025 ;
+                                $category = "STRCATEGORY_DE" ;
                                 break ;
                             case "it":
                                 $lang = 2 ;
 
                                 $indexerConfig['pid'] = 5027 ;
+                                $category = "STRCATEGORY_IT" ;
                                 break ;
                             case "cz":
                                 $lang = 3 ;
                                 $indexerConfig['pid'] = 5027 ;
+                                $category = "STRCATEGORY_CS" ;
                                 break ;
                             case "fr":
                                 $lang = 4 ;
                                 $indexerConfig['pid'] = 5026 ;
+                                $category = "STRCATEGORY_FR" ;
                                 break ;
                             case "es":
                                 $lang = 18 ;
                                 $indexerConfig['pid'] = 5027 ;
+                                $category = "STRCATEGORY_ES" ;
                                 break ;
                             case "ru":
                                 $lang = 14 ;
                                 $indexerConfig['pid'] = 5027 ;
+                                $category = "STRCATEGORY_EN" ; // RU is not in Response
                                 break ;
                             default:
                                 $lang = 0 ;
                                 $indexerConfig['pid'] = 5027 ;
+                                $category = "STRCATEGORY_EN" ;
                                 break ;
                         }
                         if (  $indexlang == 0   ) {
@@ -147,7 +154,8 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                             $debug .= "<br>ID: " . $single['uid'] ;
 
                             $single['STRSUBJECT'] =  $singleFaq->STRSUBJECT  ;
-                            $single['STRTEXT'] =  $singleFaq->STRTEXT  ;
+                            $single['STRCATEGORY'] =  $singleFaq->$category  ;
+                            $single['STRTEXT'] =  $singleFaq->$category . "\n" . $singleFaq->STRTEXT   ;
                             $single['language'] =  $indexlang ;
 
                             if( is_array( $singleFaq->LSTPROGRAMME )) {
@@ -159,6 +167,32 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                             $single['sortdate'] = mktime( 0 , 0 , 0 , substr(  $singleFaq->STRBEARBEITUNGSSTAND ,3 ,2 ) ,
                                 substr( $singleFaq->STRBEARBEITUNGSSTAND , 0 ,2 ) ,  substr( $singleFaq->STRBEARBEITUNGSSTAND ,6 ,4 ) ) ;
                             $single['url'] = $url->loc  ;
+
+                            switch ($singleFaq->STRINTERNET_RELEASE_FOR) {
+                                case "Everybody":
+                                    $single['type']     = "supportfaq" ;
+                                    $single['feGroup']  = '' ;
+                                    break;
+
+                                case "Beta Tester":
+                                    $single['type']     = "supportfaqbeta" ;
+                                    $single['feGroup']  = '38,7,4' ;
+                                    break;
+
+                                case "Portal user":
+                                    $single['type']     = "supportfaqsp" ;
+                                    $single['feGroup']  = '38,7,4,3' ;
+                                    break;
+                                case "Nemetschek only":
+                                    $single['type']     = "supportfaqsp" ;
+                                    $single['feGroup']  = '38,7' ;
+                                    break;
+
+                                default:
+                                    $single['type']     = "supportfaqlocked" ;
+                                    $single['feGroup']  = '38' ;
+                                    break;
+                            }
 
                             if( $this->putToIndex( $single , $indexerObject , $indexerConfig) ) {
                                 $debug .= "<hr>Single= " . var_export( $single , true ) ;
@@ -234,7 +268,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         return $indexerObject->storeInIndex(
             $pid ,			                // folder, where the indexer data should be stored (not where the data records are stored!)
             $single['STRSUBJECT'] ,							    // title in the result list
-            'supportfaq',				                    // content type ( useful, if you want to use additionalResultMarker)
+            $single['type'] ,				                    // content type ( useful, if you want to use additionalResultMarker)
             $single['url']                              ,	// uid of the targetpage (see indexer-config in the backend)
             strip_tags ( $single['STRTEXT'] ) , 						                // below the title in the result list
             $indexerConfig['tags'] . $single['tags'] ,						// tags
@@ -243,7 +277,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             $single['language'] ,				    // sys_language_uid
             0 ,						// starttime (not used here)
             0,						// endtime (not used here)
-            '',						// fe_group (not used here)
+            $single['feGroup'],						// fe_group ('' , '7' , '7,4' , or '7,4,3' )
             false ,					// debug only?
             array( 'sortdate' => $single['sortdate'] , 'orig_uid' => $single['uid'] , 'servername' => $server  )				// additional fields added by hooks
         );
