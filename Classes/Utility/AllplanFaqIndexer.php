@@ -165,19 +165,23 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                                     $single['feGroup']  = '' ;
                                     break;
 
-                                case "Betatester":
+                                case "Beta Tester":
                                     $single['type']     = "supportfaqbeta" ;
-                                    $single['feGroup']  = '7,4' ;
+                                    $single['feGroup']  = '38,7,4' ;
                                     break;
 
-                                case "SP user":
+                                case "Portal user":
                                     $single['type']     = "supportfaqsp" ;
-                                    $single['feGroup']  = '7,4,3' ;
+                                    $single['feGroup']  = '38,7,4,3' ;
+                                    break;
+                                case "Nemetschek only":
+                                    $single['type']     = "supportfaqsp" ;
+                                    $single['feGroup']  = '38,7' ;
                                     break;
 
                                 default:
                                     $single['type']     = "supportfaqlocked" ;
-                                    $single['feGroup']  = '7' ;
+                                    $single['feGroup']  = '38' ;
                                     break;
                             }
 
