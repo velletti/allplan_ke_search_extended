@@ -85,8 +85,11 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             if( is_object( $xml2->url ) ) {
                 $debug .="<hr> xml2->url is Array" ;
                 $i = 0 ;
+                if (PHP_SAPI === 'cli') {
+                    echo $debug ;
+                }
                 foreach ($xml2->url as $url) {
-                    $debug .= "<hr>url loc: " . $url->loc . " : lastmod: " . $url->lastmod ;
+                    $debugSub = "<hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . "\n";
 
                     if( $url->lastmod > $lastRun ) {
                         $i++ ;
@@ -141,92 +144,102 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                         $urlSingle .= "&tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1" ;
 
 
-                        $debug .= "<hr>url loc: " . $urlSingle ;
+                        $debugSub .= "<hr>Get FAQ via Curl " . $urlSingle ;
 
 
                         // https://connect.allplan.com/index.php?&id=5566&L=1&tx_nemsolution_pi1[docID]=000171ca&tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1
                         $singleFaqRaw = $this->getJsonFile( $urlSingle   , "" , array ( "Accept: application/json" , "Content-type:application/json" ) , FALSE ) ;
 
                         $singleFaq = json_decode($singleFaqRaw) ;
-            //            $debug .= "<hr>Decoded Json: " . var_export( $singleFaq , true ) ;
-                        if( is_object($singleFaq) ) {
-                            $single['uid']  = $this->convertIdToINT ( $singleFaq->STRDOK_ID , $indexlang ) ;
-                            $debug .= "<br>ID: " . $single['uid'] ;
-
-                            $single['STRSUBJECT'] =  $singleFaq->STRSUBJECT  ;
-                            $single['STRCATEGORY'] =  $singleFaq->$category  ;
-                            $single['STRTEXT'] =  $singleFaq->$category . "\n" . $singleFaq->STRTEXT   ;
-                            $single['language'] =  $indexlang ;
-
-                            if( is_array( $singleFaq->LSTPROGRAMME )) {
-                                foreach ( $singleFaq->LSTPROGRAMME as $tag ) {
-                                    $single['tags'] .= ",#" . strtolower( str_replace( " " , "" , $tag ))  . "#" ;
-                                }
-                            }
-
-                            $single['sortdate'] = mktime( 0 , 0 , 0 , substr(  $singleFaq->STRBEARBEITUNGSSTAND ,3 ,2 ) ,
-                                substr( $singleFaq->STRBEARBEITUNGSSTAND , 0 ,2 ) ,  substr( $singleFaq->STRBEARBEITUNGSSTAND ,6 ,4 ) ) ;
-                            $single['url'] = $url->loc  ;
-
-                            switch ($singleFaq->STRINTERNET_RELEASE_FOR) {
-                                case "Everybody":
-                                    $single['type']     = "supportfaq" ;
-                                    $single['feGroup']  = '' ;
-                                    break;
-
-                                case "Beta Tester":
-                                    $single['type']     = "supportfaqbeta" ;
-                                    $single['feGroup']  = '38,7,4' ;
-                                    break;
-
-                                case "Portal user":
-                                    $single['type']     = "supportfaqsp" ;
-                                    $single['feGroup']  = '38,7,4,3' ;
-                                    break;
-                                case "Nemetschek only":
-                                    $single['type']     = "supportfaqsp" ;
-                                    $single['feGroup']  = '38,7' ;
-                                    break;
-
-                                default:
-                                    $single['type']     = "supportfaqlocked" ;
-                                    $single['feGroup']  = '38' ;
-                                    break;
-                            }
-
-                            if( $this->putToIndex( $single , $indexerObject , $indexerConfig) ) {
-                                $debug .= "<hr>Single= " . var_export( $single , true ) ;
-                                $count++ ;
-                            }
-                        } else {
-                            $debug .= "<hr>Error in RAW Json:"  ;
+                        $debugSub .= "<hr>" . var_export( $singleFaq , true ) ;
+                        if( !is_object($singleFaq) ) {
+                            $debugSub .= "<hr>Error in RAW Json:"  ;
 
                             switch(json_last_error()) {
                                 case JSON_ERROR_DEPTH:
-                                    $debug .= ' - Maximale Stacktiefe überschritten';
+                                    $debugSub .= ' - Maximale Stacktiefe überschritten';
                                     break;
                                 case JSON_ERROR_STATE_MISMATCH:
-                                    $debug .= ' - Unterlauf oder Nichtübereinstimmung der Modi';
+                                    $debugSub .= ' - Unterlauf oder Nichtübereinstimmung der Modi';
                                     break;
                                 case JSON_ERROR_CTRL_CHAR:
-                                    $debug .= ' - Unerwartetes Steuerzeichen gefunden';
+                                    $debugSub .= ' - Unerwartetes Steuerzeichen gefunden';
                                     break;
                                 case JSON_ERROR_SYNTAX:
-                                    $debug .= ' - Syntaxfehler, ungültiges JSON';
+                                    $debugSub .= ' - Syntaxfehler, ungültiges JSON';
                                     break;
                                 case JSON_ERROR_UTF8:
-                                    $debug .= ' - Missgestaltete UTF-8 Zeichen, möglicherweise fehlerhaft kodiert';
+                                    $debugSub .= ' - Missgestaltete UTF-8 Zeichen, möglicherweise fehlerhaft kodiert';
                                     break;
                                 default:
-                                    $debug .= ' - Unbekannter Fehler';
+                                    $debugSub .= ' - Unbekannter Fehler';
                                     break;
                             }
-                            $debug .= "<hr>RAW Json:" . htmlentities( $singleFaqRaw  ) ;
+                            $debugSub .= "<hr>RAW Json:" . htmlentities( $singleFaqRaw  ) ;
+
+                            $singleFaqRaw = $this->getJsonFile( $urlSingle   , "" , array ( "Accept: application/json" , "Content-type: application/json" ) , TRUE , 90) ;
+                            $debugSub .= "<hr>Response with errorCode" . var_export( $singleFaqRaw , true ) ;
+                            $error = 1 ;
+                        } else {
+                            $single['uid'] = $this->convertIdToINT($singleFaq->STRDOK_ID, $indexlang);
+                            $debugSub .= "<br>ID: " . $single['uid'];
+
+                            $single['STRSUBJECT'] = $singleFaq->STRSUBJECT;
+                            $single['STRCATEGORY'] = $singleFaq->$category;
+                            $single['STRTEXT'] = $singleFaq->$category . "\n" . $singleFaq->STRTEXT;
+                            $single['language'] = $indexlang;
+
+                            if (is_array($singleFaq->LSTPROGRAMME)) {
+                                foreach ($singleFaq->LSTPROGRAMME as $tag) {
+                                    $single['tags'] .= ",#" . strtolower(str_replace(" ", "", $tag)) . "#";
+                                }
+                            }
+
+                            $single['sortdate'] = mktime(0, 0, 0, substr($singleFaq->STRBEARBEITUNGSSTAND, 3, 2),
+                                substr($singleFaq->STRBEARBEITUNGSSTAND, 0, 2), substr($singleFaq->STRBEARBEITUNGSSTAND, 6, 4));
+                            $single['url'] = $url->loc;
+
+                            switch ($singleFaq->STRINTERNET_RELEASE_FOR) {
+                                case "Everybody":
+                                    $single['type'] = "supportfaq";
+                                    $single['feGroup'] = '';
+                                    break;
+
+                                case "Beta Tester":
+                                    $single['type'] = "supportfaqbeta";
+                                    $single['feGroup'] = '38,7,4';
+                                    break;
+
+                                case "Portal user":
+                                    $single['type'] = "supportfaqsp";
+                                    $single['feGroup'] = '38,7,4,3';
+                                    break;
+                                case "Nemetschek only":
+                                    $single['type'] = "supportfaqnem";
+                                    $single['feGroup'] = '38,7';
+                                    break;
+
+                                default:
+                                    $single['type'] = "supportfaqlocked";
+                                    $single['feGroup'] = '38';
+                                    break;
+                            }
+
+                            if ($this->putToIndex($single, $indexerObject, $indexerConfig)) {
+                                $debugSub .= "<hr>Single= " . var_export($single, true);
+                                $count++;
+                            }
                         }
 
                         unset($single) ;
                         unset($singleFaq) ;
                     }
+
+                    if (PHP_SAPI === 'cli') {
+                        echo $debugSub ;
+                    }
+                    $debug .= $debugSub ;
+
                 }
             }
         }
@@ -236,9 +249,9 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $insertFields = array(
             "action"  => 1 ,
             "tablename" => "tx_kesearch_index" ,
-            "error" => 0 ,
+            "error" => $error ,
             "event_pid" => $pid ,
-            "details" => "Allplan FAQ Indexer had updated / inserted " . $count . " entrys" ,
+            "details" => "Allplan FAQ Indexer got " . $i . " entries and had updated / inserted : " . $count . " entries " ,
             "tstamp" => time() ,
             "type" => 1 ,
             "message" => $debug ,
