@@ -71,14 +71,17 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             $debug .="<hr> Lastrun from DB = " . $lastRun . "\n\n";
         }
 
-
+        $error = 0 ;
         if( is_object($xml2)) {
             $debug .="<hr> xml2 is Object" ;
             if( is_object( $xml2->url ) ) {
                 $debug .="<hr> xml2->url is Object" ;
                 $i = 0 ;
+                if (PHP_SAPI === 'cli') {
+                    echo $debug ;
+                }
                 foreach ($xml2->url as $url) {
-                    $debug .= "<hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . "\n";
+                    $debugSub = "<hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . "\n";
 
                     if( $url->lastmod > $lastRun ) {
                         $i++ ;
@@ -132,20 +135,21 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                         $urlSingle .= "&tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1" ;
 
 
-                        $debug .= "<hr>Get FAQ via Curl " . $urlSingle ;
+                        $debugSub .= "<hr>Get FAQ via Curl " . $urlSingle ;
 
 
                         // https://connect.allplan.com/index.php?&id=5566&L=1&tx_nemsolution_pi1[docID]=000171ca&tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1
                         $singleFaqRaw = $this->getJsonFile( $urlSingle   , "" , array ( "Accept: application/json" , "Content-type: application/json" ) , FALSE , 90) ;
                         $singleFaq = json_decode($singleFaqRaw) ;
-                        $debug .= "<hr>" . var_export( $singleFaq , true ) ;
+                        $debugSub .= "<hr>" . var_export( $singleFaq , true ) ;
                         if( !is_object($singleFaq) ) {
-                            $debug .= "<hr>" . var_export( $singleFaqRaw , true ) ;
+                            $debugSub .= "<hr>" . var_export( $singleFaqRaw , true ) ;
                             $singleFaqRaw = $this->getJsonFile( $urlSingle   , "" , array ( "Accept: application/json" , "Content-type: application/json" ) , TRUE , 90) ;
-                            $debug .= "<hr>Response with errorCode" . var_export( $singleFaqRaw , true ) ;
+                            $debugSub .= "<hr>Response with errorCode" . var_export( $singleFaqRaw , true ) ;
+                            $error = 1 ;
                         } else {
                             $single['uid']  = $this->convertIdToINT ( $singleFaq->STRDOK_ID , $indexlang ) ;
-                            $debug .= "<br>ID: " . $single['uid'] ;
+                            $debugSub .= "<br>ID: " . $single['uid'] ;
 
                             $single['STRSUBJECT'] =  $singleFaq->STRSUBJECT  ;
                             $single['STRCATEGORY'] =  $singleFaq->$category  ;
@@ -191,7 +195,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
 
                             if( $this->putToIndex( $single , $indexerObject , $indexerConfig) ) {
-                                $debug .= "<hr>" . var_export( $single , true ) ;
+                                $debugSub .= "<hr>" . var_export( $single , true ) ;
                                 $count++ ;
                             }
                         }
@@ -199,6 +203,11 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                         unset($single) ;
                         unset($singleFaq) ;
                     }
+
+                    if (PHP_SAPI === 'cli') {
+                        echo $debugSub ;
+                    }
+                    $debug .= $debugSub ;
 
                 }
             }
@@ -209,9 +218,9 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $insertFields = array(
             "action"  => 1 ,
             "tablename" => "tx_kesearch_index" ,
-            "error" => 0 ,
+            "error" => $error ,
             "event_pid" => $pid ,
-            "details" => "Allplan FAQ Indexer had updated / inserted " . $i . " entrys" ,
+            "details" => "Allplan FAQ Indexer got " . $i . " entries and had updated / inserted : " . $count . " entries " ,
             "tstamp" => time() ,
             "type" => 1 ,
             "message" => $debug ,
