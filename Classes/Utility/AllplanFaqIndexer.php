@@ -139,9 +139,11 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                         }
                //         $urlSingleArray['host'] = "connectv9.allplan.com.ddev.local" ;
                         $urlSingle = $urlSingleArray['scheme'] . "://" . $urlSingleArray['host'] . "/index.php?" ;
+                        $docID = str_replace( ".html" , "" , substr( $urlSingleArray['path'] , strpos( strtolower( $urlSingleArray['path'] ) , "faqid") + 6 ) )  ;
+                        $token = hash( "sha256" , $docID  . "JV-" . date("Y-m-d") ) ;
                         $urlSingle .= "&id=5566&L=" . $lang ;
-                        $urlSingle .= "&tx_nemsolution_pi1[dokID]=" . str_replace( ".html" , "" , substr( $urlSingleArray['path'] , strpos( strtolower( $urlSingleArray['path'] ) , "faqid") + 6 ) ) ;
-                        $urlSingle .= "&tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1" ;
+                        $urlSingle .= "&tx_nemsolution_pi1[dokID]=" . $docID;
+                        $urlSingle .= "&tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[ug]=ne&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1&tx_nemsolution_pi1[token]=" . $token;
 
 
                         $debugSub .= "<hr>Get FAQ via Curl " . $urlSingle ;
