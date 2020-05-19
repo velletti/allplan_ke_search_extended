@@ -68,17 +68,17 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
         if( is_array($lastRunRow )) {
             $lastRun = date( "Y-m-d" , $lastRunRow['sortdate'] ) ;
-            $debug .="<hr> Lastrun from DB = " . $lastRun;
+            $debug .="<hr> Lastrun from DB = " . $lastRun . "\n\n";
         }
 
 
         if( is_object($xml2)) {
             $debug .="<hr> xml2 is Object" ;
             if( is_object( $xml2->url ) ) {
-                $debug .="<hr> xml2->url is Array" ;
+                $debug .="<hr> xml2->url is Object" ;
                 $i = 0 ;
                 foreach ($xml2->url as $url) {
-                    $debug .= "<hr>url loc: " . $url->loc . " : lastmod: " . $url->lastmod ;
+                    $debug .= "<hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . "\n";
 
                     if( $url->lastmod > $lastRun ) {
                         $i++ ;
@@ -132,14 +132,18 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                         $urlSingle .= "&tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1" ;
 
 
-                        $debug .= "<hr>url loc: " . $urlSingle ;
+                        $debug .= "<hr>Get FAQ via Curl " . $urlSingle ;
 
 
                         // https://connect.allplan.com/index.php?&id=5566&L=1&tx_nemsolution_pi1[docID]=000171ca&tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1
-                        $singleFaq = $this->getJsonFile( $urlSingle   , "" , array ( "Accept: application/json" , "Content-type:application/json" ) , FALSE ) ;
-                        $singleFaq = json_decode($singleFaq) ;
+                        $singleFaqRaw = $this->getJsonFile( $urlSingle   , "" , array ( "Accept: application/json" , "Content-type: application/json" ) , FALSE , 90) ;
+                        $singleFaq = json_decode($singleFaqRaw) ;
                         $debug .= "<hr>" . var_export( $singleFaq , true ) ;
-                        if( is_object($singleFaq) ) {
+                        if( !is_object($singleFaq) ) {
+                            $debug .= "<hr>" . var_export( $singleFaqRaw , true ) ;
+                            $singleFaqRaw = $this->getJsonFile( $urlSingle   , "" , array ( "Accept: application/json" , "Content-type: application/json" ) , TRUE , 90) ;
+                            $debug .= "<hr>Response with errorCode" . var_export( $singleFaqRaw , true ) ;
+                        } else {
                             $single['uid']  = $this->convertIdToINT ( $singleFaq->STRDOK_ID , $indexlang ) ;
                             $debug .= "<br>ID: " . $single['uid'] ;
 
@@ -175,7 +179,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                                     $single['feGroup']  = '38,7,4,3' ;
                                     break;
                                 case "Nemetschek only":
-                                    $single['type']     = "supportfaqsp" ;
+                                    $single['type']     = "supportfaqnem" ;
                                     $single['feGroup']  = '38,7' ;
                                     break;
 
