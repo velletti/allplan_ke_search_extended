@@ -75,8 +75,14 @@ class KeSearchUnlockViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstrac
 
                 $parameters = array( "lockUid" => $row['uid'] , "CMD" => "Unlock" ) ;
 
-                $uriBuilder = GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
-                $uri = $uriBuilder->buildUriFromRoute('web_KeSearchBackendModule', $parameters);
+                if( intval(TYPO3_branch) <  9 ) {
+                    $uri = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleUrl('web_KeSearchBackendModule').'&'.$parameters ;
+                } else {
+                    $uriBuilder = GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
+                    $uri = $uriBuilder->buildUriFromRoute('web_KeSearchBackendModule', $parameters);
+
+                }
+
 
                 if ( $GLOBALS['BE_USER']->isAdmin() ) {
                     $link ="<a class='lock-button' href='" . $uri . "'>unlock</a>" ;
