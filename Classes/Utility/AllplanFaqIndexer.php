@@ -83,7 +83,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         if( is_object($xml2)) {
             $debug .="<hr> xml2 is Object" ;
             if( is_object( $xml2->url ) ) {
-                $debug .="<hr> xml2->url is Array" ;
+                $debug .= "<hr> xml2->url is Object";
                 $i = 0 ;
                 if (PHP_SAPI === 'cli') {
                     echo $debug ;
@@ -201,6 +201,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                                 substr($singleFaq->STRBEARBEITUNGSSTAND, 0, 2), substr($singleFaq->STRBEARBEITUNGSSTAND, 6, 4));
                             $single['url'] = $url->loc;
 
+
                             switch ($singleFaq->STRINTERNET_RELEASE_FOR) {
                                 case "Everybody":
                                     $single['type'] = "supportfaq";
@@ -226,6 +227,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                                     $single['feGroup'] = '38';
                                     break;
                             }
+
 
                             if ($this->putToIndex($single, $indexerObject, $indexerConfig)) {
                                 $debugSub .= "<hr>Single= " . var_export($single, true);
