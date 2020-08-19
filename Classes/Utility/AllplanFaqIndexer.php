@@ -43,9 +43,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         // http://212.29.3.155/hotline/FAQ_HOTD.nsf/0/05421C80A7EB2CE2C1257480004DDA2E/\$File/FAQIDs.xml?OpenElement
 
         $url = $indexerObject->externalUrl  ;
-
         $debug = "url: " . ($url) ;
-
         // ToDo Put tags to Indexer object
         $indexerConfig['tags'] = "#allplanfaq#" ;
 
