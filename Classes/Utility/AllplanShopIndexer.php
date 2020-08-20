@@ -226,8 +226,7 @@ class AllplanShopIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSe
             "message" => $debug ,
 
         ) ;
-
-        $GLOBALS['TYPO3_DB']->exec_INSERTquery("sys_log" , $insertFields ) ;
+        $this->insertSyslog( $insertFields) ;
         return $count ;
     }
     protected function putToIndex(array $single , \TeaminmediasPluswerk\KeSearch\Indexer\IndexerRunner $indexerObject , array  $indexerConfig ) {
@@ -260,25 +259,7 @@ class AllplanShopIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSe
         );
 
     }
-    protected function convertIdToINT( $notes_id , $lang) {
-        $row = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows("uid" , "tx_kesearch_allplan_url_ids" ,
-                        "notes_id = '" . $notes_id . "' AND sys_language_uid = " . intval($lang) . " AND deleted = 0 "  , '' , "" , "1" ) ;
-        if ( count ( $row ) == 0 ) {
-            $data = array( "pid" => 0 , "notes_id" => $notes_id , "sys_language_uid" => intval($lang)  ) ;
-            $GLOBALS['TYPO3_DB']->exec_INSERTquery("tx_kesearch_allplan_url_ids" , $data ) ;
-            $uid = $GLOBALS['TYPO3_DB']->sql_insert_id() ;
-        } else {
-            $uid = $row[0]['uid'] ;
-        }
-        if ( $uid == 0 ) {
-          //  var_dump($notes_id) ;
-            //  var_dump($lang ) ;
-            //  var_dump($data ) ;
-            //  var_dump($row) ;
-            //  die ;
-        }
-        return $uid  ;
-    }
+
 
 
 }

@@ -102,7 +102,19 @@ class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\
 
 
         }
+        $insertFields = array(
+            "action"  => 1 ,
+            "tablename" => "tx_kesearch_index" ,
+            "error" => 0 ,
+            "event_pid" => $pid ,
+            "details" => "Allplan ContentServe Indexer had updated / inserted " . $count . " entrys" ,
+            "tstamp" => time() ,
+            "type" => 1 ,
+            "message" =>  " - config: " . var_export($indexerObject , true ) . substr( $debug , 0 , 1024 ) ,
 
+        ) ;
+
+        $this->insertSyslog( $insertFields) ;
         return $count ;
     }
     protected function putToIndex(array $single , \TeaminmediasPluswerk\KeSearch\Indexer\IndexerRunner $indexerObject , array  $indexerConfig , $language ) {

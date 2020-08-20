@@ -131,8 +131,18 @@ class JvEventsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearc
             }
 
         }
-        // echo "ResCount: " . $resCount . "<hr>" ;
-        // die;
+        $insertFields = array(
+            "action"  => 1 ,
+            "tablename" => "tx_kesearch_index" ,
+            "error" => 0 ,
+            "event_pid" => 0 ,
+            "details" => "Indexer JvEvents Entries" ,
+            "tstamp" => time() ,
+            "type" => 1 ,
+            "message" => "Updated "  . $resCount . " Entries "
+
+        ) ;
+        $this->insertSyslog( $insertFields) ;
         return intval($resCount);
     }
 }

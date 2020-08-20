@@ -74,6 +74,18 @@ class AllplanHelpIndexer extends BaseKeSearchIndexerHook
                 //       return $count ;
                 //   }
         }
+        $insertFields = array(
+            "action"  => 1 ,
+            "tablename" => "tx_kesearch_index" ,
+            "error" => 0 ,
+            "event_pid" => 0 ,
+            "details" => "Indexer Allplan Online Help Entries" ,
+            "tstamp" => time() ,
+            "type" => 1 ,
+            "message" => "Updated "  . $count . " Entries from URL " . $indexerObject->externalUrl
+
+        ) ;
+        $this->insertSyslog( $insertFields) ;
 
         return $count ;
     }

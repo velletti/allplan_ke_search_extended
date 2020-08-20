@@ -275,28 +275,19 @@ class ForumIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearchIn
         }
 
         $debug .= ' ' . $record['uid'] . " ! ";
+        $insertFields = array(
+            "action"  => 1 ,
+            "tablename" => "tx_kesearch_index" ,
+            "error" => 0 ,
+            "event_pid" => 0 ,
+            "details" => "Indexer Forum Entries" ,
+            "tstamp" => time() ,
+            "type" => 1 ,
+            "message" => $debug . " part 2 : " . $debug2 . " | Tags found: " . $tagsFound  ,
 
-        $this->logToSystem( $debug . " part 2 : " . $debug2 . " | Tags found: " . $tagsFound ) ;
+        ) ;
+        $this->insertSyslog( $insertFields) ;
         return intval($count);
-    }
-    private function logToSystem( $text ) {
-
-
-        GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getConnectionForTable('sys_log')
-            ->insert(
-                'sys_log',
-                [   "action"  => 1 ,
-                    "tablename" => "tx_kesearch_index" ,
-                    "error" => 0 ,
-                    "event_pid" => 0 ,
-                    "details" => $text  ,
-                    "tstamp" => time() ,
-                    "type" => 1 ,
-                    "message" => "Indexer Forum Entries "
-                ]
-            );
-
     }
 
 }
