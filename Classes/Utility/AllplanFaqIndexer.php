@@ -219,22 +219,25 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                             $single['url'] = $url->loc;
 
 
-                            switch ($singleFaq->STRINTERNET_RELEASE_FOR) {
-                                case "Everybody":
+                            switch ( strtolower( $singleFaq->STRINTERNET_RELEASE_FOR)) {
+                                case "everybody":
                                     $single['type'] = "supportfaq";
                                     $single['feGroup'] = '';
                                     break;
 
-                                case "Beta Tester":
+                                case "beta tester":
+                                case "betatester":
                                     $single['type'] = "supportfaqbeta";
                                     $single['feGroup'] = '38,7,4';
                                     break;
 
-                                case "Portal user":
+                                case "portal user":
+                                case "portaluser":
                                     $single['type'] = "supportfaqsp";
                                     $single['feGroup'] = '38,7,4,3';
                                     break;
-                                case "Nemetschek only":
+                                case "nemetschek only":
+                                case "nemetschekonly":
                                     $single['type'] = "supportfaqnem";
                                     $single['feGroup'] = '38,7';
                                     break;
