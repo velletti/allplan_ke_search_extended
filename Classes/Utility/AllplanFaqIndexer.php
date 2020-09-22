@@ -146,8 +146,9 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
                         $debugSub .= "<hr>Get FAQ via Curl " . $urlSingle ;
 
+                        // https://connect.allplan.com/index.php?&id=5566&L=1&tx_nemsolution_pi1[ug]=ne&tx_nemsolution_pi1[dokID]=000171ca&tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1
+                        // https://connectv9.allplan.com.ddev.local/index.php?&id=5566&L=1&tx_nemsolution_pi1[ug]=ne&tx_nemsolution_pi1[dokID]=000171ca&tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1
 
-                        // https://connect.allplan.com/index.php?&id=5566&L=1&tx_nemsolution_pi1[docID]=000171ca&tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1
                         $singleFaqRaw = $this->getJsonFile( $urlSingle   , "" , array ( "Accept: application/json" , "Content-type:application/json" ) , FALSE ) ;
 
                         $singleFaq = json_decode($singleFaqRaw) ;
@@ -186,7 +187,8 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
                             $single['STRSUBJECT'] = $singleFaq->STRSUBJECT;
                             $single['STRCATEGORY'] = $singleFaq->$category;
-                            $single['STRTEXT'] = $singleFaq->$category . "\n" . $singleFaq->STRTEXT;
+                            $single['STRTEXT'] = $singleFaq->$category . " \n " . $singleFaq->STRTEXT;
+                            $single['singleFaqRaw'] = $singleFaqRaw ;
                             $single['language'] = $indexlang;
 
                             if (is_array($singleFaq->LSTPROGRAMME)) {
@@ -285,10 +287,10 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             $single['STRSUBJECT'] ,							    // title in the result list
             $single['type'] ,				                    // content type ( useful, if you want to use additionalResultMarker)
             $single['url']                              ,	// uid of the targetpage (see indexer-config in the backend)
-            strip_tags ( $single['STRTEXT'] ) , 						                // below the title in the result list
+            $single['singleFaqRaw']  , 						                // the Content here RAW Result
             $indexerConfig['tags'] . $single['tags'] ,						// tags
             '_blank' ,                                      // additional params for the link
-            substr( strip_tags( $single['STRTEXT'] ) , 0 , 200 ) ,			// abstract
+            substr( strip_tags( $single['STRTEXT'] ) , 0 , 200 ) ,			// abstract below the title in the result list
             $single['language'] ,				    // sys_language_uid
             0 ,						// starttime (not used here)
             0,						// endtime (not used here)
