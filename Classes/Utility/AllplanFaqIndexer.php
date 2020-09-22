@@ -247,7 +247,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
 
                             if ($this->putToIndex($single, $indexerObject, $indexerConfig)) {
-                                $debugSub .= "<hr>Single= " . var_export($single, true);
+                               // $debugSub .= "<hr>Single= " . var_export($single, true);
                                 $count++;
                             }
                         }
