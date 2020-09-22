@@ -12,6 +12,7 @@ class KeSearchRegisterAdditionalFieldsHook {
      */
     public function registerAdditionalFields(  &$additionalFields) {
         $additionalFields[] = 'servername' ;
+        $additionalFields[] = 'top10' ;
     }
 
 

@@ -72,7 +72,6 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             $debug .="<hr> Lastrun from Indexer config Field Period  = " . $lastRun;
 
         }
-
         if( is_array($lastRunRow )) {
             $lastRun = date( "Y-m-d" , $lastRunRow['sortdate'] ) ;
             $debug .="<hr> Lastrun from DB = " . $lastRun;
@@ -188,6 +187,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                             $debugSub .= "<br>ID: " . $single['uid'];
 
                             $single['STRSUBJECT'] = $singleFaq->STRSUBJECT;
+                            $single['INTTOPTEN'] =  intval( $singleFaq->INTTOPTEN );
                             $single['STRCATEGORY'] = $singleFaq->$category;
                             $single['STRTEXT'] = $singleFaq->$category . " \n " . $singleFaq->STRTEXT;
                             $single['singleFaqRaw'] = $singleFaqRaw ;
@@ -300,7 +300,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             0,						// endtime (not used here)
             $single['feGroup'],						// fe_group ('' , '7' , '7,4' , or '7,4,3' )
             false ,					// debug only?
-            array( 'sortdate' => $single['sortdate'] , 'orig_uid' => $single['uid'] , 'servername' => $server  , 'directory' => $single['STRCATEGORY']   )				// additional fields added by hooks
+            array( 'sortdate' => $single['sortdate'] , 'orig_uid' => $single['uid'] , 'servername' => $server  , 'directory' => $single['STRCATEGORY'] , 'top10' => $single['INTTOPTEN']  )				// additional fields added by hooks
         );
 
     }
