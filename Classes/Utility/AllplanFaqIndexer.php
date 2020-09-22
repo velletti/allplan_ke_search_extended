@@ -285,6 +285,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         } else {
             $server = "connect.allplan.com" ;
         }
+
         return $indexerObject->storeInIndex(
             $pid ,			                // folder, where the indexer data should be stored (not where the data records are stored!)
             $single['STRSUBJECT'] ,							    // title in the result list
@@ -299,7 +300,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             0,						// endtime (not used here)
             $single['feGroup'],						// fe_group ('' , '7' , '7,4' , or '7,4,3' )
             false ,					// debug only?
-            array( 'sortdate' => $single['sortdate'] , 'orig_uid' => $single['uid'] , 'servername' => $server  )				// additional fields added by hooks
+            array( 'sortdate' => $single['sortdate'] , 'orig_uid' => $single['uid'] , 'servername' => $server  , 'directory' => $single['STRCATEGORY']   )				// additional fields added by hooks
         );
 
     }
