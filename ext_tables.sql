@@ -17,5 +17,5 @@ CREATE TABLE tx_kesearch_allplan_url_ids (
 
 CREATE TABLE tx_kesearch_index (
    servername VARCHAR(40) DEFAULT '',
-   top10 INT(11)  DEFAULT '0',
+   top10  VARCHAR(11) DEFAULT '',
 ) ;

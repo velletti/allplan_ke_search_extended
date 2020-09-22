@@ -187,7 +187,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                             $debugSub .= "<br>ID: " . $single['uid'];
 
                             $single['STRSUBJECT'] = $singleFaq->STRSUBJECT;
-                            $single['INTTOPTEN'] =  intval( $singleFaq->INTTOPTEN );
+                            $single['INTTOPTEN'] =   $singleFaq->INTTOPTEN ;
                             $single['STRCATEGORY'] = $singleFaq->$category;
                             $single['STRTEXT'] = $singleFaq->$category . " \n " . $singleFaq->STRTEXT;
                             $single['singleFaqRaw'] = $singleFaqRaw ;
