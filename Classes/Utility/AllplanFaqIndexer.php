@@ -85,7 +85,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                 $i = 0 ;
                 $total  = 0 ;
                 if (PHP_SAPI === 'cli') {
-                    echo $debug ;
+      //              echo $debug ;
                 }
                 foreach ($xml2->url as $url) {
                     $debugSub = "<hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . "\n";
@@ -153,7 +153,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                         $singleFaqRaw = $this->getJsonFile( $urlSingle   , "" , array ( "Accept: application/json" , "Content-type:application/json" ) , FALSE ) ;
 
                         $singleFaq = json_decode($singleFaqRaw) ;
-                        $debugSub .= "<hr>" . var_export( $singleFaq , true ) ;
+                      //  $debugSub .= "<hr>" . var_export( $singleFaq , true ) ;
                         if( !is_object($singleFaq) ) {
                             $debugSub .= "<hr>Error in RAW Json:"  ;
 
@@ -181,6 +181,21 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
                             $singleFaqRaw = $this->getJsonFile( $urlSingle   , "" , array ( "Accept: application/json" , "Content-type: application/json" ) , TRUE , 90) ;
                             $debugSub .= "<hr>Response with errorCode" . var_export( $singleFaqRaw , true ) ;
+
+                            $insertFields = array(
+                                "action"  => 1 ,
+                                "tablename" => "tx_kesearch_index" ,
+                                "error" => 1 ,
+                                "event_pid" => 0 ,
+                                "details" => "Allplan FAQ Indexer : see full message for URL: " . $url ,
+                                "tstamp" => time() ,
+                                "type" => 1 ,
+                                "message" => $debugSub ,
+
+                            ) ;
+
+                            $this->insertSyslog( $insertFields) ;
+
                             $error = 1 ;
                         } else {
                             $single['uid'] = $this->convertIdToINT($singleFaq->STRDOK_ID, $indexlang);
@@ -242,9 +257,9 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                     }
 
                     if (PHP_SAPI === 'cli') {
-                        echo $debugSub ;
+         //               echo $debugSub ;
                     }
-                    $debug .= $debugSub ;
+          //          $debug .= $debugSub ;
 
                 }
             }
