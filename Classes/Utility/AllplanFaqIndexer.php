@@ -62,8 +62,9 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $xml2 = simplexml_load_string ($xmlFromUrl  ) ;
 
         $debug .= "<hr>xlm2 from string:<br>" . substr( var_export( $xml2 , true ) , 0 , 200 )  . " .... " . strlen( $xml2 ) . " chars .. <hr />" ;
-
+        $error = 0 ;
         $count = 0 ;
+        $total  = 0 ;
         $lastRunRow = $this->getRecordRaw( "tx_kesearch_index" , "`type` like 'supportfaq%' ORDER BY sortdate DESC ") ;
         $lastRun = "2016-12-12" ;
         if( $indexerObject->period > 365 ) {
@@ -83,13 +84,14 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             if( is_object( $xml2->url ) ) {
                 $debug .= "<hr> xml2->url is Object";
                 $i = 0 ;
+                $total  = 0 ;
                 if (PHP_SAPI === 'cli') {
                     echo $debug ;
                 }
                 foreach ($xml2->url as $url) {
                     $debugSub = "<hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . "\n";
-
-                    if( $url->lastmod > $lastRun ) {
+                    $total ++ ;
+                    if( $url->lastmod > $lastRun  ) {
                         $i++ ;
                         $urlSingleArray = parse_url( $url->loc ) ;
                         $indexlang = 0  ;
@@ -255,7 +257,8 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             "tablename" => "tx_kesearch_index" ,
             "error" => $error ,
             "event_pid" => $pid ,
-            "details" => "Allplan FAQ Indexer got " . $i . " entries and had updated / inserted : " . $count . " entries " ,
+            "details" => "Allplan FAQ Indexer (lastRun: " . $lastRun . ")  got '" . $total  . "' entries and had updated / inserted : '" . $count . "' entries. Crawled: " . $url
+            . " and got xlm2 from string: " . substr( var_export( $xml2 , true ) , 0 , 100 )  . " .... Total: " . strlen( $xml2 ) . " chars .." ,
             "tstamp" => time() ,
             "type" => 1 ,
             "message" => $debug ,
