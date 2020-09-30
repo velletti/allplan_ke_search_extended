@@ -4,6 +4,7 @@ namespace Allplan\AllplanKeSearchExtended\Utility;
 use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /***************************************************************
@@ -51,13 +52,13 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $xmlFromUrl = '<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
         <url>
-            <loc>https://connect.allplan.com/de/faqid/000171ca.html</loc>
+            <loc>https://connect.allplan.com/de/faqid/20200820142654.html</loc>
             <lastmod>2017-05-29</lastmod>
        </url>
         </urlset>
         ' ;
 
-        $xmlFromUrl = $this->getJsonFile($url , "urlset" , array('Accept: text/xml, Content-type:text/xml') , FALSE ) ;
+         $xmlFromUrl = $this->getJsonFile($url , "urlset" , array('Accept: text/xml, Content-type:text/xml') , FALSE ) ;
 
         $xml2 = simplexml_load_string ($xmlFromUrl  ) ;
 
@@ -65,17 +66,6 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $error = 0 ;
         $count = 0 ;
         $total  = 0 ;
-        $lastRunRow = $this->getRecordRaw( "tx_kesearch_index" , "`type` like 'supportfaq%' ORDER BY sortdate DESC ") ;
-        $lastRun = "2016-12-12" ;
-        if( $indexerObject->period > 365 ) {
-            $lastRun = date( "Y-m-d" , time() - ( 60 * 60 * 24 * ( $indexerObject->period -1 )) ) ;
-            $debug .="<hr> Lastrun from Indexer config Field Period  = " . $lastRun;
-
-        }
-        if( is_array($lastRunRow )) {
-            $lastRun = date( "Y-m-d" , $lastRunRow['sortdate'] ) ;
-            $debug .="<hr> Lastrun from DB = " . $lastRun;
-        }
 
 
         if( is_object($xml2)) {
@@ -90,7 +80,38 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                 foreach ($xml2->url as $url) {
                     $debugSub = "<hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . "\n";
                     $total ++ ;
-                    if( $url->lastmod > $lastRun  ) {
+
+                    $urlSingleArray = parse_url( $url->loc ) ;
+
+                    $docID = str_replace( ".html" , "" , substr( $urlSingleArray['path'] , strpos( strtolower( $urlSingleArray['path'] ) , "faqid") + 6 ) )  ;
+                    $singleUid = $this->convertIdToINT( $docID , 0 );
+                    $debugSub .= "<hr>Search Local with DocId " . $docID . " = orig_uid = " . $singleUid . "\n";
+                    $aktIndex = $this->getIndexerById($singleUid)  ;
+
+                    if($aktIndex    ) {
+                        $lastMod = date( "Y-m-d" , $aktIndex['sortdate'] ) ;
+                        $debugSub .= "<hr>last stored Last Mod in Typo3  :" . $lastMod  ;
+                    } else {
+                        $debugSub .= "<hr>Not Found last stored  in Typo3 "  ;
+                    }
+                    // todo : put to Config
+                    $maxIndex = 10 ;
+                    $numIndexed = 0 ;
+                    if( ( !$aktIndex || $lastMod <  $url->lastmod  ) && $numIndexed < $maxIndex ) {
+                        $numIndexed ++ ;
+                        /*
+                        var_dump($urlSingleArray) ;
+                        echo "<hr>" ;
+                        var_dump($docID) ;
+                        echo "<hr>" ;
+                        var_dump($singleUid) ;
+                        echo "<hr>" ;
+
+                        var_dump($aktIndex) ;
+
+                        die   ;
+                        */
+                //    if( $url->lastmod > $lastRun  ) {
                         $i++ ;
                         $urlSingleArray = parse_url( $url->loc ) ;
                         $indexlang = 0  ;
@@ -254,19 +275,29 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                                 $count++;
                             }
                         }
+                        // echo "<hr>" ;
+                        // var_dump(  $single  );
+                        // echo "<hr>" ;
+                        // var_dump(  $singleFaq  );
 
                         unset($single) ;
                         unset($singleFaq) ;
                     }
+                    // echo "<hr>" ;
+                    // var_dump(  $debugSub  );
+                    // die;
 
                     if (PHP_SAPI === 'cli') {
          //               echo $debugSub ;
                     }
           //          $debug .= $debugSub ;
-
+              //      echo $debugSub ;
                 }
             }
         }
+       // echo $debug ;
+       // echo $debugSub ;
+       // die;
         // take storage PID form indexexer Configuration or overwrite it with storagePid From Indexer Task ??
         $pid = $indexerObject->storagePid > 0 ? $indexerObject->storagePid  : $indexerConfig['pid'] ;
 
@@ -322,6 +353,8 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         );
 
     }
+
+
     protected function convertIdToINT( $notes_id , $lang) {
 
         /** @var \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool */
@@ -337,13 +370,15 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             $expr->eq('notes_id', $queryBuilder->createNamedParameter($notes_id, Connection::PARAM_STR))
         )->andWhere(
             $expr->eq('sys_language_uid', $queryBuilder->createNamedParameter(intval($lang), Connection::PARAM_INT))
-        )->setMaxResults(1) ;
+        )->orderBy("uid" , 'DESC')->setMaxResults(1) ;
 
 
         $row = $queryBuilder->execute()->fetch();
 
-        if ( $row && count ( $row ) == 0 ) {
-            $uid = $row['uid'] ;
+        if ( is_countable( $row ) && count ( $row ) > 0 ) {
+            return $row['uid'] ;
+            //var_dump($row);
+            //die;
         } else {
 
             $data = array( "pid" => 0 , "notes_id" => $notes_id , "sys_language_uid" => intval($lang)  ) ;
@@ -367,5 +402,37 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         return $uid  ;
     }
 
+
+    protected function getIndexerById( $uid ) {
+
+        /** @var \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance( "TYPO3\\CMS\\Core\\Database\\ConnectionPool");
+
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = $connectionPool->getConnectionForTable('tx_kesearch_index')->createQueryBuilder();
+        $queryBuilder->select( 'uid' , 'sortdate' , 'tstamp')
+            ->from('tx_kesearch_index') ;
+        $queryBuilder->getRestrictions()->removeAll()->add( GeneralUtility::makeInstance(DeletedRestriction::class));
+        $expr = $queryBuilder->expr();
+        $queryBuilder->where(
+            $expr->eq('orig_uid', $queryBuilder->createNamedParameter($uid, Connection::PARAM_INT))
+
+        )->andWhere(
+            $expr->like('type', $queryBuilder->createNamedParameter('supportfa%', Connection::PARAM_STR)
+            )
+        )->orderBy("uid" , 'DESC')->setMaxResults(1) ;
+
+
+        $result = $queryBuilder->execute();
+
+        // echo $queryBuilder->getSQL() ;
+        // echo $queryBuilder->getParameters() ;
+        // die ;
+
+        $row = $result->fetch();
+
+        return $row ;
+
+    }
 
 }
