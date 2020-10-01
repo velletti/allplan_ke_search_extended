@@ -69,7 +69,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $numIndexed = 0 ;
         $maxIndex =  $indexerObject->rowcount  ;
         if(  $indexerObject->rowcount < 10 ) {
-            $maxIndex = 10 ;
+            $maxIndex = 10000 ;
         }
         if( is_object($xml2)) {
             $debug .="<hr> xml2 is Object" ;
