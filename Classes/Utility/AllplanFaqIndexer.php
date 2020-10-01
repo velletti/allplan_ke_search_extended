@@ -66,7 +66,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $error = 0 ;
         $count = 0 ;
         $total  = 0 ;
-
+        $numIndexed = 0 ;
 
         if( is_object($xml2)) {
             $debug .="<hr> xml2 is Object" ;
@@ -95,8 +95,13 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                         $debugSub .= "<hr>Not Found last stored  in Typo3 "  ;
                     }
                     // todo : put to Config
-                    $maxIndex = 10 ;
-                    $numIndexed = 0 ;
+                    $maxIndex =  $indexerObject->rowcount  ;
+                    if(  $indexerObject->rowcount < 10 ) {
+                        $maxIndex = 10 ;
+                    } else  if(  $indexerObject->rowcount > 1000 ) {
+                        $maxIndex = 1000 ;
+                    }
+
                     if( ( !$aktIndex || $lastMod <  $url->lastmod  ) && $numIndexed < $maxIndex ) {
                         $numIndexed ++ ;
                         /*

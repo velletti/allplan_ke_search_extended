@@ -40,6 +40,11 @@ class AllplanKesearchIndexerTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask 
     protected $language ;
 
     /**
+     * @var int rowcount
+     */
+    protected $rowcount ;
+
+    /**
      * @var string externalUrl
      */
     protected $externalUrl ;
@@ -73,6 +78,7 @@ class AllplanKesearchIndexerTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask 
         $indexer->period = $this->period ;
         $indexer->language = $this->language ;
         $indexer->externalUrl = $this->externalUrl ;
+        $indexer->rowcount = $this->rowcount ;
         $indexer->storagePid = $this->storagePid ;
 
         // First Remove the default ke Search registry entrys ( needed as default index will set it again ..
@@ -177,6 +183,25 @@ class AllplanKesearchIndexerTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask 
     {
         $this->externalUrl = $externalUrl;
     }
+
+    /**
+     * @return int
+     */
+    public function getRowcount()
+    {
+        return $this->rowcount;
+    }
+
+    /**
+     * @param int $rowcount
+     */
+    public function setRowcount($rowcount)
+    {
+        $this->rowcount = $rowcount;
+    }
+
+
+
 
     /**
      * @return int

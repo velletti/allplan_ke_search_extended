@@ -47,6 +47,7 @@ class AllplanKesearchIndexerTaskAdditionalFieldProvider implements \TYPO3\CMS\Sc
             $taskInfo['IndexerCleanerPeriod'] = $task->getPeriod();
             $taskInfo['IndexerLanguage'] = $task->getLanguage();
             $taskInfo['IndexerExternalUrl'] = $task->getExternalUrl();
+            $taskInfo['IndexerRowcount'] = $task->getRowcount() ;
             $taskInfo['IndexerStoragePid'] = $task->getStoragePid();
 
             $taskInfo['IndexerConfigs'] = $task->getConfigs();
@@ -77,6 +78,13 @@ class AllplanKesearchIndexerTaskAdditionalFieldProvider implements \TYPO3\CMS\Sc
             'cshKey' => '',
             'cshLabel' => 'task_indexerCleaner_selectedPeriod'
         ];
+        $additionalFields['rowcount'] = [
+            'code' => '<input type="text" class="form-control" name="tx_scheduler[IndexerCleanerRowcount]" value="' . $taskInfo['IndexerCleanerRowcount'] . '">',
+            'label' => 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskRowcount',
+            'cshKey' => '',
+            'cshLabel' => 'task_indexerCleaner_selectedPeriod'
+        ];
+
 
         $additionalFields['tca'] = [
             'code' => $this->getTcaSelectHtml($taskInfo['IndexerConfigs']),
@@ -381,6 +389,7 @@ class AllplanKesearchIndexerTaskAdditionalFieldProvider implements \TYPO3\CMS\Sc
         $task->setPeriod($submittedData['IndexerCleanerPeriod']);
         $task->setLanguage($submittedData['IndexerLanguage']);
         $task->setExternalUrl($submittedData['IndexerExternalUrl']);
+        $task->setRowcount($submittedData['IndexerRowcount']);
         $task->setStoragePid($submittedData['IndexerStoragePid']);
     }
 

@@ -12,6 +12,9 @@
 			<trans-unit id="indexerTaskPeriod">
 				<source>Delete entries older than (in days)</source>
 			</trans-unit>
+            <trans-unit id="indexerTaskRowcount">
+                <source>number of entries that should be indexed in one run</source>
+            </trans-unit>
 			<trans-unit id="indexerTaskTCA">
 				<source>Indexer Configurations</source>
 			</trans-unit>
