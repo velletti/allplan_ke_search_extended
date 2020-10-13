@@ -68,7 +68,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $total  = 0 ;
         $numIndexed = 0 ;
         $maxIndex =  $indexerObject->rowcount  ;
-        if(  $indexerObject->rowcount < 10 ) {
+        if(  $indexerObject->rowcount < 1 ) {
             $maxIndex = 10000 ;
         }
         $options['htmlfrom'] = array( 'face="Vorgabe Sans Serif"' , 'type="disc"', "&amp;#345;", "\n" ,"&amp;#"
@@ -107,9 +107,9 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                     }
 
                     if ( $numIndexed > $maxIndex )  {
-                        exit ;
+                        break ;
                     }
-                    if( ( !$aktIndex || $lastMod <  $url->lastmod  )  ) {
+                    if( ( !$aktIndex || $lastMod <  $url->lastmod  || $maxIndex < 10 )  ) {
                         $numIndexed ++ ;
                         /*
                         var_dump($urlSingleArray) ;
