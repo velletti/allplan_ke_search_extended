@@ -79,10 +79,10 @@ class AllplanKesearchIndexerTaskAdditionalFieldProvider implements \TYPO3\CMS\Sc
             'cshLabel' => 'task_indexerCleaner_selectedPeriod'
         ];
         $additionalFields['rowcount'] = [
-            'code' => '<input type="text" class="form-control" name="tx_scheduler[IndexerCleanerRowcount]" value="' . $taskInfo['IndexerCleanerRowcount'] . '">',
+            'code' => '<input type="text" class="form-control" name="tx_scheduler[IndexerRowcount]" value="' . $taskInfo['IndexerRowcount'] . '">',
             'label' => 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskRowcount',
             'cshKey' => '',
-            'cshLabel' => 'task_indexerCleaner_selectedPeriod'
+            'cshLabel' => 'task_indexerCleaner_selectedRowcount'
         ];
 
 
@@ -111,6 +111,7 @@ class AllplanKesearchIndexerTaskAdditionalFieldProvider implements \TYPO3\CMS\Sc
             'cshKey' => '',
             'cshLabel' => 'task_indexerCleaner_selectedStoragePid'
         ];
+
         return $additionalFields;
     }
 
