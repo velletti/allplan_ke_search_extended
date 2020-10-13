@@ -71,6 +71,14 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         if(  $indexerObject->rowcount < 10 ) {
             $maxIndex = 10000 ;
         }
+        $options['htmlfrom'] = array( 'face="Vorgabe Sans Serif"' , 'type="disc"', "&amp;#345;", "\n" ,"&amp;#"
+        , "<ul><ol" , "</ol></ul>", "<ul><ul" , "</ul></ul>" , "<br>" , "<br/>") ;
+
+        $options['htmlto'] = array('','','ř' , "", "&#"
+        , "<ol" , "</ol>" , "<ul" , "</ul>" , "<BR />", "<BR />") ;
+
+        $options['fromdecode'] = "ISO-8859-1" ;
+
         if( is_object($xml2)) {
             $debug .="<hr> xml2 is Object" ;
             if( is_object( $xml2->url ) ) {
@@ -119,6 +127,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                         $i++ ;
                         $urlSingleArray = parse_url( $url->loc ) ;
                         $indexlang = 0  ;
+                        $options['fromdecode'] = "ISO-8859-1" ;
                         switch( substr( $urlSingleArray['path'] , 1,2 )) {
                             case "de":
                                 $lang = 1 ;
@@ -136,6 +145,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                                 $lang = 3 ;
                                 $indexerConfig['pid'] = 5027 ;
                                 $category = "STRCATEGORY_CS" ;
+                                $options['fromdecode'] = "ISO-8859-2" ;
                                 break ;
                             case "fr":
                                 $lang = 4 ;
@@ -204,6 +214,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                             }
                             $debugSub .= "<hr>RAW Json:" . htmlentities( $singleFaqRaw  ) ;
 
+                            // IN CASE of an ERROR - load FAQ RAW again to have header and status
                             $singleFaqRaw = $this->getJsonFile( $urlSingle   , "" , array ( "Accept: application/json" , "Content-type: application/json" ) , TRUE , 90) ;
                             $debugSub .= "<hr>Response with errorCode" . var_export( $singleFaqRaw , true ) ;
 
@@ -230,7 +241,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                             $single['INTTOPTEN'] =   $singleFaq->INTTOPTEN ;
                             $single['STRCATEGORY'] = $singleFaq->$category;
                             $single['STRTEXT'] = $singleFaq->$category . " \n " . $singleFaq->STRTEXT;
-                            $single['singleFaqRaw'] = $singleFaqRaw ;
+                            $single['singleFaqRaw'] = json_encode( $this->repairFAQ($singleFaq , $options ) ) ;
                             $single['language'] = $indexlang;
 
                             if (is_array($singleFaq->LSTPROGRAMME)) {
@@ -323,6 +334,54 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
         return $count ;
     }
+
+    protected function repairFAQ($entry , $options) {
+        $htmlfrom = $options['from'] ;
+        $htmlto = $options['to'] ;
+        $fromdecode = $options['fromdecode'] ;
+
+
+
+
+
+        if( is_array($entry) && array_key_exists( 'STRTEXT' , $entry ) ) {
+            if ( strip_tags( $entry['STRTEXT'] ) == $entry['STRTEXT'] ) {
+                $entry['NONLTOBR'] = FALSE;
+            } else {
+                $entry['STRTEXT'] = str_replace( $htmlfrom , $htmlto , $entry['STRTEXT'] 	);
+                $entry['NONLTOBR'] = TRUE;
+            }
+        }
+        if( is_array($entry) && array_key_exists( 'LSTPDFNAME' , $entry ) && is_array( $entry['LSTPDFNAME'])) {
+            for ( $ii=0;$ii<count($entry['LSTPDFNAME']);$ii++) {
+                $entry['NEWLSTPDFNAME'][$ii]['REALNAME'] = $entry['LSTPDFNAME'][$ii] ;
+                $entry['NEWLSTPDFNAME'][$ii]['UTF8NAME'] = iconv( $fromdecode , "UTF-8" , $entry['LSTPDFNAME'][$ii]	);
+
+            }
+        }
+
+        if( is_array($entry) && array_key_exists( 'LSTATTACHMENTS' , $entry ) && is_array( $entry['LSTATTACHMENTS'])) {
+
+            for ( $ii=0;$ii<count( $entry['LSTATTACHMENTS'] );$ii++) {
+                if ( $entry['LSTATTACHMENTS'][$ii] <> "" ) {
+
+                    $entry['NEWATTACHMENTS'][$ii]['REALNAME'] = $entry['LSTATTACHMENTS'][$ii] ;
+
+                    $entry['NEWATTACHMENTS'][$ii]['FILENAME'] = iconv( $fromdecode , "UTF-8" , $entry['LSTATTACHMENTS'][$ii]	);
+
+                    if ( strtolower( substr(  $entry['NEWATTACHMENTS'][$ii]['FILENAME'] ,-3)) == "pdf") {
+                        $entry['NEWATTACHMENTS'][$ii]['FILETYPE'] = "fileLink pdf" ;
+                        $entry['NEWATTACHMENTS'][$ii]['FILETEXT'] = "tx_nemsolution.button.downloadPDF" ;
+                    } else {
+                        $entry['NEWATTACHMENTS'][$ii]['FILETYPE'] = "fileLink" ;
+                        $entry['NEWATTACHMENTS'][$ii]['FILETEXT'] = "tx_nemsolution.button.download" ;
+                    }
+                }
+            }
+        }
+        return $entry ;
+    }
+
     protected function putToIndex(array $single , AllplanKesearchIndexer $indexerObject , array  $indexerConfig ) {
 
         // Prepare data for the indexer
