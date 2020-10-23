@@ -32,6 +32,7 @@ class KeSearchGetQueryPartsHook{
                   }
               }
             $queryParts['SELECT'] = str_replace( ") AS score" , " + (top10)) AS score" , $queryParts['SELECT']) ;
+
             //    echo "<hr><pre>" ;
             //    print_r($queryParts);
             //   die(" __FILE__" . __FILE__ . " __LINE__" . __LINE__ );
