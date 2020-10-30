@@ -367,8 +367,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
         if( is_object($entry) &&  property_exists ( $entry, 'LSTPDFNAME'   )  && is_array( $entry->LSTPDFNAME )) {
             for ( $ii=0;$ii<count($entry->LSTPDFNAME );$ii++) {
-                $entry->NEWLSTPDFNAME->$ii->REALNAME = $entry->LSTPDFNAME->$ii ;
-                $entry->NEWLSTPDFNAME->$ii->UTF8NAME = iconv( $fromdecode , "UTF-8" , $entry->LSTPDFNAME->$ii	);
+                $entry->NEWLSTPDFNAME[] = array( 'REALNAME' => $entry->LSTPDFNAME[$ii] ,"UTF8NAME" => iconv( $fromdecode , "UTF-8" , $entry->LSTPDFNAME[$ii]	) );
 
             }
         }
@@ -378,16 +377,19 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             for ( $ii=0;$ii<count($entry->LSTATTACHMENTS );$ii++) {
                 if ( $entry->LSTATTACHMENTS->$ii <> "" ) {
 
-                    $entry->NEWATTACHMENTS->$ii->REALNAME = $entry->LSTATTACHMENTS->$ii ;
 
-                    $entry->NEWATTACHMENTS->$ii->FILENAME = iconv( $fromdecode , "UTF-8" , $entry->LSTATTACHMENTS->$ii	);
-
-                    if ( strtolower( substr(  $entry->NEWATTACHMENTS->$ii->FILENAME ,-3)) == "pdf") {
-                        $entry->NEWATTACHMENTS->$ii->FILETYPE = "fileLink pdf" ;
-                        $entry->NEWATTACHMENTS->$ii->FILETEXT = "tx_nemsolution.button.downloadPDF" ;
+                    if ( strtolower( substr(  $entry->LSTATTACHMENTS[$ii],-3)) == "pdf") {
+                        $entry->NEWATTACHMENTS[] = array('REALNAME' => $entry->LSTATTACHMENTS[$ii] ,
+                                                          "FILENAME" => iconv( $fromdecode , "UTF-8" , $entry->LSTATTACHMENTS[$ii]	)  ,
+                                                            "FILETYPE" => "fileLink pdf" ,
+                                                            "FILETEXT" => "tx_nemsolution.button.downloadPDF" ,
+                                                        );
                     } else {
-                        $entry->NEWATTACHMENTS->$ii->FILETYPE = "fileLink" ;
-                        $entry->NEWATTACHMENTS->$ii->FILETEXT = "tx_nemsolution.button.download" ;
+                        $entry->NEWATTACHMENTS[] = array('REALNAME' => $entry->LSTATTACHMENTS[$ii] ,
+                            "FILENAME" => iconv( $fromdecode , "UTF-8" , $entry->LSTATTACHMENTS[$ii]	)  ,
+                            "FILETYPE" => "fileLink" ,
+                            "FILETEXT" => "tx_nemsolution.button.download" ,
+                        );
                     }
                 }
             }
