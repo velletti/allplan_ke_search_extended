@@ -241,7 +241,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                             $single['INTTOPTEN'] =   $singleFaq->INTTOPTEN ;
                             $single['STRCATEGORY'] = $singleFaq->$category;
                             $single['STRTEXT'] = $singleFaq->$category . " \n " . $singleFaq->STRTEXT;
-                            $single['singleFaqRaw'] = json_encode( $this->repairFAQ($singleFaq , $options ) ) ;
+                            $single['singleFaqRaw'] =  $this->repairFAQ($singleFaq , $options )  ;
                             $single['language'] = $indexlang;
 
                             if (is_array($singleFaq->LSTPROGRAMME)) {
@@ -340,10 +340,6 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $htmlto = $options['to'] ;
         $fromdecode = $options['fromdecode'] ;
 
-
-
-
-
         if( is_object($entry) && property_exists ( $entry, 'STRTEXT'   ) ) {
             if ( strip_tags( $entry->STRTEXT ) == $entry->STRTEXT ) {
                 $entry->NONLTOBR = FALSE;
@@ -351,11 +347,12 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                 $entry->STRTEXT = str_replace( $htmlfrom , $htmlto , $entry->STRTEXT 	);
                 $entry->NONLTOBR = TRUE;
             }
+            $strText = json_encode( $entry->STRTEXT);
+            $strText = str_replace('\\\\u',  '\\u', $strText);
+            $entry->STRTEXT  = json_decode($strText);
         }
 
-        $strText = json_encode( $entry->STRTEXT);
-        $strText = str_replace('\\\\u',  '\\u', $strText);
-        $entry->STRTEXT  = json_decode($strText);
+
 
         if( is_object($entry) && property_exists ( $entry, 'STRCOMMENT'   ) ) {
             $strText = json_encode($entry->STRCOMMENT);
