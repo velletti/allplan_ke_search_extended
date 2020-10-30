@@ -344,48 +344,50 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
 
 
-        if( is_array($entry) && array_key_exists( 'STRTEXT' , $entry ) ) {
-            if ( strip_tags( $entry['STRTEXT'] ) == $entry['STRTEXT'] ) {
-                $entry['NONLTOBR'] = FALSE;
+        if( is_object($entry) && property_exists ( $entry, 'STRTEXT'   ) ) {
+            if ( strip_tags( $entry->STRTEXT ) == $entry->STRTEXT ) {
+                $entry->NONLTOBR = FALSE;
             } else {
-                $entry['STRTEXT'] = str_replace( $htmlfrom , $htmlto , $entry['STRTEXT'] 	);
-                $entry['NONLTOBR'] = TRUE;
+                $entry->STRTEXT = str_replace( $htmlfrom , $htmlto , $entry->STRTEXT 	);
+                $entry->NONLTOBR = TRUE;
             }
         }
 
-        $strText = json_encode($entry['STRTEXT']);
+        $strText = json_encode( $entry->STRTEXT);
         $strText = str_replace('\\\\u',  '\\u', $strText);
-        $entry['STRTEXT']  = json_decode($strText);
+        $entry->STRTEXT  = json_decode($strText);
 
-        $strText = json_encode($entry['STRCOMMENT']);
-        $strText = str_replace('\\\\u',  '\\u', $strText);
-        $entry['STRCOMMENT']  = json_decode($strText);
+        if( is_object($entry) && property_exists ( $entry, 'STRCOMMENT'   ) ) {
+            $strText = json_encode($entry->STRCOMMENT);
+            $strText = str_replace('\\\\u', '\\u', $strText);
+            $entry->STRCOMMENT = json_decode($strText);
+        }
 
 
 
-        if( is_array($entry) && array_key_exists( 'LSTPDFNAME' , $entry ) && is_array( $entry['LSTPDFNAME'])) {
-            for ( $ii=0;$ii<count($entry['LSTPDFNAME']);$ii++) {
-                $entry['NEWLSTPDFNAME'][$ii]['REALNAME'] = $entry['LSTPDFNAME'][$ii] ;
-                $entry['NEWLSTPDFNAME'][$ii]['UTF8NAME'] = iconv( $fromdecode , "UTF-8" , $entry['LSTPDFNAME'][$ii]	);
+        if( is_object($entry) &&  property_exists ( $entry, 'LSTPDFNAME'   )  && is_array( $entry->LSTPDFNAME )) {
+            for ( $ii=0;$ii<count($entry->LSTPDFNAME );$ii++) {
+                $entry->NEWLSTPDFNAME[$ii]['REALNAME'] = $entry->LSTPDFNAME[$ii] ;
+                $entry->NEWLSTPDFNAME[$ii]['UTF8NAME'] = iconv( $fromdecode , "UTF-8" , $entry->LSTPDFNAME[$ii]	);
 
             }
         }
 
-        if( is_array($entry) && array_key_exists( 'LSTATTACHMENTS' , $entry ) && is_array( $entry['LSTATTACHMENTS'])) {
+        if( is_object($entry) && property_exists( $entry  ,'LSTATTACHMENTS' ) && is_array( $entry->LSTATTACHMENTS)) {
 
-            for ( $ii=0;$ii<count( $entry['LSTATTACHMENTS'] );$ii++) {
-                if ( $entry['LSTATTACHMENTS'][$ii] <> "" ) {
+            for ( $ii=0;$ii<count($entry->LSTATTACHMENTS );$ii++) {
+                if ( $entry->LSTATTACHMENTS[$ii] <> "" ) {
 
-                    $entry['NEWATTACHMENTS'][$ii]['REALNAME'] = $entry['LSTATTACHMENTS'][$ii] ;
+                    $entry->NEWATTACHMENTS[$ii]['REALNAME'] = $entry->LSTATTACHMENTS[$ii] ;
 
-                    $entry['NEWATTACHMENTS'][$ii]['FILENAME'] = iconv( $fromdecode , "UTF-8" , $entry['LSTATTACHMENTS'][$ii]	);
+                    $entry->NEWATTACHMENTS[$ii]['FILENAME'] = iconv( $fromdecode , "UTF-8" , $entry->LSTATTACHMENTS[$ii]	);
 
                     if ( strtolower( substr(  $entry['NEWATTACHMENTS'][$ii]['FILENAME'] ,-3)) == "pdf") {
-                        $entry['NEWATTACHMENTS'][$ii]['FILETYPE'] = "fileLink pdf" ;
-                        $entry['NEWATTACHMENTS'][$ii]['FILETEXT'] = "tx_nemsolution.button.downloadPDF" ;
+                        $entry->NEWATTACHMENTS[$ii]['FILETYPE'] = "fileLink pdf" ;
+                        $entry->NEWATTACHMENTS[$ii]['FILETEXT'] = "tx_nemsolution.button.downloadPDF" ;
                     } else {
-                        $entry['NEWATTACHMENTS'][$ii]['FILETYPE'] = "fileLink" ;
-                        $entry['NEWATTACHMENTS'][$ii]['FILETEXT'] = "tx_nemsolution.button.download" ;
+                        $entry->NEWATTACHMENTS[$ii]['FILETYPE'] = "fileLink" ;
+                        $entry->NEWATTACHMENTS[$ii]['FILETEXT'] = "tx_nemsolution.button.download" ;
                     }
                 }
             }
