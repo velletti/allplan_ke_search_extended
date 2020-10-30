@@ -357,6 +357,12 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $strText = str_replace('\\\\u',  '\\u', $strText);
         $entry['STRTEXT']  = json_decode($strText);
 
+        $strText = json_encode($entry['STRCOMMENT']);
+        $strText = str_replace('\\\\u',  '\\u', $strText);
+        $entry['STRCOMMENT']  = json_decode($strText);
+
+
+
         if( is_array($entry) && array_key_exists( 'LSTPDFNAME' , $entry ) && is_array( $entry['LSTPDFNAME'])) {
             for ( $ii=0;$ii<count($entry['LSTPDFNAME']);$ii++) {
                 $entry['NEWLSTPDFNAME'][$ii]['REALNAME'] = $entry['LSTPDFNAME'][$ii] ;
