@@ -109,7 +109,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                     if ( $numIndexed > $maxIndex )  {
                         break ;
                     }
-                    if( ( !$aktIndex || $lastMod <  $url->lastmod  || $maxIndex < 10 )  ) {
+                    if( ( !$aktIndex || $lastMod <  $url->lastmod  || $maxIndex < 10 || $maxIndex > 10000 )  ) {
                         $numIndexed ++ ;
                         /*
                         var_dump($urlSingleArray) ;
@@ -237,7 +237,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                             $single['uid'] = $this->convertIdToINT($singleFaq->STRDOK_ID, $indexlang);
                             $debugSub .= "<br>ID: " . $single['uid'];
 
-                            $single['STRSUBJECT'] = $singleFaq->STRSUBJECT;
+                            $single['STRSUBJECT'] = html_entity_decode( $singleFaq->STRSUBJECT );
                             $single['INTTOPTEN'] =   $singleFaq->INTTOPTEN ;
                             $single['STRCATEGORY'] = $singleFaq->$category;
                             $single['STRTEXT'] = $singleFaq->$category . " \n " . $singleFaq->STRTEXT;
