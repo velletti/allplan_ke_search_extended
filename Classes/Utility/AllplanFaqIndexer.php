@@ -241,7 +241,8 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                             $single['INTTOPTEN'] =   $singleFaq->INTTOPTEN ;
                             $single['STRCATEGORY'] = $singleFaq->$category;
                             $single['STRTEXT'] = $singleFaq->$category . " \n " . $singleFaq->STRTEXT;
-                            $single['singleFaqRaw'] =  $this->repairFAQ($singleFaq , $options )  ;
+                            $single['singleFaqRaw'] = json_encode( $this->repairFAQ($singleFaq , $options )  , JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ;
+
                             $single['language'] = $indexlang;
 
                             if (is_array($singleFaq->LSTPROGRAMME)) {
