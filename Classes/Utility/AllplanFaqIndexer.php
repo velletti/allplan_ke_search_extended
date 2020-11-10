@@ -109,7 +109,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                     if ( $numIndexed > $maxIndex )  {
                         break ;
                     }
-                    if( ( !$aktIndex || $lastMod <  $url->lastmod  || $maxIndex < 10 )  ) {
+                    if( ( !$aktIndex || $lastMod <  $url->lastmod  || $maxIndex < 10 || $maxIndex > 10000 )  ) {
                         $numIndexed ++ ;
                         /*
                         var_dump($urlSingleArray) ;
@@ -237,11 +237,12 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                             $single['uid'] = $this->convertIdToINT($singleFaq->STRDOK_ID, $indexlang);
                             $debugSub .= "<br>ID: " . $single['uid'];
 
-                            $single['STRSUBJECT'] = $singleFaq->STRSUBJECT;
+                            $single['STRSUBJECT'] = html_entity_decode( $singleFaq->STRSUBJECT );
                             $single['INTTOPTEN'] =   $singleFaq->INTTOPTEN ;
                             $single['STRCATEGORY'] = $singleFaq->$category;
                             $single['STRTEXT'] = $singleFaq->$category . " \n " . $singleFaq->STRTEXT;
-                            $single['singleFaqRaw'] = json_encode( $this->repairFAQ($singleFaq , $options ) ) ;
+                            $single['singleFaqRaw'] = json_encode( $this->repairFAQ($singleFaq , $options )  , JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ;
+
                             $single['language'] = $indexlang;
 
                             if (is_array($singleFaq->LSTPROGRAMME)) {
@@ -340,41 +341,53 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $htmlto = $options['to'] ;
         $fromdecode = $options['fromdecode'] ;
 
-
-
-
-
-        if( is_array($entry) && array_key_exists( 'STRTEXT' , $entry ) ) {
-            if ( strip_tags( $entry['STRTEXT'] ) == $entry['STRTEXT'] ) {
-                $entry['NONLTOBR'] = FALSE;
+        if( is_object($entry) && property_exists ( $entry, 'STRTEXT'   ) ) {
+            if ( strip_tags( $entry->STRTEXT ) == $entry->STRTEXT ) {
+                $entry->NONLTOBR = FALSE;
             } else {
-                $entry['STRTEXT'] = str_replace( $htmlfrom , $htmlto , $entry['STRTEXT'] 	);
-                $entry['NONLTOBR'] = TRUE;
+                $entry->STRTEXT = str_replace( $htmlfrom , $htmlto , $entry->STRTEXT 	);
+                $entry->NONLTOBR = TRUE;
             }
-        }
-        if( is_array($entry) && array_key_exists( 'LSTPDFNAME' , $entry ) && is_array( $entry['LSTPDFNAME'])) {
-            for ( $ii=0;$ii<count($entry['LSTPDFNAME']);$ii++) {
-                $entry['NEWLSTPDFNAME'][$ii]['REALNAME'] = $entry['LSTPDFNAME'][$ii] ;
-                $entry['NEWLSTPDFNAME'][$ii]['UTF8NAME'] = iconv( $fromdecode , "UTF-8" , $entry['LSTPDFNAME'][$ii]	);
-
-            }
+            $strText = json_encode( $entry->STRTEXT);
+            $strText = str_replace('\\\\u',  '\\u', $strText);
+            $entry->STRTEXT  = json_decode($strText);
         }
 
-        if( is_array($entry) && array_key_exists( 'LSTATTACHMENTS' , $entry ) && is_array( $entry['LSTATTACHMENTS'])) {
 
-            for ( $ii=0;$ii<count( $entry['LSTATTACHMENTS'] );$ii++) {
-                if ( $entry['LSTATTACHMENTS'][$ii] <> "" ) {
 
-                    $entry['NEWATTACHMENTS'][$ii]['REALNAME'] = $entry['LSTATTACHMENTS'][$ii] ;
+        if( is_object($entry) && property_exists ( $entry, 'STRCOMMENT'   ) ) {
+            $strText = json_encode($entry->STRCOMMENT);
+            $strText = str_replace('\\\\u', '\\u', $strText);
+            $entry->STRCOMMENT = json_decode($strText);
+        }
 
-                    $entry['NEWATTACHMENTS'][$ii]['FILENAME'] = iconv( $fromdecode , "UTF-8" , $entry['LSTATTACHMENTS'][$ii]	);
 
-                    if ( strtolower( substr(  $entry['NEWATTACHMENTS'][$ii]['FILENAME'] ,-3)) == "pdf") {
-                        $entry['NEWATTACHMENTS'][$ii]['FILETYPE'] = "fileLink pdf" ;
-                        $entry['NEWATTACHMENTS'][$ii]['FILETEXT'] = "tx_nemsolution.button.downloadPDF" ;
+
+        if( is_object($entry) &&  property_exists ( $entry, 'LSTPDFNAME'   )  && is_array( $entry->LSTPDFNAME )) {
+            for ( $ii=0;$ii<count($entry->LSTPDFNAME );$ii++) {
+                $entry->NEWLSTPDFNAME[] = array( 'REALNAME' => $entry->LSTPDFNAME[$ii] ,"UTF8NAME" => iconv( $fromdecode , "UTF-8" , $entry->LSTPDFNAME[$ii]	) );
+
+            }
+        }
+
+        if( is_object($entry) && property_exists( $entry  ,'LSTATTACHMENTS' ) && is_array( $entry->LSTATTACHMENTS)) {
+
+            for ( $ii=0;$ii<count($entry->LSTATTACHMENTS );$ii++) {
+                if ( $entry->LSTATTACHMENTS->$ii <> "" ) {
+
+
+                    if ( strtolower( substr(  $entry->LSTATTACHMENTS[$ii],-3)) == "pdf") {
+                        $entry->NEWATTACHMENTS[] = array('REALNAME' => $entry->LSTATTACHMENTS[$ii] ,
+                                                          "FILENAME" => iconv( $fromdecode , "UTF-8" , $entry->LSTATTACHMENTS[$ii]	)  ,
+                                                            "FILETYPE" => "fileLink pdf" ,
+                                                            "FILETEXT" => "tx_nemsolution.button.downloadPDF" ,
+                                                        );
                     } else {
-                        $entry['NEWATTACHMENTS'][$ii]['FILETYPE'] = "fileLink" ;
-                        $entry['NEWATTACHMENTS'][$ii]['FILETEXT'] = "tx_nemsolution.button.download" ;
+                        $entry->NEWATTACHMENTS[] = array('REALNAME' => $entry->LSTATTACHMENTS[$ii] ,
+                            "FILENAME" => iconv( $fromdecode , "UTF-8" , $entry->LSTATTACHMENTS[$ii]	)  ,
+                            "FILETYPE" => "fileLink" ,
+                            "FILETEXT" => "tx_nemsolution.button.download" ,
+                        );
                     }
                 }
             }

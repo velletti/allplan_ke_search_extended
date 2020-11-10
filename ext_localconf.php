@@ -26,6 +26,8 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyAddressIndexEntry'][]
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyExtNewsIndexEntry'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchModifyExtNewsIndexEntryHook';
 
 
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['additionalResultMarker'][] =      'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchAdditionalResultMarkerHook';
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['getQueryParts'][] =      'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchGetQueryPartsHook';
 
 
 
