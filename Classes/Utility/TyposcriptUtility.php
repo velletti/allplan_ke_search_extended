@@ -6,7 +6,7 @@ namespace Allplan\AllplanKeSearchExtended\Utility;
  */
 use TYPO3\CMS\Core\TypoScript\ExtendedTemplateService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Frontend\Page\PageRepository;
+use TYPO3\CMS\Core\Utility\RootlineUtility;
 
 /**
  * Php
@@ -55,16 +55,15 @@ class TyposcriptUtility
 	{
 
 		/**
-		 * @var PageRepository $pageRepository
 		 * @var ExtendedTemplateService $extendedTemplateService
+		 * @var RootlineUtility $rootLineUtility
 		 */
-		$pageRepository = GeneralUtility::makeInstance(PageRepository::class);
 		$extendedTemplateService = GeneralUtility::makeInstance(ExtendedTemplateService::class);
+		$rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $pageUid);
 
-		$rootLine = $pageRepository->getRootLine($pageUid);
+		$rootLine = $rootLineUtility->get();
 
 		$extendedTemplateService->tt_track = 0;
-		$extendedTemplateService->init();
 
 		// To get static files also
 		$extendedTemplateService->setProcessExtensionStatics(true);
