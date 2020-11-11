@@ -1,11 +1,17 @@
 <?php
 namespace Allplan\AllplanKeSearchExtended\Hooks;
 
+/**
+ * AllplanKeSearchExtended
+ */
+use Allplan\AllplanKeSearchExtended\Utility\TyposcriptUtility;
 
-use Allplan\AllplanTools\Utility\TyposcriptUtility;
-use Allplan\NemConnections\Utility\Settings;
-
-class KeSearchGetQueryPartsHook{
+/**
+ * Class KeSearchGetQueryPartsHook
+ * @package Allplan\AllplanKeSearchExtended\Hooks
+ */
+class KeSearchGetQueryPartsHook
+{
 
     /**
      * @param array $markerArray
@@ -36,7 +42,6 @@ class KeSearchGetQueryPartsHook{
             //    echo "<hr><pre>" ;
             //    print_r($queryParts);
             //   die(" __FILE__" . __FILE__ . " __LINE__" . __LINE__ );
-
 
 		}
         return $queryParts ;
