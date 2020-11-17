@@ -223,9 +223,8 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
                         $params['INTSORTORDER'] = '32';
                         $params['STRQUERY'] = substr( $urlSingleArray['path'] , strpos( strtolower( $urlSingleArray['path'] ) , "faqid") + 6 )  ;
-                        // todo Disable  next lines just for testing a spezicif
+                        // Enable  next lines just for testing a spezific FAQ
                        // $params['STRQUERY'] = "20150618130717.html" ;
-                       // $params['STRLANGUAGE'] = "DE" ;
                         $params['STRUSERGROUP'] = "ne";
 
                         $params['STRTOPTEN'] = '1-1'  ;
@@ -255,9 +254,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                             $single['STRTEXT'] = $singleFaq[$category] . " \n " . $singleFaq['STRTEXT'] ;
 
 
-                            // ToDo cahnge repair function from object to array..
                             $single['singleFaqRaw'] = json_encode( $this->repairFAQ($singleFaq , $options )  , JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ;
-                            // $single['singleFaqRaw'] = json_encode( $singleFaq  , JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) ;
 
                             $single['language'] = $indexlang;
 
@@ -460,8 +457,6 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
         // take storage PID form indexexer Configuration ... Hard Coded by Language !!!
         $pid =  $indexerConfig['pid'] ;
-        // todo remove next line
-        $pid = 3009 ;
 
         $server = $_SERVER['SERVER_NAME'] ;
         if( $server == "www-typo3.allplan.com" ||  $server == "vm5012986.psmanaged.com" ||   $server == "allplan" ||   $server == "www") {
