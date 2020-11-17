@@ -2,6 +2,8 @@
 namespace Allplan\AllplanKeSearchExtended\Utility;
 
 use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
+use Allplan\NemSolution\Service\FaqWrapper;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
@@ -42,6 +44,21 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         // rendered by an agent every 4 hours
         // http:// IP of the news Server see doku/hotline/FAQ_HOTD.nsf/0/05421C80A7EB2CE2C1257480004DDA2E/\$File/FAQIDs.xml?OpenElement
         // http://212.29.3.155/hotline/FAQ_HOTD.nsf/0/05421C80A7EB2CE2C1257480004DDA2E/\$File/FAQIDs.xml?OpenElement
+
+        // ToDo  : move this to settings....
+        $pathToWebService = 'http://212.29.3.155/hotline/FAQ_HOTD.nsf/FAQ?OpenWebService' ;
+        $pathToWSDL = Environment::getProjectPath() . '/wsdl/FAQ_RPC.wsdl' ;
+        $namespace = 'Nemetschek:ProxySystem:FAQ:Types:1.0:1.0' ;
+
+        // connect to the webservice
+        /** @var FaqWrapper $faqWrapper */
+        $faqWrapper = GeneralUtility::makeInstance(
+            'Allplan\\NemSolution\\Service\\FaqWrapper',
+            $pathToWSDL,
+            $pathToWebService ,
+            $namespace
+        );
+
 
         $url = $indexerObject->externalUrl  ;
         $debug = "url: " . ($url) ;
@@ -93,8 +110,14 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                     $total ++ ;
 
                     $urlSingleArray = parse_url( $url->loc ) ;
-
+                    $currentLang =  substr( $urlSingleArray['path'] , 1,2 ) ;
+                    if( !in_array( $currentLang , array("en" , "de" , "it" , "fr" ,"es" , "ru" , "cz" , "tr" ) )) {
+                        $currentLang = "en" ;
+                    }
                     $docID = str_replace( ".html" , "" , substr( $urlSingleArray['path'] , strpos( strtolower( $urlSingleArray['path'] ) , "faqid") + 6 ) )  ;
+
+
+
                     $singleUid = $this->convertIdToINT( $docID , 0 );
                     $debugSub .= "<hr>Search Local with DocId " . $docID . " = orig_uid = " . $singleUid . "\n";
                     $aktIndex = $this->getIndexerById($singleUid)  ;
@@ -128,7 +151,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                         $urlSingleArray = parse_url( $url->loc ) ;
                         $indexlang = 0  ;
                         $options['fromdecode'] = "ISO-8859-1" ;
-                        switch( substr( $urlSingleArray['path'] , 1,2 )) {
+                        switch($currentLang ) {
                             case "de":
                                 $lang = 1 ;
                                 $indexlang = -1 ;
@@ -171,6 +194,10 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                         if (  $indexlang == 0   ) {
                             $indexlang = $lang  ;
                         }
+
+                        /*
+                        // this is the old aproach with calling OLD FAQ extension and use json  output ..
+
                //         $urlSingleArray['host'] = "connectv9.allplan.com.ddev.local" ;
                         $urlSingle = $urlSingleArray['scheme'] . "://" . $urlSingleArray['host'] . "/index.php?" ;
                         $docID = str_replace( ".html" , "" , substr( $urlSingleArray['path'] , strpos( strtolower( $urlSingleArray['path'] ) , "faqid") + 6 ) )  ;
@@ -178,7 +205,6 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                         $urlSingle .= "&id=5566&L=" . $lang ;
                         $urlSingle .= "&tx_nemsolution_pi1[dokID]=" . $docID;
                         $urlSingle .= "&tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[ug]=ne&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1&tx_nemsolution_pi1[token]=" . $token;
-
 
                         $debugSub .= "<hr>Get FAQ via Curl " . $urlSingle ;
 
@@ -188,75 +214,65 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                         $singleFaqRaw = $this->getJsonFile( $urlSingle   , "" , array ( "Accept: application/json" , "Content-type:application/json" ) , FALSE ) ;
 
                         $singleFaq = json_decode($singleFaqRaw) ;
-                      //  $debugSub .= "<hr>" . var_export( $singleFaq , true ) ;
-                        if( !is_object($singleFaq) ) {
-                            $debugSub .= "<hr>Error in RAW Json:"  ;
+                        //  $debugSub .= "<hr>" . var_export( $singleFaq , true ) ;
+                        */
 
-                            switch(json_last_error()) {
-                                case JSON_ERROR_DEPTH:
-                                    $debugSub .= ' - Maximale Stacktiefe überschritten';
-                                    break;
-                                case JSON_ERROR_STATE_MISMATCH:
-                                    $debugSub .= ' - Unterlauf oder Nichtübereinstimmung der Modi';
-                                    break;
-                                case JSON_ERROR_CTRL_CHAR:
-                                    $debugSub .= ' - Unerwartetes Steuerzeichen gefunden';
-                                    break;
-                                case JSON_ERROR_SYNTAX:
-                                    $debugSub .= ' - Syntaxfehler, ungültiges JSON';
-                                    break;
-                                case JSON_ERROR_UTF8:
-                                    $debugSub .= ' - Missgestaltete UTF-8 Zeichen, möglicherweise fehlerhaft kodiert';
-                                    break;
-                                default:
-                                    $debugSub .= ' - Unbekannter Fehler';
-                                    break;
-                            }
-                            $debugSub .= "<hr>RAW Json:" . htmlentities( $singleFaqRaw  ) ;
+                        $params['VARVERSION'] = array("2020" , "2019");
+                        $params['STRPRODUKT'] = 'Allplan' ;
+                        $params['STRLANGUAGE'] = strtoupper( $currentLang ) ;
 
-                            // IN CASE of an ERROR - load FAQ RAW again to have header and status
-                            $singleFaqRaw = $this->getJsonFile( $urlSingle   , "" , array ( "Accept: application/json" , "Content-type: application/json" ) , TRUE , 90) ;
-                            $debugSub .= "<hr>Response with errorCode" . var_export( $singleFaqRaw , true ) ;
+                        $params['INTSORTORDER'] = '32';
+                        $params['STRQUERY'] = substr( $urlSingleArray['path'] , strpos( strtolower( $urlSingleArray['path'] ) , "faqid") + 6 )  ;
+                        // todo Disable  next lines just for testing a spezicif
+                       // $params['STRQUERY'] = "20150618130717.html" ;
+                       // $params['STRLANGUAGE'] = "DE" ;
+                        $params['STRUSERGROUP'] = "ne";
 
-                            $insertFields = array(
-                                "action"  => 1 ,
-                                "tablename" => "tx_kesearch_index" ,
-                                "error" => 1 ,
-                                "event_pid" => 0 ,
-                                "details" => "Allplan FAQ Indexer : see full message for URL: " . $url ,
-                                "tstamp" => time() ,
-                                "type" => 1 ,
-                                "message" => $debugSub ,
+                        $params['STRTOPTEN'] = '1-1'  ;
+                        $faq = $faqWrapper->getSingleFAQdirect($params);
 
-                            ) ;
+/* unused but maybe we need this kind of repair
+                        $strText = json_encode($faq['FNCSEARCHReturn']['FAQSEARCHLIST']['FAQENTRIES'][0]['STRTEXT'],JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+                        $strText = str_replace('\\\\u', '\\u', $strText);
+*/
 
-                            $this->insertSyslog( $insertFields) ;
+                        if( is_array($faq) && array_key_exists('FNCSEARCHReturn' , $faq) && array_key_exists('FAQSEARCHLIST' , $faq['FNCSEARCHReturn']) ) {
+                            $singleFaq = $faq['FNCSEARCHReturn']['FAQSEARCHLIST']['FAQENTRIES'][0] ;
+                        }
+                        if( !is_array($singleFaq) ) {
 
                             $error = 1 ;
                         } else {
-                            $single['uid'] = $this->convertIdToINT($singleFaq->STRDOK_ID, $indexlang);
+                            // echo " <hr> **********************+ +text html_entity_decode =" ;
+                            $singleFaq['STRTEXT'] = html_entity_decode(  $singleFaq['STRTEXT']	,ENT_COMPAT  , "UTF-8")  ;
+
+                            $single['uid'] = $this->convertIdToINT($singleFaq['STRDOK_ID'], $indexlang);
                             $debugSub .= "<br>ID: " . $single['uid'];
 
-                            $single['STRSUBJECT'] = html_entity_decode( $singleFaq->STRSUBJECT );
-                            $single['INTTOPTEN'] =   $singleFaq->INTTOPTEN ;
-                            $single['STRCATEGORY'] = $singleFaq->$category;
-                            $single['STRTEXT'] = $singleFaq->$category . " \n " . $singleFaq->STRTEXT;
+                            $single['STRSUBJECT'] = html_entity_decode( $singleFaq['STRSUBJECT'] ,ENT_COMPAT  , "UTF-8");
+                            $single['INTTOPTEN'] =   $singleFaq['INTTOPTEN'] ;
+                            $single['STRCATEGORY'] = $singleFaq[$category];
+                            $single['STRTEXT'] = $singleFaq[$category] . " \n " . $singleFaq['STRTEXT'] ;
+
+
+                            // ToDo cahnge repair function from object to array..
                             $single['singleFaqRaw'] = json_encode( $this->repairFAQ($singleFaq , $options )  , JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ;
+                            // $single['singleFaqRaw'] = json_encode( $singleFaq  , JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) ;
 
                             $single['language'] = $indexlang;
 
-                            if (is_array($singleFaq->LSTPROGRAMME)) {
-                                foreach ($singleFaq->LSTPROGRAMME as $tag) {
+                            if (is_array($singleFaq['LSTPROGRAMME'])) {
+                                foreach ($singleFaq['LSTPROGRAMME'] as $tag) {
                                     $single['tags'] .= ",#" . strtolower(str_replace(" ", "", $tag)) . "#";
                                 }
                             }
 
-                            $single['sortdate'] = mktime(0, 0, 0, substr($singleFaq->STRBEARBEITUNGSSTAND, 3, 2),
-                                substr($singleFaq->STRBEARBEITUNGSSTAND, 0, 2), substr($singleFaq->STRBEARBEITUNGSSTAND, 6, 4));
+                            $single['sortdate'] = mktime(0, 0, 0, substr($singleFaq['STRBEARBEITUNGSSTAND'], 3, 2),
+                                substr($singleFaq['STRBEARBEITUNGSSTAND'], 0, 2), substr($singleFaq['STRBEARBEITUNGSSTAND'], 6, 4));
                             $single['url'] = $url->loc;
 
 
-                            switch ( strtolower( $singleFaq->STRINTERNET_RELEASE_FOR)) {
+                            switch ( strtolower( $singleFaq['STRINTERNET_RELEASE_FOR'])) {
                                 case "everybody":
                                     $single['type'] = "supportfaq";
                                     $single['feGroup'] = '';
@@ -291,23 +307,11 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                                 $count++;
                             }
                         }
-                        // echo "<hr>" ;
-                        // var_dump(  $single  );
-                        // echo "<hr>" ;
-                        // var_dump(  $singleFaq  );
 
                         unset($single) ;
                         unset($singleFaq) ;
                     }
-                    // echo "<hr>" ;
-                    // var_dump(  $debugSub  );
-                    // die;
 
-                    if (PHP_SAPI === 'cli') {
-         //               echo $debugSub ;
-                    }
-          //          $debug .= $debugSub ;
-              //      echo $debugSub ;
                 }
             }
         }
@@ -322,7 +326,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             "tablename" => "tx_kesearch_index" ,
             "error" => $error ,
             "event_pid" => $pid ,
-            "details" => "Allplan FAQ Indexer (lastRun: " . $lastRun . ")  got '" . $total  . "' entries and had updated / inserted : '" . $count . "' entries. Crawled: " . $url
+            "details" => "Allplan FAQ Indexer : got '" . $total  . "' entries and had updated / inserted : '" . $count . "' entries. Crawled: " . $url
             . " and got xlm2 from string: " . substr( var_export( $xml2 , true ) , 0 , 100 )  . " .... Total: " . strlen( $xml2 ) . " chars .." ,
             "tstamp" => time() ,
             "type" => 1 ,
@@ -337,6 +341,59 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
     }
 
     protected function repairFAQ($entry , $options) {
+        if ( ! is_array($entry)) {
+            return $entry ;
+        }
+        $htmlfrom = $options['from'] ;
+        $htmlto = $options['to'] ;
+        $fromdecode = $options['fromdecode'] ;
+
+        if( array_key_exists(  'STRTEXT' ,  $entry ) ) {
+            if ( strip_tags( $entry['STRTEXT']) == $entry['STRTEXT'] ) {
+                $entry['NONLTOBR'] = FALSE;
+            } else {
+                $entry['NONLTOBR'] = TRUE;
+            }
+        }
+
+        if( array_key_exists ( 'STRCOMMENT' , $entry    ) ) {
+            $entry['STRCOMMENT'] =  html_entity_decode(  $entry['STRCOMMENT']	,ENT_COMPAT  , "UTF-8")  ;
+        }
+
+
+
+        if( array_key_exists ( 'LSTPDFNAME' , $entry )  && is_array( $entry['LSTPDFNAME'] )) {
+            for ( $ii=0;$ii<count( $entry['LSTPDFNAME'] );$ii++) {
+                $entry['NEWLSTPDFNAME'][] = array( 'REALNAME' => $entry['LSTPDFNAME'][$ii] ,"UTF8NAME" => iconv( $fromdecode , "UTF-8" , $entry['LSTPDFNAME'][$ii]	) );
+            }
+        }
+        if( array_key_exists ( 'LSTATTACHMENTS' , $entry )  && is_array( $entry['LSTATTACHMENTS'] )) {
+            for ( $ii=0;$ii<count( $entry['LSTATTACHMENTS'] );$ii++) {
+                if ( $entry['LSTATTACHMENTS'][$ii] <> "" ) {
+                    if ( strtolower( substr(  $entry['LSTATTACHMENTS'][$ii],-3)) == "pdf") {
+                        $entry['NEWATTACHMENTS'][] = array('REALNAME' => $entry['LSTATTACHMENTS'][$ii] ,
+                                                          "FILENAME" => iconv( $fromdecode , "UTF-8" , $entry['LSTATTACHMENTS'][$ii]	)  ,
+                                                            "FILETYPE" => "fileLink pdf" ,
+                                                            "FILETEXT" => "tx_nemsolution.button.downloadPDF" ,
+                                                        );
+                    } else {
+                        $entry['NEWATTACHMENTS'][] = array('REALNAME' => $entry['LSTATTACHMENTS'][$ii] ,
+                            "FILENAME" => iconv( $fromdecode , "UTF-8" , $entry['LSTATTACHMENTS'][$ii]	)  ,
+                            "FILETYPE" => "fileLink" ,
+                            "FILETEXT" => "tx_nemsolution.button.download" ,
+                        );
+                    }
+                }
+            }
+        }
+        return $entry ;
+    }
+
+    /**
+     * @deprecated  will be removed if  repairFAQ() works
+     */
+
+    protected function repairFAQobject($entry , $options) {
         $htmlfrom = $options['from'] ;
         $htmlto = $options['to'] ;
         $fromdecode = $options['fromdecode'] ;
@@ -378,10 +435,10 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
                     if ( strtolower( substr(  $entry->LSTATTACHMENTS[$ii],-3)) == "pdf") {
                         $entry->NEWATTACHMENTS[] = array('REALNAME' => $entry->LSTATTACHMENTS[$ii] ,
-                                                          "FILENAME" => iconv( $fromdecode , "UTF-8" , $entry->LSTATTACHMENTS[$ii]	)  ,
-                                                            "FILETYPE" => "fileLink pdf" ,
-                                                            "FILETEXT" => "tx_nemsolution.button.downloadPDF" ,
-                                                        );
+                            "FILENAME" => iconv( $fromdecode , "UTF-8" , $entry->LSTATTACHMENTS[$ii]	)  ,
+                            "FILETYPE" => "fileLink pdf" ,
+                            "FILETEXT" => "tx_nemsolution.button.downloadPDF" ,
+                        );
                     } else {
                         $entry->NEWATTACHMENTS[] = array('REALNAME' => $entry->LSTATTACHMENTS[$ii] ,
                             "FILENAME" => iconv( $fromdecode , "UTF-8" , $entry->LSTATTACHMENTS[$ii]	)  ,
@@ -403,6 +460,8 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
         // take storage PID form indexexer Configuration ... Hard Coded by Language !!!
         $pid =  $indexerConfig['pid'] ;
+        // todo remove next line
+        $pid = 3009 ;
 
         $server = $_SERVER['SERVER_NAME'] ;
         if( $server == "www-typo3.allplan.com" ||  $server == "vm5012986.psmanaged.com" ||   $server == "allplan" ||   $server == "www") {
@@ -419,7 +478,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             $single['singleFaqRaw']  , 						                // the Content here RAW Result
             $indexerConfig['tags'] . $single['tags'] ,						// tags
             '_blank' ,                                      // additional params for the link
-            substr( strip_tags( $single['STRTEXT'] ) , 0 , 200 ) ,			// abstract below the title in the result list
+            substr( strip_tags( $single['STRTEXT'] ) , 0 , 200 ) ,	// abstract below the title in the result list
             $single['language'] ,				    // sys_language_uid
             0 ,						// starttime (not used here)
             0,						// endtime (not used here)
