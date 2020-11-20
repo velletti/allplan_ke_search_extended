@@ -273,6 +273,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                                 case "everybody":
                                     $single['type'] = "supportfaq";
                                     $single['feGroup'] = '';
+                                    $single['tags'] .= ",#allUserAccess#,#customerAccess#";
                                     break;
 
                                 case "beta tester":
@@ -285,6 +286,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                                 case "portaluser":
                                     $single['type'] = "supportfaqsp";
                                     $single['feGroup'] = '38,7,4,3';
+                                    $single['tags'] .= ",#customerAccess#";
                                     break;
                                 case "nemetschek only":
                                 case "nemetschekonly":
