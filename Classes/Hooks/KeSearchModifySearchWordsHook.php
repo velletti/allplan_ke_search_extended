@@ -17,8 +17,6 @@ class KeSearchModifySearchWordsHook {
         // var_dump($searchWordInformation['wordsAgainst']);
         if( $pObj->conf['encodeWords'] )  {
             $searchWordInformation['wordsAgainst'] = htmlentities( $searchWordInformation['wordsAgainst'] ) ;
-
-            // var_dump($searchWordInformation['wordsAgainst']);
         }
         $arr = GeneralUtility::trimExplode(" " , $searchWordInformation['wordsAgainst']) ;
         if ($arr && count($arr) > 3 ) {

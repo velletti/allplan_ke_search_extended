@@ -348,13 +348,16 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         if( array_key_exists(  'STRTEXT' ,  $entry ) ) {
             if ( strip_tags( $entry['STRTEXT']) == $entry['STRTEXT'] ) {
                 $entry['NONLTOBR'] = FALSE;
+                $entry['STRTEXT'] =  str_replace( "\n" , " " , $entry['STRTEXT']	)  ;
             } else {
                 $entry['NONLTOBR'] = TRUE;
             }
+            $entry['STRTEXT'] =  str_replace( "&apos;" , "'" , $entry['STRTEXT']	)  ;
         }
 
         if( array_key_exists ( 'STRCOMMENT' , $entry    ) ) {
             $entry['STRCOMMENT'] =  html_entity_decode(  $entry['STRCOMMENT']	,ENT_COMPAT  , "UTF-8")  ;
+            $entry['STRCOMMENT'] =  str_replace( "&apos;" , "'" , $entry['STRCOMMENT']	)  ;
         }
 
 
