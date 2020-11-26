@@ -61,6 +61,7 @@ class KeSearchGetQueryPartsHook
                                   }
                               }
                               $queryParts['WHERE'] .= " ) ";
+                              $queryParts['ORDERBY'] = "top10 DESC" ;
                           }
                       }
 
