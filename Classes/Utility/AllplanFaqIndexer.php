@@ -2,6 +2,7 @@
 namespace Allplan\AllplanKeSearchExtended\Utility;
 
 use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
+use Allplan\AllplanKeSearchExtended\Utility\AllplanFaqIndexerUtility;
 use Allplan\NemSolution\Service\FaqWrapper;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\Connection;
@@ -41,292 +42,62 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
      */
 
     public function main(&$indexerConfig, &$indexerObject) {
-        // rendered by an agent every 4 hours
-        // http:// IP of the news Server see doku/hotline/FAQ_HOTD.nsf/0/05421C80A7EB2CE2C1257480004DDA2E/\$File/FAQIDs.xml?OpenElement
-        // http://212.29.3.155/hotline/FAQ_HOTD.nsf/0/05421C80A7EB2CE2C1257480004DDA2E/\$File/FAQIDs.xml?OpenElement
-
-        // ToDo  : move this to settings....
-        $pathToWebService = 'http://212.29.3.155/hotline/FAQ_HOTD.nsf/FAQ?OpenWebService' ;
-        $pathToWSDL = Environment::getProjectPath() . '/wsdl/FAQ_RPC.wsdl' ;
-        $namespace = 'Nemetschek:ProxySystem:FAQ:Types:1.0:1.0' ;
-
-        // connect to the webservice
-        /** @var FaqWrapper $faqWrapper */
-        $faqWrapper = GeneralUtility::makeInstance(
-            'Allplan\\NemSolution\\Service\\FaqWrapper',
-            $pathToWSDL,
-            $pathToWebService ,
-            $namespace
-        );
-
-
-        $url = $indexerObject->externalUrl  ;
-        $debug = "url: " . ($url) ;
         // ToDo Put tags to Indexer object
         $indexerConfig['tags'] = "#allplanfaq#" ;
 
-        // For testing  disable  the next command ... something like this should come from next ws call
-        $xmlFromUrl = '<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-        <url>
-            <loc>https://connect.allplan.com/de/faqid/20200820142654.html</loc>
-            <lastmod>2017-05-29</lastmod>
-       </url>
-        </urlset>
-        ' ;
+        /** @var AllplanFaqIndexerUtility $AllplanFaqIndexerUtility */
+        $AllplanFaqIndexerUtility = GeneralUtility::makeInstance("Allplan\\AllplanKeSearchExtended\\Utility\\AllplanFaqIndexerUtility") ;
+        $AllplanFaqIndexerUtility->init($indexerConfig ,$indexerObject);
 
-         $xmlFromUrl = $this->getJsonFile($url , "urlset" , array('Accept: text/xml, Content-type:text/xml') , FALSE ) ;
+        $url = $indexerObject->externalUrl  ;
+        $debug = "url: " . ($url) ;
+
+        $xmlFromUrl = $this->getExampleXml() ;
+        // For testing  disable  the next command : $this->getJsonFile ... as something like above should come from ws call
+        $xmlFromUrl = $this->getJsonFile($url , "urlset" , array('Accept: text/xml, Content-type:text/xml') , FALSE ) ;
 
         $xml2 = simplexml_load_string ($xmlFromUrl  ) ;
 
         $debug .= "<hr>xlm2 from string:<br>" . substr( var_export( $xml2 , true ) , 0 , 200 )  . " .... " . strlen( $xml2 ) . " chars .. <hr />" ;
         $error = 0 ;
         $count = 0 ;
-        $total  = 0 ;
         $numIndexed = 0 ;
         $maxIndex =  $indexerObject->rowcount  ;
         if(  $indexerObject->rowcount < 1 ) {
             $maxIndex = 10000 ;
         }
-        $options['htmlfrom'] = array( 'face="Vorgabe Sans Serif"' , 'type="disc"', "&amp;#345;", "\n" ,"&amp;#"
-        , "<ul><ol" , "</ol></ul>", "<ul><ul" , "</ul></ul>" , "<br>" , "<br/>") ;
-
-        $options['htmlto'] = array('','','ř' , "", "&#"
-        , "<ol" , "</ol>" , "<ul" , "</ul>" , "<BR />", "<BR />") ;
-
-        $options['fromdecode'] = "ISO-8859-1" ;
 
         if( is_object($xml2)) {
-            $debug .="<hr> xml2 is Object" ;
             if( is_object( $xml2->url ) ) {
-                $debug .= "<hr> xml2->url is Object";
-                $i = 0 ;
-                $total  = 0 ;
-                if (PHP_SAPI === 'cli') {
-      //              echo $debug ;
-                }
                 foreach ($xml2->url as $url) {
-                    $debugSub = "<hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . "\n";
-                    $total ++ ;
-
-                    $urlSingleArray = parse_url( $url->loc ) ;
-                    $currentLang =  substr( $urlSingleArray['path'] , 1,2 ) ;
-                    if( !in_array( $currentLang , array("en" , "de" , "it" , "fr" ,"es" , "ru" , "cz" , "tr" ) )) {
-                        $currentLang = "en" ;
-                    }
-                    $docID = str_replace( ".html" , "" , substr( $urlSingleArray['path'] , strpos( strtolower( $urlSingleArray['path'] ) , "faqid") + 6 ) )  ;
-
-
-
-                    $singleUid = $this->convertIdToINT( $docID , 0 );
-                    $debugSub .= "<hr>Search Local with DocId " . $docID . " = orig_uid = " . $singleUid . "\n";
-                    $aktIndex = $this->getIndexerById($singleUid)  ;
-
-                    if($aktIndex    ) {
-                        $lastMod = date( "Y-m-d" , $aktIndex['sortdate'] ) ;
-                        $debugSub .= "<hr>last stored Last Mod in Typo3  :" . $lastMod  ;
-                    } else {
-                        $debugSub .= "<hr>Not Found last stored  in Typo3 "  ;
-                    }
-
-                    if ( $numIndexed > $maxIndex )  {
-                        break ;
-                    }
-                    if( ( !$aktIndex || $lastMod <  $url->lastmod  || $maxIndex < 10 || $maxIndex > 10000 )  ) {
-                        $numIndexed ++ ;
-                        /*
-                        var_dump($urlSingleArray) ;
-                        echo "<hr>" ;
-                        var_dump($docID) ;
-                        echo "<hr>" ;
-                        var_dump($singleUid) ;
-                        echo "<hr>" ;
-
-                        var_dump($aktIndex) ;
-
-                        die   ;
-                        */
-                //    if( $url->lastmod > $lastRun  ) {
-                        $i++ ;
-                        $urlSingleArray = parse_url( $url->loc ) ;
-                        $indexlang = 0  ;
-                        $options['fromdecode'] = "ISO-8859-1" ;
-                        switch($currentLang ) {
-                            case "de":
-                                $lang = 1 ;
-                                $indexlang = -1 ;
-                                $indexerConfig['pid'] = 5025 ;
-                                $category = "STRCATEGORY_DE" ;
-                                break ;
-                            case "it":
-                                $lang = 2 ;
-
-                                $indexerConfig['pid'] = 5027 ;
-                                $category = "STRCATEGORY_IT" ;
-                                break ;
-                            case "cz":
-                                $lang = 3 ;
-                                $indexerConfig['pid'] = 5027 ;
-                                $category = "STRCATEGORY_CS" ;
-                                $options['fromdecode'] = "ISO-8859-2" ;
-                                break ;
-                            case "fr":
-                                $lang = 4 ;
-                                $indexerConfig['pid'] = 5026 ;
-                                $category = "STRCATEGORY_FR" ;
-                                break ;
-                            case "es":
-                                $lang = 18 ;
-                                $indexerConfig['pid'] = 5027 ;
-                                $category = "STRCATEGORY_ES" ;
-                                break ;
-                            case "ru":
-                                $lang = 14 ;
-                                $indexerConfig['pid'] = 5027 ;
-                                $category = "STRCATEGORY_EN" ; // RU is not in Response
-                                break ;
-                            default:
-                                $lang = 0 ;
-                                $indexerConfig['pid'] = 5027 ;
-                                $category = "STRCATEGORY_EN" ;
-                                break ;
-                        }
-                        if (  $indexlang == 0   ) {
-                            $indexlang = $lang  ;
-                        }
-
-                        /*
-                        // this is the old aproach with calling OLD FAQ extension and use json  output ..
-
-               //         $urlSingleArray['host'] = "connectv9.allplan.com.ddev.local" ;
-                        $urlSingle = $urlSingleArray['scheme'] . "://" . $urlSingleArray['host'] . "/index.php?" ;
-                        $docID = str_replace( ".html" , "" , substr( $urlSingleArray['path'] , strpos( strtolower( $urlSingleArray['path'] ) , "faqid") + 6 ) )  ;
-                        $token = hash( "sha256" , $docID  . "JV-" . date("Y-m-d") ) ;
-                        $urlSingle .= "&id=5566&L=" . $lang ;
-                        $urlSingle .= "&tx_nemsolution_pi1[dokID]=" . $docID;
-                        $urlSingle .= "&tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[ug]=ne&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1&tx_nemsolution_pi1[token]=" . $token;
-
-                        $debugSub .= "<hr>Get FAQ via Curl " . $urlSingle ;
-
-                        // https://connect.allplan.com/index.php?&id=5566&L=1&tx_nemsolution_pi1[ug]=ne&tx_nemsolution_pi1[dokID]=000171ca&tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1
-                        // https://connectv9.allplan.com.ddev.local/index.php?&id=5566&L=1&tx_nemsolution_pi1[ug]=ne&tx_nemsolution_pi1[dokID]=000171ca&tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[json]=1
-
-                        $singleFaqRaw = $this->getJsonFile( $urlSingle   , "" , array ( "Accept: application/json" , "Content-type:application/json" ) , FALSE ) ;
-
-                        $singleFaq = json_decode($singleFaqRaw) ;
-                        //  $debugSub .= "<hr>" . var_export( $singleFaq , true ) ;
-                        */
-
-                        $params['VARVERSION'] = array("2020" , "2019");
-                        $params['STRPRODUKT'] = 'Allplan' ;
-                        $params['STRLANGUAGE'] = strtoupper( $currentLang ) ;
-
-                        $params['INTSORTORDER'] = '32';
-                        $params['STRQUERY'] = substr( $urlSingleArray['path'] , strpos( strtolower( $urlSingleArray['path'] ) , "faqid") + 6 )  ;
-                        // Enable  next lines just for testing a spezific FAQ
-                       // $params['STRQUERY'] = "20150618130717.html" ;
-                        $params['STRUSERGROUP'] = "ne";
-
-                        $params['STRTOPTEN'] = '1-1'  ;
-                        $faq = $faqWrapper->getSingleFAQdirect($params);
-
-/* unused but maybe we need this kind of repair
-                        $strText = json_encode($faq['FNCSEARCHReturn']['FAQSEARCHLIST']['FAQENTRIES'][0]['STRTEXT'],JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
-                        $strText = str_replace('\\\\u', '\\u', $strText);
-*/
-
-                        if( is_array($faq) && array_key_exists('FNCSEARCHReturn' , $faq) && array_key_exists('FAQSEARCHLIST' , $faq['FNCSEARCHReturn']) ) {
-                            $singleFaq = $faq['FNCSEARCHReturn']['FAQSEARCHLIST']['FAQENTRIES'][0] ;
-                        }
-                        if( !is_array($singleFaq) ) {
-
-                            $error = 1 ;
+                    $debug .= "<hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . "\n";
+                    $numIndexed ++ ;
+                    if( $numIndexed < $maxIndex ) {
+                        if( $AllplanFaqIndexerUtility->indexSingleFAQ( $url->loc , $url->lastmod )) {
+                            $count++;
                         } else {
-                            // echo " <hr> **********************+ +text html_entity_decode =" ;
-                            $singleFaq['STRTEXT'] = html_entity_decode(  $singleFaq['STRTEXT']	,ENT_COMPAT  , "UTF-8")  ;
-
-                            $single['uid'] = $this->convertIdToINT($singleFaq['STRDOK_ID'], $indexlang);
-                            $debugSub .= "<br>ID: " . $single['uid'];
-
-                            $single['STRSUBJECT'] = html_entity_decode( $singleFaq['STRSUBJECT'] ,ENT_COMPAT  , "UTF-8");
-                            $single['INTTOPTEN'] =   $singleFaq['INTTOPTEN'] ;
-                            $single['STRCATEGORY'] = $singleFaq[$category];
-                            $single['STRTEXT'] = $singleFaq[$category] . " \n " . $singleFaq['STRTEXT'] ;
-
-
-                            $single['singleFaqRaw'] = json_encode( $this->repairFAQ($singleFaq , $options )  , JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ;
-
-                            $single['language'] = $indexlang;
-
-                            if (is_array($singleFaq['LSTPROGRAMME'])) {
-                                foreach ($singleFaq['LSTPROGRAMME'] as $tag) {
-                                    $single['tags'] .= ",#" . strtolower(str_replace(" ", "", $tag)) . "#";
-                                }
-                            }
-
-                            $single['sortdate'] = mktime(0, 0, 0, substr($singleFaq['STRBEARBEITUNGSSTAND'], 3, 2),
-                                substr($singleFaq['STRBEARBEITUNGSSTAND'], 0, 2), substr($singleFaq['STRBEARBEITUNGSSTAND'], 6, 4));
-                            $single['url'] = $url->loc;
-
-
-                            switch ( strtolower( $singleFaq['STRINTERNET_RELEASE_FOR'])) {
-                                case "everybody":
-                                    $single['type'] = "supportfaq";
-                                    $single['feGroup'] = '';
-                                    $single['tags'] .= ",#allUserAccess#,#customerAccess#";
-                                    break;
-
-                                case "beta tester":
-                                case "betatester":
-                                    $single['type'] = "supportfaqbeta";
-                                    $single['feGroup'] = '38,7,4';
-                                    break;
-
-                                case "portal user":
-                                case "portaluser":
-                                    $single['type'] = "supportfaqsp";
-                                    $single['feGroup'] = '38,7,4,3';
-                                    $single['tags'] .= ",#customerAccess#";
-                                    break;
-                                case "nemetschek only":
-                                case "nemetschekonly":
-                                    $single['type'] = "supportfaqnem";
-                                    $single['feGroup'] = '38,7';
-                                    break;
-
-                                default:
-                                    $single['type'] = "supportfaqlocked";
-                                    $single['feGroup'] = '38';
-                                    break;
-                            }
-
-
-                            if ($this->putToIndex($single, $indexerObject, $indexerConfig)) {
-                               // $debugSub .= "<hr>Single= " . var_export($single, true);
-                                $count++;
-                            }
+                            $error++;
                         }
-
-                        unset($single) ;
-                        unset($singleFaq) ;
                     }
-
                 }
             }
         }
-       // echo $debug ;
-       // echo $debugSub ;
-       // die;
+        // var_dump( $debug ) ;
+        if ( $error > 0 ) {
+            $error = true ;
+        } else {
+
+        }
         // take storage PID form indexexer Configuration or overwrite it with storagePid From Indexer Task ??
         $pid = $indexerObject->storagePid > 0 ? $indexerObject->storagePid  : $indexerConfig['pid'] ;
 
         $insertFields = array(
             "action"  => 1 ,
             "tablename" => "tx_kesearch_index" ,
-            "error" => $error ,
+            "error" => $error > 0,
             "event_pid" => $pid ,
-            "details" => "Allplan FAQ Indexer : got '" . $total  . "' entries and had updated / inserted : '" . $count . "' entries. Crawled: " . $url
-            . " and got xlm2 from string: " . substr( var_export( $xml2 , true ) , 0 , 100 )  . " .... Total: " . strlen( $xml2 ) . " chars .." ,
+            "details" => "Allplan FAQ Indexer : got '" . $numIndexed  . "' entries, got " . $error . " Errors and had updated / inserted : '" . $count . "' entries. Crawled: " . $url
+                . " and got xlm2 from string: " . substr( var_export( $xml2 , true ) , 0 , 100 )  . " .... Total: " . strlen( $xml2 ) . " chars .." ,
             "tstamp" => time() ,
             "type" => 1 ,
             "message" => $debug ,
@@ -335,239 +106,31 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
         $this->insertSyslog( $insertFields) ;
 
-
-        return $count ;
-    }
-
-    protected function repairFAQ($entry , $options) {
-        if ( ! is_array($entry)) {
-            return $entry ;
+        if ( $error ) {
+            return false ;
         }
-        $htmlfrom = $options['from'] ;
-        $htmlto = $options['to'] ;
-        $fromdecode = $options['fromdecode'] ;
-
-        if( array_key_exists(  'STRTEXT' ,  $entry ) ) {
-            if ( strip_tags( $entry['STRTEXT']) == $entry['STRTEXT'] ) {
-                $entry['NONLTOBR'] = FALSE;
-                $entry['STRTEXT'] =  str_replace( "\n" , " " , $entry['STRTEXT']	)  ;
-            } else {
-                $entry['NONLTOBR'] = TRUE;
-            }
-            $entry['STRTEXT'] =  str_replace( "&apos;" , "'" , $entry['STRTEXT']	)  ;
+        if( $count > 0 ) {
+            return $count ;
         }
+        return true ;
 
-        if( array_key_exists ( 'STRCOMMENT' , $entry    ) ) {
-            $entry['STRCOMMENT'] =  html_entity_decode(  $entry['STRCOMMENT']	,ENT_COMPAT  , "UTF-8")  ;
-            $entry['STRCOMMENT'] =  str_replace( "&apos;" , "'" , $entry['STRCOMMENT']	)  ;
-        }
-
-
-
-        if( array_key_exists ( 'LSTPDFNAME' , $entry )  && is_array( $entry['LSTPDFNAME'] )) {
-            for ( $ii=0;$ii<count( $entry['LSTPDFNAME'] );$ii++) {
-                $entry['NEWLSTPDFNAME'][] = array( 'REALNAME' => $entry['LSTPDFNAME'][$ii] ,"UTF8NAME" => iconv( $fromdecode , "UTF-8" , $entry['LSTPDFNAME'][$ii]	) );
-            }
-        }
-        if( array_key_exists ( 'LSTATTACHMENTS' , $entry )  && is_array( $entry['LSTATTACHMENTS'] )) {
-            for ( $ii=0;$ii<count( $entry['LSTATTACHMENTS'] );$ii++) {
-                if ( $entry['LSTATTACHMENTS'][$ii] <> "" ) {
-                    if ( strtolower( substr(  $entry['LSTATTACHMENTS'][$ii],-3)) == "pdf") {
-                        $entry['NEWATTACHMENTS'][] = array('REALNAME' => $entry['LSTATTACHMENTS'][$ii] ,
-                                                          "FILENAME" => iconv( $fromdecode , "UTF-8" , $entry['LSTATTACHMENTS'][$ii]	)  ,
-                                                            "FILETYPE" => "fileLink pdf" ,
-                                                            "FILETEXT" => "tx_nemsolution.button.downloadPDF" ,
-                                                        );
-                    } else {
-                        $entry['NEWATTACHMENTS'][] = array('REALNAME' => $entry['LSTATTACHMENTS'][$ii] ,
-                            "FILENAME" => iconv( $fromdecode , "UTF-8" , $entry['LSTATTACHMENTS'][$ii]	)  ,
-                            "FILETYPE" => "fileLink" ,
-                            "FILETEXT" => "tx_nemsolution.button.download" ,
-                        );
-                    }
-                }
-            }
-        }
-        return $entry ;
     }
 
     /**
-     * @deprecated  will be removed if  repairFAQ() works
-     */
-
-    protected function repairFAQobject($entry , $options) {
-        $htmlfrom = $options['from'] ;
-        $htmlto = $options['to'] ;
-        $fromdecode = $options['fromdecode'] ;
-
-        if( is_object($entry) && property_exists ( $entry, 'STRTEXT'   ) ) {
-            if ( strip_tags( $entry->STRTEXT ) == $entry->STRTEXT ) {
-                $entry->NONLTOBR = FALSE;
-            } else {
-                $entry->STRTEXT = str_replace( $htmlfrom , $htmlto , $entry->STRTEXT 	);
-                $entry->NONLTOBR = TRUE;
-            }
-            $strText = json_encode( $entry->STRTEXT);
-            $strText = str_replace('\\\\u',  '\\u', $strText);
-            $entry->STRTEXT  = json_decode($strText);
-        }
-
-
-
-        if( is_object($entry) && property_exists ( $entry, 'STRCOMMENT'   ) ) {
-            $strText = json_encode($entry->STRCOMMENT);
-            $strText = str_replace('\\\\u', '\\u', $strText);
-            $entry->STRCOMMENT = json_decode($strText);
-        }
-
-
-
-        if( is_object($entry) &&  property_exists ( $entry, 'LSTPDFNAME'   )  && is_array( $entry->LSTPDFNAME )) {
-            for ( $ii=0;$ii<count($entry->LSTPDFNAME );$ii++) {
-                $entry->NEWLSTPDFNAME[] = array( 'REALNAME' => $entry->LSTPDFNAME[$ii] ,"UTF8NAME" => iconv( $fromdecode , "UTF-8" , $entry->LSTPDFNAME[$ii]	) );
-
-            }
-        }
-
-        if( is_object($entry) && property_exists( $entry  ,'LSTATTACHMENTS' ) && is_array( $entry->LSTATTACHMENTS)) {
-
-            for ( $ii=0;$ii<count($entry->LSTATTACHMENTS );$ii++) {
-                if ( $entry->LSTATTACHMENTS->$ii <> "" ) {
-
-
-                    if ( strtolower( substr(  $entry->LSTATTACHMENTS[$ii],-3)) == "pdf") {
-                        $entry->NEWATTACHMENTS[] = array('REALNAME' => $entry->LSTATTACHMENTS[$ii] ,
-                            "FILENAME" => iconv( $fromdecode , "UTF-8" , $entry->LSTATTACHMENTS[$ii]	)  ,
-                            "FILETYPE" => "fileLink pdf" ,
-                            "FILETEXT" => "tx_nemsolution.button.downloadPDF" ,
-                        );
-                    } else {
-                        $entry->NEWATTACHMENTS[] = array('REALNAME' => $entry->LSTATTACHMENTS[$ii] ,
-                            "FILENAME" => iconv( $fromdecode , "UTF-8" , $entry->LSTATTACHMENTS[$ii]	)  ,
-                            "FILETYPE" => "fileLink" ,
-                            "FILETEXT" => "tx_nemsolution.button.download" ,
-                        );
-                    }
-                }
-            }
-        }
-        return $entry ;
-    }
-
-    protected function putToIndex(array $single , AllplanKesearchIndexer $indexerObject , array  $indexerConfig ) {
-
-        // Prepare data for the indexer
-        $content = $single['title'] . PHP_EOL . nl2br($single['text']) ;
-
-
-        // take storage PID form indexexer Configuration ... Hard Coded by Language !!!
-        $pid =  $indexerConfig['pid'] ;
-
-        $server = $_SERVER['SERVER_NAME'] ;
-        if( $server == "www-typo3.allplan.com" ||  $server == "vm5012986.psmanaged.com" ||   $server == "allplan" ||   $server == "www") {
-            $server = "www.allplan.com" ;
-        } else {
-            $server = "connect.allplan.com" ;
-        }
-
-        return $indexerObject->storeInIndex(
-            $pid ,			                // folder, where the indexer data should be stored (not where the data records are stored!)
-            $single['STRSUBJECT'] ,							    // title in the result list
-            $single['type'] ,				                    // content type ( useful, if you want to use additionalResultMarker)
-            $single['url']                              ,	// uid of the targetpage (see indexer-config in the backend)
-            $single['singleFaqRaw']  , 						                // the Content here RAW Result
-            $indexerConfig['tags'] . $single['tags'] ,						// tags
-            '_blank' ,                                      // additional params for the link
-            substr( strip_tags( $single['STRTEXT'] ) , 0 , 200 ) ,	// abstract below the title in the result list
-            $single['language'] ,				    // sys_language_uid
-            0 ,						// starttime (not used here)
-            0,						// endtime (not used here)
-            $single['feGroup'],						// fe_group ('' , '7' , '7,4' , or '7,4,3' )
-            false ,					// debug only?
-            array( 'sortdate' => $single['sortdate'] , 'orig_uid' => $single['uid'] , 'servername' => $server  , 'directory' => $single['STRCATEGORY'] , 'top10' => $single['INTTOPTEN']  )				// additional fields added by hooks
-        );
-
+     *  dummy function .. used for local testing
+    */
+    private function getExampleXml() {
+        $return ='<?xml version="1.0" encoding="UTF-8"?>' . "\n" ;
+        $return .='<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n" ;
+        $return .='   <url>' . "\n" ;
+        $return .='   <loc>https://connect.allplan.com/de/faqid/20200820142654.html</loc>' . "\n" ;
+        $return .='   <lastmod>2017-05-29</lastmod>' . "\n" ;
+        $return .='</url>' . "\n" ;
+        $return .='</urlset>' ;
+        return $return ;
     }
 
 
-    protected function convertIdToINT( $notes_id , $lang) {
 
-        /** @var \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance( "TYPO3\\CMS\\Core\\Database\\ConnectionPool");
-
-        /** @var QueryBuilder $queryBuilder */
-        $queryBuilder = $connectionPool->getConnectionForTable('tx_kesearch_allplan_url_ids')->createQueryBuilder();
-        $queryBuilder->select('uid')
-            ->from('tx_kesearch_allplan_url_ids') ;
-
-        $expr = $queryBuilder->expr();
-        $queryBuilder->where(
-            $expr->eq('notes_id', $queryBuilder->createNamedParameter($notes_id, Connection::PARAM_STR))
-        )->andWhere(
-            $expr->eq('sys_language_uid', $queryBuilder->createNamedParameter(intval($lang), Connection::PARAM_INT))
-        )->orderBy("uid" , 'DESC')->setMaxResults(1) ;
-
-
-        $row = $queryBuilder->execute()->fetch();
-
-        if ( is_countable( $row ) && count ( $row ) > 0 ) {
-            return $row['uid'] ;
-            //var_dump($row);
-            //die;
-        } else {
-
-            $data = array( "pid" => 0 , "notes_id" => $notes_id , "sys_language_uid" => intval($lang)  ) ;
-            /** @var QueryBuilder $queryBuilder */
-            $queryBuilder = $connectionPool->getConnectionForTable('tx_kesearch_allplan_url_ids')->createQueryBuilder();
-            /** @var \TYPO3\CMS\Core\Database\Connection $connection */
-            $connection = $connectionPool->getConnectionForTable('tx_kesearch_allplan_url_ids') ;
-
-            $queryBuilder->insert("tx_kesearch_allplan_url_ids")->values( $data)->execute() ;
-
-            $uid = $connection->lastInsertId('tx_kesearch_allplan_url_ids') ;
-
-        }
-        if ( $uid == 0 ) {
-          //  var_dump($notes_id) ;
-            //  var_dump($lang ) ;
-            //  var_dump($data ) ;
-            //  var_dump($row) ;
-            //  die ;
-        }
-        return $uid  ;
-    }
-
-
-    protected function getIndexerById( $uid ) {
-
-        /** @var \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool */
-        $connectionPool = GeneralUtility::makeInstance( "TYPO3\\CMS\\Core\\Database\\ConnectionPool");
-
-        /** @var QueryBuilder $queryBuilder */
-        $queryBuilder = $connectionPool->getConnectionForTable('tx_kesearch_index')->createQueryBuilder();
-        $queryBuilder->select( 'uid' , 'sortdate' , 'tstamp')
-            ->from('tx_kesearch_index') ;
-        $queryBuilder->getRestrictions()->removeAll()->add( GeneralUtility::makeInstance(DeletedRestriction::class));
-        $expr = $queryBuilder->expr();
-        $queryBuilder->where(
-            $expr->eq('orig_uid', $queryBuilder->createNamedParameter($uid, Connection::PARAM_INT))
-
-        )->andWhere(
-            $expr->like('type', $queryBuilder->createNamedParameter('supportfa%', Connection::PARAM_STR)
-            )
-        )->orderBy("uid" , 'DESC')->setMaxResults(1) ;
-
-
-        $result = $queryBuilder->execute();
-
-        // echo $queryBuilder->getSQL() ;
-        // echo $queryBuilder->getParameters() ;
-        // die ;
-
-        $row = $result->fetch();
-
-        return $row ;
-
-    }
 
 }
