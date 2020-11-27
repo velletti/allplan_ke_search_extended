@@ -279,7 +279,7 @@ class AllplanFaqIndexerUtility
 
         unset($single) ;
         unset($singleFaq) ;
-        return true ;
+        return $debug ;
     }
 
     protected function repairFAQ($entry , $options) {
