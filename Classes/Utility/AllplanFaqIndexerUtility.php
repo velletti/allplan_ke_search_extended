@@ -75,6 +75,10 @@ class AllplanFaqIndexerUtility
 
     public function indexSingleFAQ( $url , $lastRun , $faq = false ) {
         $debugOutput = false ;
+        if(  $faq) {
+            $debugOutput = true ;
+        }
+
         $debug[] = array( "LINE:" => __LINE__ ,  "url" => $url ) ;
 
         $indexerConfig = $this->indexerConfig ;
@@ -180,6 +184,7 @@ class AllplanFaqIndexerUtility
         $params['STRTOPTEN'] = '1-1'  ;
 
         if( !$faq ) {
+            $debug[] = array( "LINE:" => __LINE__ ,  "got no FAQ - search FAQ py params " => $params ) ;
             $faq = $this->faqWrapper->getSingleFAQdirect($params);
         }
 
@@ -263,10 +268,11 @@ class AllplanFaqIndexerUtility
 
             if (! $this->putToIndex($single, $indexerObject, $indexerConfig)) {
                 $debug[] = array( "LINE:" => __LINE__ ,  "indexer Update failed" => "!!!" ) ;
-                if($debugOutput) {  var_dump($debug) ; die; };
+                $debug[] = array( "LINE:" => __LINE__ ,  "params: " => $indexerConfig ) ;
+                if($debugOutput) {  print_r($debug) ; die; };
                return false ;
             }
-            if($debugOutput) {  var_dump($debug) ; die; };
+
         }
 
         unset($single) ;
