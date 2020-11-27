@@ -61,6 +61,15 @@ class AllplanFaqIndexerUtility
         } else {
             // load hardcoded Indexer Object to emulate Single Indexer AllplanKesearchIndexer extends IndexerRunner
             $this->indexerObject = GeneralUtility::makeInstance(AllplanKesearchIndexer::class);
+
+            // register additional fields which should be written to DB
+            if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['registerAdditionalFields'])) {
+                foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['registerAdditionalFields'] as $_classRef) {
+                    $_procObj = GeneralUtility::makeInstance($_classRef);
+                    $_procObj->registerAdditionalFields($this->indexerObject->additionalFields);
+                }
+            }
+
             // set some prepare statements
             $this->indexerObject->prepareStatements();
         }
@@ -170,6 +179,7 @@ class AllplanFaqIndexerUtility
             // if we found one or more  entries in tx_kesearch_allplan_url_ids but no indexed FAQ in kesearch_index, we must remove this garbage
             $debug[] = array( "LINE:" => __LINE__ ,  "delete  tx_kesearch_allplan_url_ids $docID and $indexlang " => $docID . " - " . $indexlang) ;
             $this->deleteIdToINTentries( $docID , $indexlang) ;
+            $singleUid = $this->convertIdToINT( $docID , $indexlang );
         }
 
         $params['VARVERSION'] = array("2020" , "2019");
@@ -214,7 +224,7 @@ class AllplanFaqIndexerUtility
             // echo " <hr> **********************+ +text html_entity_decode =" ;
             $singleFaq['STRTEXT'] = html_entity_decode(  $singleFaq['STRTEXT']	,ENT_COMPAT  , "UTF-8")  ;
 
-            $single['uid'] = $this->convertIdToINT( $docID , $indexlang);
+            $single['uid'] = $singleUid ;
             $single['STRSUBJECT'] = html_entity_decode( $singleFaq['STRSUBJECT'] ,ENT_COMPAT  , "UTF-8");
             $single['INTTOPTEN'] =   $singleFaq['INTTOPTEN'] ;
             $single['STRCATEGORY'] = $singleFaq[$category];
