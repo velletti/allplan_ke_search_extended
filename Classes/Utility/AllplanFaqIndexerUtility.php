@@ -3,7 +3,6 @@ namespace Allplan\AllplanKeSearchExtended\Utility;
 
 use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
 use Allplan\NemSolution\Service\FaqWrapper;
-use TeaminmediasPluswerk\KeSearch\Indexer\IndexerRunner;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
@@ -60,8 +59,8 @@ class AllplanFaqIndexerUtility
         if($indexerObject) {
             $this->indexerObject = $indexerObject ;
         } else {
-            // load hardcoded Indexer Object to emulate Single Indexer
-            $this->indexerObject = GeneralUtility::makeInstance(IndexerRunner::class);
+            // load hardcoded Indexer Object to emulate Single Indexer AllplanKesearchIndexer extends IndexerRunner
+            $this->indexerObject = GeneralUtility::makeInstance(AllplanKesearchIndexer::class);
         }
         $this->indexerConfig = $indexerConfig ;
 
@@ -155,6 +154,7 @@ class AllplanFaqIndexerUtility
 
         $aktIndex = $this->getIndexerById($singleUid)  ;
         if($aktIndex ) {
+            // echo "\n LINE " . LINE__ ;
             $lastMod = date( "Y-m-d" , $aktIndex['sortdate'] ) ;
             if( $lastMod >= $lastRun ) {
                 return true ;
@@ -468,6 +468,9 @@ class AllplanFaqIndexerUtility
             $queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter('supportfa%', Connection::PARAM_STR)
             )
         ) ;
+        // echo $queryBuilder->getSQL() ;
+        // echo $queryBuilder->getParameters() ;
+        // die ;
 
         $queryBuilder->execute();
 
