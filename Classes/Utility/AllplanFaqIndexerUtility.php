@@ -214,7 +214,7 @@ class AllplanFaqIndexerUtility
             // echo " <hr> **********************+ +text html_entity_decode =" ;
             $singleFaq['STRTEXT'] = html_entity_decode(  $singleFaq['STRTEXT']	,ENT_COMPAT  , "UTF-8")  ;
 
-            $single['uid'] = $this->convertIdToINT($singleFaq['STRDOK_ID'], $indexlang);
+            $single['uid'] = $this->convertIdToINT( $docID , $indexlang);
             $single['STRSUBJECT'] = html_entity_decode( $singleFaq['STRSUBJECT'] ,ENT_COMPAT  , "UTF-8");
             $single['INTTOPTEN'] =   $singleFaq['INTTOPTEN'] ;
             $single['STRCATEGORY'] = $singleFaq[$category];
