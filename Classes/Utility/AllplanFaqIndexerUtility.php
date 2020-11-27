@@ -74,6 +74,8 @@ class AllplanFaqIndexerUtility
      */
 
     public function indexSingleFAQ( $url , $lastRun , $faq = false ) {
+        $debugOutput = false ;
+        $debug[] = array( "LINE:" => __LINE__ ,  "url" => $url ) ;
 
         $indexerConfig = $this->indexerConfig ;
         $indexerObject = $this->indexerObject ;
@@ -95,12 +97,6 @@ class AllplanFaqIndexerUtility
             $currentLang = "en" ;
         }
         $docID = str_replace( ".html" , "" , substr( $urlSingleArray['path'] , strpos( strtolower( $urlSingleArray['path'] ) , "faqid") + 6 ) )  ;
-
-
-
-
-
-
 
         $urlSingleArray = parse_url( $url ) ;
         $indexlang = 0  ;
@@ -150,13 +146,15 @@ class AllplanFaqIndexerUtility
         }
 
         $singleUid = $this->convertIdToINT( $docID , $indexlang );
-
+        $debug[] = array( "LINE:" => __LINE__ ,  "singleUid" => $singleUid ) ;
 
         $aktIndex = $this->getIndexerById($singleUid)  ;
         if($aktIndex ) {
-            // echo "\n LINE " . LINE__ ;
+            $debug[] = array( "LINE:" => __LINE__ ,  "aktIndex" => $aktIndex ) ;
             $lastMod = date( "Y-m-d" , $aktIndex['sortdate'] ) ;
+            $debug[] = array( "LINE:" => __LINE__ ,  "lastMod" => $lastMod ) ;
             if( $lastMod >= $lastRun ) {
+                if($debugOutput) {  var_dump($debug) ; die; };
                 return true ;
             }
             // delete all old entries of this FAX from index. needed as update index takes "type" into account
@@ -164,6 +162,7 @@ class AllplanFaqIndexerUtility
             $this->deleteFromIndexById($singleUid) ;
         } else {
             // if we found one or more  entries in tx_kesearch_allplan_url_ids but no indexed FAQ in kesearch_index, we must remove this garbage
+            $debug[] = array( "LINE:" => __LINE__ ,  "delete  tx_kesearch_allplan_url_ids $docID and $indexlang " => $docID . " - " . $indexlang) ;
             $this->deleteIdToINTentries( $docID , $indexlang) ;
         }
 
@@ -190,6 +189,8 @@ class AllplanFaqIndexerUtility
             $singleFaq = $faq['FNCSEARCHReturn']['FAQSEARCHLIST']['FAQENTRIES'][0] ;
         }
         if( !is_array($singleFaq) ) {
+            $debug[] = array( "LINE:" => __LINE__ ,  "Stop here .. Got no FAQ !! " => $singleFaq ) ;
+            if($debugOutput) {  var_dump($debug) ; die; };
             return false  ;
         } else {
 
@@ -198,6 +199,8 @@ class AllplanFaqIndexerUtility
 
             if ( array_key_exists('TODELETE' , $singleFaq ) && $singleFaq['TODELETE'] === true ) {
                 // 26.11.2020 "TODELETE"  = TRUE ... as above all entries if this FAQ have been deleted deleteFromIndexById(). it should work now
+                $debug[] = array( "LINE:" => __LINE__ ,  "Stop here .. marked as do be deleted " => "!" ) ;
+                if($debugOutput) {  var_dump($debug) ; die; };
                 return true ;
             }
 
@@ -256,11 +259,14 @@ class AllplanFaqIndexerUtility
                     $single['feGroup'] = '38';
                     break;
             }
-
+            $debug[] = array( "LINE:" => __LINE__ ,  "single" => $single ) ;
 
             if (! $this->putToIndex($single, $indexerObject, $indexerConfig)) {
+                $debug[] = array( "LINE:" => __LINE__ ,  "indexer Update failed" => "!!!" ) ;
+                if($debugOutput) {  var_dump($debug) ; die; };
                return false ;
             }
+            if($debugOutput) {  var_dump($debug) ; die; };
         }
 
         unset($single) ;
