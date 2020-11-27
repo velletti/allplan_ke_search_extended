@@ -70,10 +70,11 @@ class AllplanFaqIndexerUtility
     /**
      * @param string  $url Singel URL to index
      * @param string  $lastRun when was faq Indexer last time updated ?   2020.09.30  set it to future to enforce indexing
+     * @param mixed   $faq singe FAQ Search result ... only if already loaded in Nem Solution .. to update index
      * @return boolean
      */
 
-    public function indexSingleFAQ( $url , $lastRun ) {
+    public function indexSingleFAQ( $url , $lastRun , $faq = false ) {
 
         $indexerConfig = $this->indexerConfig ;
         $indexerObject = $this->indexerObject ;
@@ -98,19 +99,7 @@ class AllplanFaqIndexerUtility
 
 
 
-        $singleUid = $this->convertIdToINT( $docID , 0 );
 
-
-        $aktIndex = $this->getIndexerById($singleUid)  ;
-        if($aktIndex ) {
-            $lastMod = date( "Y-m-d" , $aktIndex['sortdate'] ) ;
-            if( $lastMod >= $lastRun ) {
-                return true ;
-            }
-            // delete all old entries of this FAX from index. needed as update index takes "type" into account
-            // but type may change from supportfaq to a restricted  supportfaqnem
-            $this->deleteFromIndexById($singleUid) ;
-        }
 
 
 
@@ -161,6 +150,23 @@ class AllplanFaqIndexerUtility
             $indexlang = $lang  ;
         }
 
+        $singleUid = $this->convertIdToINT( $docID , $indexlang );
+
+
+        $aktIndex = $this->getIndexerById($singleUid)  ;
+        if($aktIndex ) {
+            $lastMod = date( "Y-m-d" , $aktIndex['sortdate'] ) ;
+            if( $lastMod >= $lastRun ) {
+                return true ;
+            }
+            // delete all old entries of this FAX from index. needed as update index takes "type" into account
+            // but type may change from supportfaq to a restricted  supportfaqnem
+            $this->deleteFromIndexById($singleUid) ;
+        } else {
+            // if we found one or more  entries in tx_kesearch_allplan_url_ids but no indexed FAQ in kesearch_index, we must remove this garbage
+            $this->deleteIdToINTentries( $docID , $indexlang) ;
+        }
+
         $params['VARVERSION'] = array("2020" , "2019");
         $params['STRPRODUKT'] = 'Allplan' ;
         $params['STRLANGUAGE'] = strtoupper( $currentLang ) ;
@@ -174,7 +180,10 @@ class AllplanFaqIndexerUtility
 
         $params['STRTOPTEN'] = '1-1'  ;
 
-        $faq = $this->faqWrapper->getSingleFAQdirect($params);
+        if( !$faq ) {
+            $faq = $this->faqWrapper->getSingleFAQdirect($params);
+        }
+
 
 
         if( is_array($faq) && array_key_exists('FNCSEARCHReturn' , $faq) && array_key_exists('FAQSEARCHLIST' , $faq['FNCSEARCHReturn']) ) {
@@ -347,6 +356,23 @@ class AllplanFaqIndexerUtility
 
     }
 
+    protected function deleteIdToINTentries( $notes_id , $lang)
+    {
+
+        /** @var \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance("TYPO3\\CMS\\Core\\Database\\ConnectionPool");
+
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = $connectionPool->getConnectionForTable('tx_kesearch_allplan_url_ids')->createQueryBuilder();
+        $queryBuilder->delete('tx_kesearch_allplan_url_ids');
+
+        $expr = $queryBuilder->expr();
+        $queryBuilder->where(
+            $expr->eq('notes_id', $queryBuilder->createNamedParameter($notes_id, Connection::PARAM_STR))
+        )->andWhere(
+            $expr->eq('sys_language_uid', $queryBuilder->createNamedParameter(intval($lang), Connection::PARAM_INT))
+        )->execute() ;
+    }
 
     protected function convertIdToINT( $notes_id , $lang) {
 
@@ -373,7 +399,6 @@ class AllplanFaqIndexerUtility
             //var_dump($row);
             //die;
         } else {
-
             $data = array( "pid" => 0 , "notes_id" => $notes_id , "sys_language_uid" => intval($lang)  ) ;
             /** @var QueryBuilder $queryBuilder */
             $queryBuilder = $connectionPool->getConnectionForTable('tx_kesearch_allplan_url_ids')->createQueryBuilder();
