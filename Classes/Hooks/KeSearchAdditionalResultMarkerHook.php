@@ -20,7 +20,7 @@ class KeSearchAdditionalResultMarkerHook{
             if( substr( $row['type'], 0 , 10) == "supportfaq") {
                 $tempMarkerArray['faq'] = json_decode( $row['content'] , true)  ;
                 if( !is_array( $tempMarkerArray['faq'] ) ){
-                    $docId = substr( $row['content'] , 14 , strpos( $row['content'] , STRBEARBEITUNGSSTAND ) -3 ) ;
+                    $docId = substr( $row['content'] , 14 , strpos( $row['content'] , "STRBEARBEITUNGSSTAND" ) -3 ) ;
 
                     $tempMarkerArray['faq'] = array( "STRDOK_ID" => $docId , "STRSUBJECT" => "--- outdated index !--- ") ;
                 }
