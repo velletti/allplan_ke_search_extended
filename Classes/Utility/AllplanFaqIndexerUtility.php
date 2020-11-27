@@ -61,6 +61,8 @@ class AllplanFaqIndexerUtility
         } else {
             // load hardcoded Indexer Object to emulate Single Indexer AllplanKesearchIndexer extends IndexerRunner
             $this->indexerObject = GeneralUtility::makeInstance(AllplanKesearchIndexer::class);
+            // set some prepare statements
+            $this->indexerObject->prepareStatements();
         }
         $this->indexerConfig = $indexerConfig ;
 
