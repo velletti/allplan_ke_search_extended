@@ -19,6 +19,11 @@ class KeSearchAdditionalResultMarkerHook{
 
             if( substr( $row['type'], 0 , 10) == "supportfaq") {
                 $tempMarkerArray['faq'] = json_decode( $row['content'] , true)  ;
+                if( !is_array( $tempMarkerArray['faq'] ) ){
+                    $docId = substr( $row['content'] , 14 , strpos( $row['content'] , STRBEARBEITUNGSSTAND ) -3 ) ;
+
+                    $tempMarkerArray['faq'] = array( "STRDOK_ID" => $docId , "STRSUBJECT" => "--- outdated index !--- ") ;
+                }
                 $tempMarkerArray['top10'] = $row['top10'] ;
                 // We need to Overwrite the Teaser again as using the Json from FAQ as Abstract Teaser is not usefull
                 $tempMarkerArray['teaser'] = $pibase->searchResult->buildTeaserContent( $row['abstract'] ) ;
