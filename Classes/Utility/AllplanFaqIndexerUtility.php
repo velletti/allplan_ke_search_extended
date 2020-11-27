@@ -78,7 +78,7 @@ class AllplanFaqIndexerUtility
     public function indexSingleFAQ( $url , $lastRun , $faq = false ) {
         $debugOutput = false ;
         if(  $faq) {
-            $debugOutput = true ;
+     //       $debugOutput = true ;
         }
 
         $debug[] = array( "LINE:" => __LINE__ ,  "url" => $url ) ;
