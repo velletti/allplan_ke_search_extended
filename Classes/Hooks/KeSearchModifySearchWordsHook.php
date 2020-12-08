@@ -11,7 +11,7 @@ class KeSearchModifySearchWordsHook {
 	 * @param array $searchWordInformation
 	 * @param mixed $pObj
 	 */
-	public function modifySearchWords(&$searchWordInformation, $pObj) {
+	public function modifySearchWords(&$searchWordInformation, &$pObj) {
 
         $searchWordInformation['wordsAgainst'] = str_replace( "+" , "", $searchWordInformation['wordsAgainst'] ) ;
         // var_dump($searchWordInformation['wordsAgainst']);
@@ -34,6 +34,8 @@ class KeSearchModifySearchWordsHook {
         // die(" __FILE__" . __FILE__ . " __LINE__" . __LINE__ );
 
         $searchWordInformation['wordsAgainst'] = "+" . str_replace( " " , " +", $searchWordInformation['wordsAgainst'] ) ;
+
+
 	}
 
 
