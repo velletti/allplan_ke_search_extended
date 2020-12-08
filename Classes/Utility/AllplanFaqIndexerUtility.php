@@ -226,7 +226,7 @@ class AllplanFaqIndexerUtility
 
             $single['uid'] = $singleUid ;
             $single['STRSUBJECT'] = html_entity_decode( $singleFaq['STRSUBJECT'] ,ENT_COMPAT  , "UTF-8");
-            $single['INTTOPTEN'] =   $singleFaq['INTTOPTEN'] ;
+            $single['INTTOPTEN'] =   intval( $singleFaq['INTTOPTEN'] > 0 ) ? substr( "00" . $singleFaq['INTTOPTEN'] , -3 ,3) : "000" ;
             $single['STRCATEGORY'] = $singleFaq[$category];
             $single['STRTEXT'] = $singleFaq[$category] . " \n " . $singleFaq['STRTEXT'] ;
 
