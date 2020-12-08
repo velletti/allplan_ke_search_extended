@@ -22,7 +22,7 @@ class KeSearchAdditionalResultMarkerHook{
                 if( !is_array( $tempMarkerArray['faq'] ) ){
                     $docId = substr( $row['content'] , 14 , strpos( $row['content'] , "STRBEARBEITUNGS" ) -17 ) ;
 
-                    $tempMarkerArray['faq'] = array( "STRDOK_ID" => $docId , "STRSUBJECT" => "--- outdated index !--- ") ;
+                    $tempMarkerArray['faq'] = array( "STRDOK_ID" => $docId , "STRSUBJECT" => "--- outdated index !--- " , "outdated" => true ) ;
                 }
                 $tempMarkerArray['top10'] = $row['top10'] ;
                 // We need to Overwrite the Teaser again as using the Json from FAQ as Abstract Teaser is not usefull
