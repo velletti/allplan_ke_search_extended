@@ -23,6 +23,8 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['registerAdditionalFields'][
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyContentIndexEntry'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchModifyContentIndexEntryHook';
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyPagesIndexEntry'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchModifyPagesIndexEntryHook';
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyAddressIndexEntry'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchModifyAddressIndexEntryHook';
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFilters'][]           = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchModifyFiltersHook';
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFlexFormData'][]           = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchModifyFlexFormDataHook';
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyExtNewsIndexEntry'][] = 'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchModifyExtNewsIndexEntryHook';
 
 

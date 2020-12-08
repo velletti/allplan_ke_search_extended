@@ -226,7 +226,10 @@ class AllplanFaqIndexerUtility
 
             $single['uid'] = $singleUid ;
             $single['STRSUBJECT'] = html_entity_decode( $singleFaq['STRSUBJECT'] ,ENT_COMPAT  , "UTF-8");
-            $single['INTTOPTEN'] =   intval( $singleFaq['INTTOPTEN'] > 0 ) ? substr( "00" . $singleFaq['INTTOPTEN'] , -3 ,3) : "000" ;
+            // faq top value : 1 should rank highest .. 999 lowest. aktuall we get 49 as lowest value
+            // BUT also 0 that should be the absolutest value .. To rank Top10 mostly on to, we revert sorting.
+            // problem is also top10 is a string field and we need to sort 40 higher than 8 so change 40 => 040 and 8 => 008 ... 0 will get 000
+            $single['INTTOPTEN'] =  substr( "000" . ( 1000 - intval($singleFaq['INTTOPTEN']) ) , -3 ,3) ;
             $single['STRCATEGORY'] = $singleFaq[$category];
             $single['STRTEXT'] = $singleFaq[$category] . " \n " . $singleFaq['STRTEXT'] ;
 
