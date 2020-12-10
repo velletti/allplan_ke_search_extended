@@ -116,46 +116,16 @@ class AllplanFaqIndexerUtility
         $urlSingleArray = parse_url( $url ) ;
         $indexlang = 0  ;
         $options['fromdecode'] = "ISO-8859-1" ;
-        switch($currentLang ) {
-            case "de":
-                $lang = 1 ;
-                $indexlang = -1 ;
-                $indexerConfig['pid'] = 5025 ;
-                $category = "STRCATEGORY_DE" ;
-                break ;
-            case "it":
-                $lang = 2 ;
 
-                $indexerConfig['pid'] = 5027 ;
-                $category = "STRCATEGORY_IT" ;
-                break ;
-            case "cz":
-                $lang = 3 ;
-                $indexerConfig['pid'] = 5027 ;
-                $category = "STRCATEGORY_CS" ;
-                $options['fromdecode'] = "ISO-8859-2" ;
-                break ;
-            case "fr":
-                $lang = 4 ;
-                $indexerConfig['pid'] = 5026 ;
-                $category = "STRCATEGORY_FR" ;
-                break ;
-            case "es":
-                $lang = 18 ;
-                $indexerConfig['pid'] = 5027 ;
-                $category = "STRCATEGORY_ES" ;
-                break ;
-            case "ru":
-                $lang = 14 ;
-                $indexerConfig['pid'] = 5027 ;
-                $category = "STRCATEGORY_EN" ; // RU is not in Response
-                break ;
-            default:
-                $lang = 0 ;
-                $indexerConfig['pid'] = 5027 ;
-                $category = "STRCATEGORY_EN" ;
-                break ;
-        }
+        $langSettings= $this->getLanguageSettings( $currentLang ) ;
+
+        $lang = $langSettings['lang'] ;
+        $indexlang =  $langSettings['indexlang'] ; ;
+        $indexerConfig['pid'] = $langSettings['pid'] ;
+        $category = $langSettings['cat'] ;
+        $options['fromdecode'] = $langSettings['fromdecode'] ;
+
+
         if (  $indexlang == 0   ) {
             $indexlang = $lang  ;
         }
@@ -295,6 +265,27 @@ class AllplanFaqIndexerUtility
         return $debug ;
     }
 
+    public function getLanguageSettings($currentLang) {
+
+        switch($currentLang ) {
+            case "de":
+                return array("lang" => 1 , "indexlang" => -1 , "pid" => 5025 , "cat" =>  "STRCATEGORY_DE" , 'fromdecode' => "ISO-8859-1" ) ;
+            case "it":
+                return array("lang" => 2 , "indexlang" => 2 , "pid" => 5027 , "cat" =>  "STRCATEGORY_IT" , 'fromdecode' => "ISO-8859-1" ) ;
+            case "cz":
+                return array("lang" => 3 , "indexlang" => 3 , "pid" => 5027 , "cat" =>  "STRCATEGORY_CS" , 'fromdecode' => "ISO-8859-2" ) ;
+            case "fr":
+                return array("lang" => 4 , "indexlang" => 4 , "pid" => 5026 , "cat" =>  "STRCATEGORY_FR" , 'fromdecode' => "ISO-8859-1" ) ;
+            case "es":
+                return array("lang" => 18 , "indexlang" => 18 , "pid" => 5027 , "cat" =>  "STRCATEGORY_ES" , 'fromdecode' => "ISO-8859-1" ) ;
+            case "ru":
+                return array("lang" => 14 , "indexlang" => 14 , "pid" => 5027 , "cat" =>  "STRCATEGORY_EN" , 'fromdecode' => "ISO-8859-1" ) ;
+            default:
+                return array("lang" => 0 , "indexlang" => 0 , "pid" => 5027 , "cat" =>  "STRCATEGORY_EN" , 'fromdecode' => "ISO-8859-1" ) ;
+        }
+
+    }
+
     protected function repairFAQ($entry , $options) {
         if ( ! is_array($entry)) {
             return $entry ;
@@ -401,7 +392,7 @@ class AllplanFaqIndexerUtility
         )->execute() ;
     }
 
-    protected function convertIdToINT( $notes_id , $lang) {
+    public function convertIdToINT( $notes_id , $lang) {
 
         /** @var \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool */
         $connectionPool = GeneralUtility::makeInstance( "TYPO3\\CMS\\Core\\Database\\ConnectionPool");
