@@ -189,7 +189,13 @@ class AllplanFaqIndexerUtility
             if($debugOutput) {  var_dump($debug) ; die; };
             return false  ;
         } else {
-            if($debugOutput) {  var_dump($debug) ; die; };
+            $debug[] = array( "LINE:" => __LINE__ ,  "now update FAQ on index " => var_export( $singleFaq , true  )) ;
+            if($debugOutput) {
+                echo "<pre>" ;
+                var_dump($debug) ;
+                die;
+            };
+
             // https://connect.allplan.com/de/support/loesungen/show.html?tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[dokID]=20200313091506&tx_nemsolution_pi1[ug]=ne&tx_nemsolution_pi1[json]=1
 
 
