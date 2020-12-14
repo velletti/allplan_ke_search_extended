@@ -175,15 +175,21 @@ class AllplanFaqIndexerUtility
 
 
 
-        if( is_array($faq) && array_key_exists('FNCSEARCHReturn' , $faq) && array_key_exists('FAQSEARCHLIST' , $faq['FNCSEARCHReturn']) ) {
-            $singleFaq = $faq['FNCSEARCHReturn']['FAQSEARCHLIST']['FAQENTRIES'][0] ;
+        if( is_array($faq) ) {
+            if ( array_key_exists('FNCSEARCHReturn' , $faq) && array_key_exists('FAQSEARCHLIST' , $faq['FNCSEARCHReturn']) ) {
+                $singleFaq = $faq['FNCSEARCHReturn']['FAQSEARCHLIST']['FAQENTRIES'][0] ;
+            } else {
+                if ( array_key_exists('STRTEXT' , $faq) ) {
+                    $singleFaq = $faq;
+                }
+            }
         }
         if( !is_array($singleFaq) ) {
             $debug[] = array( "LINE:" => __LINE__ ,  "Stop here .. Got no FAQ !! " => $singleFaq ) ;
             if($debugOutput) {  var_dump($debug) ; die; };
             return false  ;
         } else {
-
+            if($debugOutput) {  var_dump($debug) ; die; };
             // https://connect.allplan.com/de/support/loesungen/show.html?tx_nemsolution_pi1[action]=show&tx_nemsolution_pi1[controller]=Solution&tx_nemsolution_pi1[dokID]=20200313091506&tx_nemsolution_pi1[ug]=ne&tx_nemsolution_pi1[json]=1
 
 
