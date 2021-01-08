@@ -90,7 +90,7 @@ class AllplanFaqIndexerUtility
      //       $debugOutput = true ;
         }
         if( $url && substr( $url , -5, 5 ) != ".html" ) {
-            $url = $url ."html" ;
+            $url = $url .".html" ;
         }
 
         $debug[] = array( "LINE:" => __LINE__ ,  "url" => $url ) ;
