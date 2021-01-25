@@ -47,7 +47,9 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
         /** @var AllplanFaqIndexerUtility $AllplanFaqIndexerUtility */
         $AllplanFaqIndexerUtility = GeneralUtility::makeInstance("Allplan\\AllplanKeSearchExtended\\Utility\\AllplanFaqIndexerUtility") ;
+        // @extensionScannerIgnoreLine
         $AllplanFaqIndexerUtility->init($indexerConfig ,$indexerObject);
+
 
         $url = $indexerObject->externalUrl  ;
         $debug = "url: " . ($url) ;

@@ -38,10 +38,10 @@
  * @package PlaceLocalInclude
  * @subpackage simple_html_dom
  */
-
 /**
  * All of the Defines for the classes below.
  * @author S.C. Chen <me578022@gmail.com>
+ * @extensionScannerIgnoreFile
  */
 define('HDOM_TYPE_ELEMENT', 1);
 define('HDOM_TYPE_COMMENT', 2);
@@ -110,6 +110,7 @@ function dump_html_tree($node, $show_attr=true, $deep=0)
  * PaperG - added ability for "find" routine to lowercase the value of the selector.
  * PaperG - added $tag_start to track the start position of the tag in the total byte index
  *
+ *  @extensionScannerIgnoreFile
  * @package PlaceLocalInclude
  */
 class simple_html_dom_node

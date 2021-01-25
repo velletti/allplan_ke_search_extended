@@ -9,6 +9,8 @@ use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
 /**
  * TYPO3Fluid
  */
+
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
@@ -103,13 +105,8 @@ class KeSearchUnlockViewHelper extends AbstractViewHelper
 					'lockUid' => $row['uid'],
 					'CMD' => 'Unlock',
 				];
-
-				if(intval(TYPO3_branch) < 9){
-					$uri = BackendUtility::getModuleUrl('web_KeSearchBackendModule') . '&' . $parameters;
-				}else{
-					$uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
-					$uri = $uriBuilder->buildUriFromRoute('web_KeSearchBackendModule', $parameters);
-				}
+                $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
+                $uri = $uriBuilder->buildUriFromRoute('web_KeSearchBackendModule', $parameters);
 
 				if($GLOBALS['BE_USER']->isAdmin()){
 					$link = '<a class="lock-button" href="' . $uri . '">unlock</a>';

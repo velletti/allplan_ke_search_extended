@@ -15,6 +15,7 @@ class KeSearchModifySearchWordsHook {
 
         $searchWordInformation['wordsAgainst'] = str_replace( "+" , "", $searchWordInformation['wordsAgainst'] ) ;
         // var_dump($searchWordInformation['wordsAgainst']);
+        // @extensionScannerIgnoreLine
         if( $pObj->conf['encodeWords'] )  {
             $searchWordInformation['wordsAgainst'] = htmlentities( $searchWordInformation['wordsAgainst'] ) ;
         }

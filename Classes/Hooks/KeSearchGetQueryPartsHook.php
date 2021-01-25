@@ -27,6 +27,7 @@ class KeSearchGetQueryPartsHook
 	     */
 
         if(is_array($queryParts) ){
+            // @extensionScannerIgnoreLine
              $resultPage = $pibase->conf['resultPage'] ;
             // echo " resultPage " . $resultPage ;
               $settings = TyposcriptUtility::loadTypoScriptFromScratch($resultPage, 'tx_kesearch_pi1') ;

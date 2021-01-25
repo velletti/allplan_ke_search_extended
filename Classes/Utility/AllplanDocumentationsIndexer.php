@@ -201,9 +201,9 @@ class AllplanDocumentationsIndexer extends BaseKeSearchIndexerHook
 
 
 
-        $FileRecord = $queryBuilder->execute()->fetch();
+        $FileRecord = $queryBuilder->execute()->fetchAssociative();
 
-        $file = PATH_site . "fileadmin" . $FileRecord['identifier'] ;
+        $file = \TYPO3\CMS\Core\Core\Environment::getPublicPath()  . "/fileadmin" . $FileRecord['identifier'] ;
         $className = 'tx_kesearch_indexer_filetypes_pdf' ;
 
         // check if class exists

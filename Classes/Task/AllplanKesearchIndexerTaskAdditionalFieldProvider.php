@@ -21,6 +21,7 @@ use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Scheduler\AbstractAdditionalFieldProvider;
 use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
@@ -28,7 +29,7 @@ use TYPO3\CMS\Scheduler\Task\AbstractTask;
  * A task that should be run regularly that deletes
  * datasets flagged as "deleted" from the DB.
  */
-class AllplanKesearchIndexerTaskAdditionalFieldProvider implements \TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface
+class AllplanKesearchIndexerTaskAdditionalFieldProvider extends  AbstractAdditionalFieldProvider implements \TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface
 {
 
 
@@ -42,8 +43,7 @@ class AllplanKesearchIndexerTaskAdditionalFieldProvider implements \TYPO3\CMS\Sc
      */
     public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $schedulerModule)
     {
-
-        if ($schedulerModule->CMD === 'edit') {
+        if ($schedulerModule->getCurrentAction() === 'edit') {
             $taskInfo['IndexerCleanerPeriod'] = $task->getPeriod();
             $taskInfo['IndexerLanguage'] = $task->getLanguage();
             $taskInfo['IndexerExternalUrl'] = $task->getExternalUrl();
@@ -285,7 +285,8 @@ class AllplanKesearchIndexerTaskAdditionalFieldProvider implements \TYPO3\CMS\Sc
             $validTca = false;
         }
         if( !$validTca ) {
-            $schedulerModule->addMessage(
+            // @extensionScannerIgnoreLine
+            $this->addMessage(
                 htmlspecialchars( $this->getLanguageService()->sL('LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskErrorTCAempty'), ENT_COMPAT, 'UTF-8', false)
                 ,
                 FlashMessage::ERROR
@@ -336,7 +337,8 @@ class AllplanKesearchIndexerTaskAdditionalFieldProvider implements \TYPO3\CMS\Sc
         if (!empty($period) && ( filter_var($period, FILTER_VALIDATE_INT) !== false || intval( $period ) == -1 )) {
             $validPeriod = true;
         } else {
-            $schedulerModule->addMessage(
+            // @extensionScannerIgnoreLine
+            $this->addMessage(
                 htmlspecialchars( $this->getLanguageService()->sL('LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskErrorPeriod'), ENT_COMPAT, 'UTF-8', false)
                 ,
                 FlashMessage::ERROR
@@ -359,7 +361,8 @@ class AllplanKesearchIndexerTaskAdditionalFieldProvider implements \TYPO3\CMS\Sc
         if (empty($period) ||   filter_var($period, FILTER_VALIDATE_INT) !== false  ) {
             $validPeriod = true;
         } else {
-            $schedulerModule->addMessage(
+            // @extensionScannerIgnoreLine
+            $this->addMessage(
                 htmlspecialchars( $this->getLanguageService()->sL('LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskErrorStoragePid'), ENT_COMPAT, 'UTF-8', false) ,
 
                 FlashMessage::ERROR
