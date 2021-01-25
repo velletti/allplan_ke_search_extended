@@ -1,6 +1,9 @@
 <?php
 namespace Allplan\AllplanKeSearchExtended\Hooks;
 
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
+
 class KeSearchIndexerHook extends BaseKeSearchIndexerHook{
 
     /**
@@ -10,8 +13,7 @@ class KeSearchIndexerHook extends BaseKeSearchIndexerHook{
      * @param mixed $pObj
      */
     public function registerIndexerConfiguration(&$params, $pObj) {
-        $iconPath = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::siteRelPath('allplan_ke_search_extended') . '/Resources/Public/Icons/' ;
-        
+        $iconPath = 'EXT:allplan_ke_search_extended/Resources/Public/Icons/' ;
         // Events (jv_events)
         // =================================================================================================================================
         $newArray = [
