@@ -110,6 +110,10 @@ class JvEventsIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSearc
                     'sortdate' => $sortdate ,
                     'servername' => $server
                 );
+                // var_dump($content);
+                // var_dump($parameters);
+                // return 0 ;
+
 
                 $indexerObject->storeInIndex(
                     $indexerConfig['pid'],			// folder, where the indexer Data is stored

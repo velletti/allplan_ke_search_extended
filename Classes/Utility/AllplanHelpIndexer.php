@@ -38,7 +38,6 @@ class AllplanHelpIndexer extends BaseKeSearchIndexerHook
         $url = $indexerObject->externalUrl . "search.json" ;
         // ToDo Put tags to Indexer object
         $indexerConfig['tags'] = "#onlinehelp#" ;
-
         $json = $this->getJsonFile($url) ;
         if( is_array($json)) {
             if($json['error'] > 0 ) {
@@ -67,12 +66,15 @@ class AllplanHelpIndexer extends BaseKeSearchIndexerHook
                         $count++ ;
                     }
                 }
+                // ToDo Disable  next lines .. only needed for faster dev Process ..
+                // if ( $count > 20 ) {
+            //    var_dump($string);
+            //        var_dump($single);
+            //        return $count ;
+            //    }
                 unset($single) ;
                 unset($singleString) ;
-                // ToDo Disable  next lines .. only needed for faster dev Process ..
-                //   if ( $count > 20 ) {
-                //       return $count ;
-                //   }
+
         }
         $insertFields = array(
             "action"  => 1 ,
