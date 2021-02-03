@@ -171,6 +171,13 @@ class AllplanFaqIndexerUtility
         if( !$faq ) {
             $debug[] = array( "LINE:" => __LINE__ ,  "got no FAQ - search FAQ py params " => $params ) ;
             $faq = $this->faqWrapper->getSingleFAQdirect($params);
+
+            $options['from'] = $options['htmlfrom'] ;
+            $options['to']   = $options['htmlto'] ;
+        } else {
+            // we got a repaired FAQ so we do not need to repair it twice
+            $options['from'] = '' ;
+            $options['to']   = '' ;
         }
 
 
