@@ -319,8 +319,11 @@ class AllplanFaqIndexerUtility
         if( array_key_exists(  'STRTEXT' ,  $entry ) ) {
             if ( strip_tags( $entry['STRTEXT']) == $entry['STRTEXT'] ) {
                 $entry['NONLTOBR'] = FALSE;
-                $entry['STRTEXT'] =  str_replace( "\\n" , "" , $entry['STRTEXT']	)  ;
+
             } else {
+                // we do not want to convert NL to BR if there are HTML Tags
+                // problem : <img \nsrc=""> breaks ...
+                $entry['STRTEXT'] =  str_replace( "\\n" , "" , $entry['STRTEXT']	)  ;
                 $entry['NONLTOBR'] = TRUE;
             }
             $entry['STRTEXT'] =  str_replace( "&apos;" , "'" , $entry['STRTEXT']	)  ;
