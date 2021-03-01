@@ -324,10 +324,11 @@ class AllplanFaqIndexerUtility
                 // we do not want to convert NL to BR if there are HTML Tags
                 // problem : <img \nsrc=""> breaks ...
                 $entry['STRTEXT'] =  str_replace( "\\n" , "" , $entry['STRTEXT']	)  ;
-                $entry['NONLTOBR'] = TRUE;
+                $entry['NONLTOBR'] = FALSE;
             }
             $entry['STRTEXT'] =  str_replace( "&apos;" , "'" , $entry['STRTEXT']	)  ;
         }
+        $entry['STRTEXT'] =  str_replace( array("img \\nsrc" , "img \nsrc" , ">\\n"  , ">\n" ) , array("img src" ,"img src"  , ">" , ">"), $entry['STRTEXT']	)  ;
 
         if( array_key_exists ( 'STRCOMMENT' , $entry    ) ) {
             $entry['STRCOMMENT'] =  html_entity_decode(  $entry['STRCOMMENT']	,ENT_COMPAT  , "UTF-8")  ;
