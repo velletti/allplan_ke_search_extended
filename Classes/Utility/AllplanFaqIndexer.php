@@ -3,6 +3,7 @@ namespace Allplan\AllplanKeSearchExtended\Utility;
 
 use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
 use Allplan\AllplanKeSearchExtended\Utility\AllplanFaqIndexerUtility;
+use Allplan\AllplanTools\Utility\MailUtility;
 use Allplan\NemSolution\Service\FaqWrapper;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\Connection;
@@ -90,6 +91,14 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         } else {
 
         }
+
+        $details  =  "Allplan FAQ Indexer : got '" . $numIndexed  . "' entries, got " . $error . " Errors and had updated / inserted : '" . $count . "' entries. Crawled: " . $url
+        . " and got xlm2 from string: " . substr( var_export( $xml2 , true ) , 0 , 500 )  . " .... Total: " . strlen( $xml2 ) . " chars .." ;
+
+        MailUtility::debugMail( array("jvelletti@allplan.com" , "slorenz@allplan.com" ) , "[FAQ-Indexer] FAQ Indexer has run on '" . $count . "' objects ", $details . " \n\n " . $debug ) ;
+
+
+
         // take storage PID form indexexer Configuration or overwrite it with storagePid From Indexer Task ??
         $pid = $indexerObject->storagePid > 0 ? $indexerObject->storagePid  : $indexerConfig['pid'] ;
 
@@ -98,8 +107,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             "tablename" => "tx_kesearch_index" ,
             "error" => $error > 0,
             "event_pid" => $pid ,
-            "details" => "Allplan FAQ Indexer : got '" . $numIndexed  . "' entries, got " . $error . " Errors and had updated / inserted : '" . $count . "' entries. Crawled: " . $url
-                . " and got xlm2 from string: " . substr( var_export( $xml2 , true ) , 0 , 100 )  . " .... Total: " . strlen( $xml2 ) . " chars .." ,
+            "details" => $details ,
             "tstamp" => time() ,
             "type" => 1 ,
             "message" => $debug ,
