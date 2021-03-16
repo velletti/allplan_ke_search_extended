@@ -52,8 +52,14 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $AllplanFaqIndexerUtility->init($indexerConfig ,$indexerObject);
 
 
-        $url = $indexerObject->externalUrl  ;
-        $debug = "url: " . ($url) ;
+        $url = trim( $indexerObject->externalUrl ) ;
+        $debug = "Url to XML File in Config: " . ($url) . "\n\n";
+        $debug .= "Max Entrys in Config: " . int($indexerObject->rowcount) . "\n\n";
+        if ( $url == "") {
+            $url = "http://212.29.3.155/hotline/FAQ_HOTD.nsf/0/05421C80A7EB2CE2C1257480004DDA2E/\$FILE/FAQIDs.xml?OpenElement";
+            $debug = "Url to XML File set to: " . ($url) . "\n\n";
+        }
+
 
         $xmlFromUrl = $this->getExampleXml() ;
         // For testing  disable  the next command : $this->getJsonFile ... as something like above should come from ws call
@@ -68,6 +74,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $maxIndex =  $indexerObject->rowcount  ;
         if(  $indexerObject->rowcount < 1 ) {
             $maxIndex = 10000 ;
+            $debug .= "Max Entrys set to: " . int( $maxIndex ) . "\n\n";
         }
 
         if( is_object($xml2)) {
