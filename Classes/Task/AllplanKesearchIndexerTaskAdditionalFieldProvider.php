@@ -43,7 +43,8 @@ class AllplanKesearchIndexerTaskAdditionalFieldProvider extends  AbstractAdditio
      */
     public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $schedulerModule)
     {
-        if ($schedulerModule->getCurrentAction() === 'edit') {
+
+        if ($schedulerModule->getCurrentAction() == 'edit') {
             $taskInfo['IndexerCleanerPeriod'] = $task->getPeriod();
             $taskInfo['IndexerLanguage'] = $task->getLanguage();
             $taskInfo['IndexerExternalUrl'] = $task->getExternalUrl();
@@ -69,7 +70,6 @@ class AllplanKesearchIndexerTaskAdditionalFieldProvider extends  AbstractAdditio
                 // $task->setConfigs($taskInfo['IndexerConfigs']);
             }
         }
-
 
 
         $additionalFields['period'] = [
