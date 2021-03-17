@@ -120,39 +120,6 @@ class KeSearchUnlockViewHelper extends AbstractViewHelper
 			}
 
 		}
-
-		// No running scheduler tasks found
-		if($foundNone){
-
-			// Get all indexer and show the last index date
-			$queryBuilder = $connectionPool->getConnectionForTable('tx_kesearch_index')->createQueryBuilder();
-			$allResult = $queryBuilder->select('type', 'tstamp')
-				->from('tx_kesearch_index')
-				->groupBy('type')
-				->orderBy('type', 'ASC')
-				->addOrderBy('tstamp', 'DESC')
-				->execute()
-				->fetchAllAssociative()
-			;
-
-			$content = '<div class="well well-info"><h4>Found no running ke_search indexer</h4></div>';
-			$content.= '<div class="typo3-fullDoc">';
-			$content.= '<div class="row" style="font-weight: bold">';
-			$content.= '<div class="col-xs-4">Type</div>';
-			$content.= '<div class="col-xs-4">Last index date</div>';
-			$content.= '<div class="col-xs-4"></div>';
-			$content.= '</div>';
-
-			foreach ($allResult as $key => $row){
-				$content.= '<div class="row">';
-				$content.= '<div class="col-xs-4">' . $row['type'] . '</div>';
-				$content.= '<div class="col-xs-4">' . date('d.m.Y - H:i', $row['tstamp']) . '</div>';
-				$content.= '<div class="col-xs-4">' . '</div>';
-				$content.= '</div>';
-			}
-			$content.= '</div>';
-
-		}
 		$content.= '</div>';
 		return $content ;
 
