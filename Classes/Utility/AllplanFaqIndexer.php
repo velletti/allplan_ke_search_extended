@@ -72,6 +72,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $count = 0 ;
         $numIndexed = 0 ;
         $maxIndex =  $indexerObject->rowcount  ;
+        $LastModDate = "9999-99-99" ;
         if(  $indexerObject->rowcount < 1 ) {
             $maxIndex = 10000 ;
             $debug .= "Max Entrys set to: " . int( $maxIndex ) . "\n\n";
@@ -80,9 +81,19 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         if( is_object($xml2)) {
             if( is_object( $xml2->url ) ) {
                 foreach ($xml2->url as $url) {
+
                     $debug .= "<hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . "\n";
                     $numIndexed ++ ;
-                    if( $numIndexed < $maxIndex ) {
+                    //we are near last to be indexed FAQ .. Keep its lastMode Date
+                    if( $numIndexed >= ($maxIndex -10 )) {
+                        $LastModDate = $url->lastmod ;
+                    }
+                    if ( $url->lastmod == $LastModDate ) {
+                        // if f.e. max Index is configured 100 and the first 90 FAQ are change on same day, we will index 190.
+                        // if first 200 have the same date, it will continue until date cahnges and indexer will index 100 (configure Number) FAQs more
+                        $maxIndex ++ ;
+                    }
+                    if( $numIndexed <= $maxIndex ) {
                         if( $AllplanFaqIndexerUtility->indexSingleFAQ( $url->loc , $url->lastmod )) {
                             $count++;
                         } else {
