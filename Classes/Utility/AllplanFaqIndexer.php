@@ -85,13 +85,21 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                     $debug .= "<hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . "\n";
                     $numIndexed ++ ;
                     //we are near last to be indexed FAQ .. Keep its lastMode Date
-                    if( $numIndexed >= ($maxIndex -10 )) {
+                    if( $numIndexed >= ($maxIndex -10 ) && $LastModDate == "9999-99-99"  ) {
                         $LastModDate = $url->lastmod ;
                     }
                     if ( $url->lastmod == $LastModDate ) {
                         // if f.e. max Index is configured 100 and the first 90 FAQ are change on same day, we will index 190.
                         // if first 200 have the same date, it will continue until date cahnges and indexer will index 100 (configure Number) FAQs more
-                        $maxIndex ++ ;
+                        // and to be shure: if we get for all FAQs same lastmod date , this would lead to deadlock .. max should  3 times of config
+                        if(  $indexerObject->rowcount > 1 ) {
+                            if ( $maxIndex < ( $indexerObject->rowcount * 3 )) {
+                                $maxIndex ++ ;
+                            }
+                        } else {
+                            $maxIndex ++ ;
+                        }
+
                     }
                     if( $numIndexed <= $maxIndex ) {
                         if( $AllplanFaqIndexerUtility->indexSingleFAQ( $url->loc , $url->lastmod )) {
