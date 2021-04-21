@@ -227,6 +227,7 @@ class AllplanFaqIndexerUtility
 
 
             $single['singleFaqRaw'] = json_encode( $this->repairFAQ($singleFaq , $options )  , JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ;
+            $single['singleFaqRaw'] =  str_replace( array( "\\n" , "\n" ) , array( "" , ""),  $single['singleFaqRaw'] )  ;
 
             $single['language'] = $indexlang;
 
@@ -321,6 +322,7 @@ class AllplanFaqIndexerUtility
                 // we do not want to convert NL to BR if there are HTML Tags
                 // problem : <img \nsrc=""> breaks ...
                 $entry['STRTEXT'] =  str_replace( "\\n" , "" , $entry['STRTEXT']	)  ;
+                $entry['STRTEXT'] =  str_replace( "\n" , "" , $entry['STRTEXT']	)  ;
             }
             $entry['STRTEXT'] =  str_replace( "&apos;" , "'" , $entry['STRTEXT']	)  ;
         }
