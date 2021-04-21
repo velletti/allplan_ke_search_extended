@@ -84,7 +84,7 @@ class AllplanFaqIndexerUtility
      * @return boolean
      */
 
-    public function indexSingleFAQ( $url , $lastRun , $faq = false ) {
+    public function indexSingleFAQ( $url , $lastRun , $faq = false ) {https://connect.allplan.com/de/faqid/20150626103859.html
         $debugOutput = false ;
         if(  $faq) {
      //       $debugOutput = true ;
@@ -327,7 +327,7 @@ class AllplanFaqIndexerUtility
             $entry['STRTEXT'] =  str_replace( "&apos;" , "'" , $entry['STRTEXT']	)  ;
         }
         $entry['NONLTOBR'] = TRUE;
-        $entry['STRTEXT'] =  str_replace( array("img \\nsrc" , "img \nsrc" , ">\n"  , "\n" ) , array("img src" ,"img src"  , "" , ""), $entry['STRTEXT']	)  ;
+        $entry['STRTEXT'] =  str_replace( array("img \\nsrc" , "img \nsrc" , ">\n"  , "\n" ) , array("img src" ,"img src"  , ">" , ""), $entry['STRTEXT']	)  ;
 
         if( array_key_exists ( 'STRCOMMENT' , $entry    ) ) {
             $entry['STRCOMMENT'] =  html_entity_decode(  $entry['STRCOMMENT']	,ENT_COMPAT  , "UTF-8")  ;

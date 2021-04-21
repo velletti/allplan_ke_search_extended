@@ -54,7 +54,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
         $url = trim( $indexerObject->externalUrl ) ;
         $debug = "Url to XML File in Config: " . ($url) . "\n\n";
-        $debug .= "Max Entrys in Config: " . intval($indexerObject->rowcount) . "\n\n";
+        $debug .= "Max Entrys in Config: " . intval($indexerObject->getRowcount() ) . "\n\n";
         if ( $url == "") {
             $url = "http://212.29.3.155/hotline/FAQ_HOTD.nsf/0/05421C80A7EB2CE2C1257480004DDA2E/\$FILE/FAQIDs.xml?OpenElement";
             $debug = "Url to XML File set to: " . ($url) . "\n\n";
@@ -74,9 +74,9 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $error = 0 ;
         $count = 0 ;
         $numIndexed = 0 ;
-        $maxIndex =  $indexerObject->rowcount  ;
+        $maxIndex =  $indexerObject->getRowcount()  ;
         $LastModDate = "9999-99-99" ;
-        if(  $indexerObject->rowcount < 1 ) {
+        if(  $indexerObject->getRowcount() < 1 ) {
             $maxIndex = 10000 ;
             $debug .= "Max Entrys set to: " . int( $maxIndex ) . "\n\n";
         }
@@ -95,8 +95,8 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                         // if f.e. max Index is configured 100 and the first 90 FAQ are change on same day, we will index 190.
                         // if first 200 have the same date, it will continue until date cahnges and indexer will index 100 (configure Number) FAQs more
                         // and to be shure: if we get for all FAQs same lastmod date , this would lead to deadlock .. max should  3 times of config
-                        if(  $indexerObject->rowcount > 1 ) {
-                            if ( $maxIndex < ( $indexerObject->rowcount * 3 )) {
+                        if(  $indexerObject->getRowcount() > 1 ) {
+                            if ( $maxIndex < ( $indexerObject->getRowcount() * 3 )) {
                                 $maxIndex ++ ;
                             }
                         } else {
