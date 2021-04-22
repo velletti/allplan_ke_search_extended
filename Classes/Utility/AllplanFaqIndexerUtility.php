@@ -285,7 +285,8 @@ class AllplanFaqIndexerUtility
 
         unset($single) ;
         unset($singleFaq) ;
-        return $debug ;
+        if($debugOutput) {  print_r($debug) ; die; };
+        return true ;
     }
 
     public function getLanguageSettings($currentLang) {

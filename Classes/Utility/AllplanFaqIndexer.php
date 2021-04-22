@@ -97,17 +97,21 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                         // and to be shure: if we get for all FAQs same lastmod date , this would lead to deadlock .. max should  3 times of config
                         if(  $indexerObject->rowcount > 1 ) {
                             if ( $maxIndex < ( $indexerObject->rowcount * 3 )) {
+                                $debug .= " - LINE: " . __LINE__ . "  (restricted maxIndex ++)" ;
                                 $maxIndex ++ ;
                             }
                         } else {
+                            $debug .= " - LINE: " . __LINE__ . "  (unrestricted maxIndex ++) " ;
                             $maxIndex ++ ;
                         }
 
                     }
                     if( $numIndexed <= $maxIndex ) {
                         if( $AllplanFaqIndexerUtility->indexSingleFAQ( $url->loc , $url->lastmod )) {
+                            $debug .= " .. Indexed " ;
                             $count++;
                         } else {
+                            $debug .= " ! ERROR ! " ;
                             $error++;
                         }
                     }
