@@ -64,8 +64,8 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $xmlFromUrl = $this->getExampleXml() ;
         // For testing  disable  the next command : $this->getJsonFile ... as something like above should come from ws call
         $xmlFromUrl = $this->getJsonFile($url , "urlset" , array('Accept: text/xml, Content-type:text/xml') , FALSE ) ;
-
-        MailUtility::debugMail( array("jvelletti@allplan.com" ) , "[FAQ-Indexer] FAQ Indexer Will run with URL: $url ", $xmlFromUrl . " \n\n "   ) ;
+        $xmlFromUrlDebug = strip_tags( str_replace( [ "<lastmod>" , "</lastmod>" , "<loc>" , "</loc>" ] , [" LastMod: " , "URL: " , "" , " "] , $xmlFromUrl) ) ;
+        MailUtility::debugMail( array("jvelletti@allplan.com" ) , "[FAQ-Indexer] FAQ Indexer Will run with URL: $url ", $xmlFromUrlDebug . " \n\n "   ) ;
 
 
         $xml2 = simplexml_load_string ($xmlFromUrl  ) ;
