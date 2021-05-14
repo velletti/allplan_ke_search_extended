@@ -106,7 +106,7 @@ class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\
             "action"  => 1 ,
             "tablename" => "tx_kesearch_index" ,
             "error" => 0 ,
-            "event_pid" => $pid ,
+            "event_pid" => $indexerObject->storagePid > 0 ? $indexerObject->storagePid  : $indexerConfig['pid']  ,
             "details" => "Allplan ContentServe Indexer had updated / inserted " . $count . " entrys" ,
             "tstamp" => time() ,
             "type" => 1 ,
