@@ -14,11 +14,11 @@ class KeSearchGetQueryPartsHook
 {
 
     /**
-     * @param array $markerArray
-     * @param $row
+     * @param array $queryParts
      * @param object $pibase
+     * @param string $searchwordQuoted
      */
-	public function getQueryParts( $queryParts , $pibase ){
+	public function getQueryParts( $queryParts , $pibase , $searchwordQuoted ){
 	    /*
 	     * see connect TYPO Script file f.e.:
 	     * http/typo3conf/ext/connect_template/Configuration/TypoScript/Base/Setup/Extensions/ke_search_for_support.ts

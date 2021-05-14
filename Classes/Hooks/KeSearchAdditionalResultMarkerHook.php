@@ -5,11 +5,11 @@ namespace Allplan\AllplanKeSearchExtended\Hooks;
 class KeSearchAdditionalResultMarkerHook{
 
     /**
-     * @param array $markerArray
+     * @param array $tempMarkerArray
      * @param $row
      * @param object $pibase
      */
-	public function additionalResultMarker(&$tempMarkerArray, $row , $pibase ){
+	public function additionalResultMarker(array &$tempMarkerArray, $row , $pibase){
 		 // print_r($tempMarkerArray);
 		 // die(" __FILE__" . __FILE__ . " __LINE__" . __LINE__ );
 
