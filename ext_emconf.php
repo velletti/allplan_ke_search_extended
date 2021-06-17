@@ -1,6 +1,6 @@
 <?php
 
-$EM_CONF[$_EXTKEY] = [
+$EM_CONF['allplan_ke_search_extended'] = [
     'title' => 'Allplan: ke_search extended',
     'description' => 'Indexers for ke_search',
     'category' => 'plugin',
