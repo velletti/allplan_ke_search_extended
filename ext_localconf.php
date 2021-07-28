@@ -32,6 +32,7 @@ if (!defined ("TYPO3_MODE")) die ('Access denied');
 
     $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['additionalResultMarker'][] =      'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchAdditionalResultMarkerHook';
     $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['getQueryParts'][] =      'Allplan\\AllplanKeSearchExtended\\Hooks\\KeSearchGetQueryPartsHook';
+    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['GenericRepositoryTablename'][] =      'Allplan\\AllplanKeSearchExtended\\Hooks\\GenericRepositoryTablenameHook';
 
 
 
