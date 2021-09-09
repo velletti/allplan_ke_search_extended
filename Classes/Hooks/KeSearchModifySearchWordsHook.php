@@ -13,6 +13,15 @@ class KeSearchModifySearchWordsHook {
 	 */
 	public function modifySearchWords(&$searchWordInformation, &$pObj) {
         $searchWordInformation['wordsAgainst'] = trim( $searchWordInformation['wordsAgainst']) ;
+
+        if ( is_array($_GET ) && array_key_exists( "tx_kesearch_pi1" , $_GET) && array_key_exists( "directory" , $_GET['tx_kesearch_pi1'])) {
+            if ( $searchWordInformation['wordsAgainst'] == '' ) {
+                $searchWordInformation['wordsAgainst'] = urldecode(trim($_GET['tx_kesearch_pi1']['directory']));
+            }
+            if ( $searchWordInformation['sword'] == '' ) {
+                $searchWordInformation['sword'] = urldecode( trim( $_GET['tx_kesearch_pi1']['directory']) ) ;
+            }
+        }
         if ( strlen(  $searchWordInformation['wordsAgainst'] ) > 2 ) {
             $searchWordInformation['wordsAgainst'] = str_replace( "+" , "", $searchWordInformation['wordsAgainst'] ) ;
             // var_dump($searchWordInformation['wordsAgainst']);

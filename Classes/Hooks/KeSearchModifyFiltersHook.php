@@ -12,7 +12,7 @@ class KeSearchModifyFiltersHook {
 	 * @param mixed $pObj
 	 */
 	public function modifyFilters(&$filters, $pObj) {
-
+	    //
 	}
 
 

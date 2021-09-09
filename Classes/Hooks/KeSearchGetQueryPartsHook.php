@@ -5,6 +5,8 @@ namespace Allplan\AllplanKeSearchExtended\Hooks;
  * AllplanKeSearchExtended
  */
 use Allplan\AllplanKeSearchExtended\Utility\TyposcriptUtility;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class KeSearchGetQueryPartsHook
@@ -31,7 +33,7 @@ class KeSearchGetQueryPartsHook
              $resultPage = $pibase->conf['resultPage'] ;
             // echo " resultPage " . $resultPage ;
               $settings = TyposcriptUtility::loadTypoScriptFromScratch($resultPage, 'tx_kesearch_pi1') ;
-            $debug[] = "line: " . __LINE__  . " queryParts is array ";
+              $debug[] = "line: " . __LINE__  . " queryParts is array ";
               if ( is_array($settings) && array_key_exists("getQuerypartsHook" , $settings )) {
                   $debug[] = "line: " . __LINE__ . " found getQuerypartsHook in Settings ";
                   $hookData = $settings['getQuerypartsHook'] ;
@@ -72,23 +74,43 @@ class KeSearchGetQueryPartsHook
                           $queryParts['ORDERBY'] = "top10 DESC";
                       }
                   }
+
                   $debug[] = "line: " . __LINE__ ;
                   $queryParts['SELECT'] = str_replace( ") AS score" , " + (top10)) AS score" , $queryParts['SELECT']) ;
               }
 
 
+            $params = GeneralUtility::_GET("tx_kesearch_pi1") ;
+            if ( is_array($params) && array_key_exists("directory" , $params) && strlen( $params["directory"]) > 0 ) {
+                $debug[] = "line: " . __LINE__ . " got param directory ";
+                if ( strpos($params["directory"] , ";") < 1 && strpos($params["directory"] , ")") < 1 && strpos($params["directory"] , "'") < 1 ) {
+                    $databaseConnection =  GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('tx_kesearch_index');
+                    $directory = trim( substr( urldecode( $params["directory"] ), 0 , -1)  ) .  "%" ;
+                    $debug[] = "line: " . __LINE__ . " param directory is  " . $directory ;
 
-if ( 1==2 ) {
-    echo "<hr><pre>Hook Data :" ;
-    print_r($hookData );
-    echo "<hr>" ;
 
-    print_r($queryParts);
-    echo "<hr>" ;
-    print_r($debug);
+                    $directoryQuoted = $databaseConnection->quote(
+                        str_replace( "\\" , "\\\\", $directory ) ,
+                        \PDO::PARAM_STR
+                    );
+                    $debug[] = "line: " . __LINE__ . " param directory is now " . $directoryQuoted ;
+                    $queryParts['WHERE'] .= " AND ( directory LIKE " . $directoryQuoted . " ) ";
+                }
 
-    die(" __FILE__" . __FILE__ . " __LINE__" . __LINE__ );
-}
+            }
+            $queryParts['WHERE'] = str_replace("MATCH (title,content) AGAINST ", "MATCH (title,content,directory) AGAINST ", $queryParts['WHERE']) ;
+            if ( 1==2 ) {
+                echo "<hr><pre>Hook Data :" ;
+                print_r($hookData );
+                echo "<hr>" ;
+                print_r($debug);
+
+                echo "<hr>" ;
+                print_r($queryParts);
+
+
+                die(" __FILE__" . __FILE__ . " __LINE__" . __LINE__ );
+            }
 
 
 
