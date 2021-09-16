@@ -84,7 +84,8 @@ class AllplanFaqIndexerUtility
      * @return boolean
      */
 
-    public function indexSingleFAQ( $url , $lastRun , $faq = false ) {https://connect.allplan.com/de/faqid/20150626103859.html
+    public function indexSingleFAQ( $url , $lastRun , $faq = false ) {
+        // https://connect.allplan.com/de/faqid/20150626103859.html
         $debugOutput = false ;
         if(  $faq) {
      //       $debugOutput = true ;
@@ -225,8 +226,15 @@ class AllplanFaqIndexerUtility
             $single['STRCATEGORY'] = $singleFaq[$category];
             $single['STRTEXT'] = $singleFaq[$category] . " \n " . $singleFaq['STRTEXT'] ;
 
+            $beforeJson = $this->repairFAQ($singleFaq , $options )  ;
+            // $single['singleFaqRaw'] = json_encode( $beforeJson  , JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ;
+            $single['singleFaqRaw'] = json_encode( $beforeJson  , JSON_UNESCAPED_UNICODE ) ;
 
-            $single['singleFaqRaw'] = json_encode( $this->repairFAQ($singleFaq , $options )  , JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ;
+            //           var_dump( $beforeJson);
+            //           echo "<hr>" ;
+            //          var_dump(json_decode(  $single['singleFaqRaw'] , true , 512 , JSON_INVALID_UTF8_IGNORE | JSON_INVALID_UTF8_SUBSTITUTE ) );
+            //  die ;
+
             $single['singleFaqRaw'] =  str_replace( array( "\\n" , "\n" ) , array( "" , ""),  $single['singleFaqRaw'] )  ;
 
             $single['language'] = $indexlang;
@@ -319,6 +327,7 @@ class AllplanFaqIndexerUtility
         $fromdecode = $options['fromdecode'] ;
 
         if( array_key_exists(  'STRTEXT' ,  $entry ) ) {
+            $entry['STRTEXT'] =  str_replace( "\\nem\\" , "\\ nem\\" , $entry['STRTEXT']	)  ;
             if ( !strip_tags( $entry['STRTEXT']) == $entry['STRTEXT'] ) {
                 // we do not want to convert NL to BR if there are HTML Tags
                 // problem : <img \nsrc=""> breaks ...
