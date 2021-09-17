@@ -35,11 +35,20 @@ class KeSearchDirectoryViewHelper extends AbstractViewHelper
      */
     protected $escapeOutput = false;
 
+    /**
+     * @return string
+     * @author Jörg Velletti <jvelletti@allplan.com>
+     */
+    public function render()
+    {
+        $contentArray = $this->getCategories() ;
+        return $contentArray['select1'] .  $contentArray['select2'] .  $contentArray['select3'] . '<br>' ;
+    }
 	/**
 	 * @return string
 	 * @author Jörg Velletti <jvelletti@allplan.com>
 	 */
-	public function render()
+	public function getCategories()
 	{
 
 		/**
@@ -149,41 +158,33 @@ class KeSearchDirectoryViewHelper extends AbstractViewHelper
                 }
             }
         }
-        $content = '' ;
+        $lng = MigrationUtility::getSysLanguageUid() ;
+        $pid = $GLOBALS['TSFE']->id ;
+
+        $content = [] ;
         if ( $contentSelect1) {
             $field = "directory" ;
-            if( $contentSelect2) {
-
-            }
-            $content .= '<select name="tx_kesearch_pi1[directory1]" data-cat="tx_kesearch_pi1[directory1]" class="form-control kesearch-directory  kesearch-directory1" >' . $contentSelect1 . '</select>';
+            $content["select1"]  = '<select name="tx_kesearch_pi1[directory1]" onchange="allplan_kesearch_change(this);return true;" data-pid="'.$pid.'" data-lng="'.$lng.'" data-level="1" data-cat="tx_kesearch_pi1[directory1]" class="form-control kesearch-directory  kesearch-directory1" >' . $contentSelect1 . '</select>';
+        } else {
+            $content["select1"]  =  '' ;
         }
         if ( $contentSelect2) {
-            $content .= '<br><select name="tx_kesearch_pi1[directory2]" data-cat="tx_kesearch_pi1[directory2]"  class="form-control kesearch-directory  kesearch-directory2" >'
+            $content["select2"]  = '<select name="tx_kesearch_pi1[directory2]" onchange="allplan_kesearch_change(this);return true;" data-pid="'.$pid.'" data-lng="'.$lng.'" data-level="2" data-cat="tx_kesearch_pi1[directory2]"  class="form-control kesearch-directory  kesearch-directory2" >'
                 . "<option value=\"" . urlencode($directory[0] ) . "\"></option>"
                 . $contentSelect2
                 . '</select>';
+        } else {
+            $content["select2"]  =  '<br>' ;
         }
         if ( $contentSelect3) {
-            $content .= '<br><select name="tx_kesearch_pi1[directory3]" data-cat="tx_kesearch_pi1[directory3]"  class="form-control kesearch-directory  kesearch-directory3" >'
+            $content["select3"] = '<select name="tx_kesearch_pi1[directory3]" onchange="allplan_kesearch_change(this);return true;" data-pid="'.$pid.'" data-lng="'.$lng.'" data-level="3" data-cat="tx_kesearch_pi1[directory3]"  class="form-control kesearch-directory  kesearch-directory3" >'
                 . "<option value=\"" . urlencode($directory[0] . "\\" . $directory[1] ) . "\"></option>"
                 . $contentSelect3
                 . '</select>';
+        } else {
+            $content["select3"]  =  '<br>' ;
         }
-        $content .= " <script>$('SELECT.kesearch-directory').on('change' , function() { 
-     
-     $('SELECT.kesearch-directory').each( function() { 
-         $( this).attr( 'name' , $( this).data('cat') )
-     });
-     $( this).attr( 'name' , 'tx_kesearch_pi1[directory]' )   ;
-     if($( this).data('cat') =='tx_kesearch_pi1[directory1]') {
-         $( 'SELECT.kesearch-directory2').remove() ;
-         $( 'SELECT.kesearch-directory3').remove() ;
-     }
-     if($( this).data('cat') =='tx_kesearch_pi1[directory2]') {
-         $( 'SELECT.kesearch-directory3').remove() ;
-     }
- }) ; 
- </script>" ;
+
         return $content ;
 
 	}
