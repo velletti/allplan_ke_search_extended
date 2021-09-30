@@ -244,9 +244,18 @@ class AllplanFaqIndexerUtility
                     $single['tags'] .= ",#" . strtolower(str_replace(" ", "", $tag)) . "#";
                 }
             }
+            if( strlen( $singleFaq['STRBEARBEITUNGSSTAND'] ) < 18 ) {
+                $singleFaq['STRBEARBEITUNGSSTAND'] .= ":59" ;
+            }
 
-            $single['sortdate'] = mktime(0, 0, 0, substr($singleFaq['STRBEARBEITUNGSSTAND'], 3, 2),
-                substr($singleFaq['STRBEARBEITUNGSSTAND'], 0, 2), substr($singleFaq['STRBEARBEITUNGSSTAND'], 6, 4));
+            $single['sortdate'] = mktime(substr($singleFaq['STRBEARBEITUNGSSTAND'], 11, 2),
+                substr($singleFaq['STRBEARBEITUNGSSTAND'], 14, 2),
+                substr($singleFaq['STRBEARBEITUNGSSTAND'], 17, 2),
+
+                substr($singleFaq['STRBEARBEITUNGSSTAND'], 3, 2),
+                substr($singleFaq['STRBEARBEITUNGSSTAND'], 0, 2),
+                substr($singleFaq['STRBEARBEITUNGSSTAND'], 6, 4));
+
             $single['url'] = $url;
 
 

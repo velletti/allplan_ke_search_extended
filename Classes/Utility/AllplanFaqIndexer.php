@@ -80,7 +80,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
 
         if( is_array($latestIndexRows )) {
-            $lastRun = date( "Y-m-d h:i:s" , $latestIndexRows['sortdate'] ) ;
+            $lastRun = date( "Y-m-d h:i:s" , ( $latestIndexRows['sortdate'] - 60 ) ) ;
             $debug .="<hr> Lastest FAQ Entry in DB = " . $lastRun . " sortdate: " . $latestIndexRows['sortdate'] ;
         } else {
             $lastRun = "2014-12-31 00:00:00" ;
