@@ -130,6 +130,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                 $reversed = array_reverse($faq2beIndexed) ;
                 $debug .= " ******************************************* found " . count($reversed) . " ****************** ";
                 if ( count($reversed ) > 0 ) {
+                    MailUtility::debugMail( array("jvelletti@allplan.com" ) , "[FAQ-Indexer] FAQ Indexer found " . count($reversed) , $debug . " \n\n "   ) ;
 
                    foreach ( $reversed as $url ) {
 
