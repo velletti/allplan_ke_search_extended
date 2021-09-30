@@ -67,14 +67,16 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
         /** @var \TYPO3\CMS\Core\Database\Query\QueryBuilder $queryBuilder */
         $queryBuilder = $connectionPool->getQueryBuilderForTable('tx_kesearch_index') ;
-        $latestIndexRows = $queryBuilder ->select('uid' , 'sortdate' , 'targetpid', 'tstamp' , 'urig_uid' ) ->from('tx_kesearch_index')
-            ->where( $queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter( "supportfa*" , Connection::PARAM_STR)) )
+        $query = $queryBuilder ->select('uid' , 'sortdate' , 'targetpid', 'tstamp' , 'orig_uid' ) ->from('tx_kesearch_index')
+            ->where( $queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter( "supportfa%" , Connection::PARAM_STR)) )
+            ->andWhere( $queryBuilder->expr()->gt('sortdate', $queryBuilder->createNamedParameter( 0 , Connection::PARAM_INT)) )
             ->orderBy("sortdate" , "DESC")
             ->setMaxResults(1)
-            ->execute()
-            ->fetchAllAssociative();
+            ->execute() ;
 
+        $debug .="<hr> SQL : "  .   $queryBuilder->getSQL()  . " \n <br> \n <br>  ";
 
+        $latestIndexRows =    $query->fetchAssociative();
 
 
         if( is_array($latestIndexRows )) {
@@ -85,8 +87,6 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             $debug .="<hr> Found no FAQ Entry in DB = set LastRun to " . $lastRun  ;
 
         }
-
-
         $xmlFromUrl = $this->getExampleXml() ;
         // For testing  disable  the next command : $this->getJsonFile ... as something like above should come from ws call
         $xmlFromUrl = $this->getJsonFile($url , "urlset" , array('Accept: text/xml, Content-type:text/xml') , FALSE ) ;
@@ -118,66 +118,72 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                     }
                     if ($notesLastMod > $lastRun) {
 
-                        $debug .= "<hr>url->loc: " . $url->loc . " : lastmod: " . $notesLastMod ;
+                        $debug .= "\n <hr>url->loc: " . $url->loc . " : lastmod: " . $notesLastMod ;
                         $faq2beIndexed[]  = $url ;
                     } else {
                         $debug .= " ******************************************* latest already indexed FAQ  ****************** ";
-                        $debug .= "<hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . " (" . $numIndexed . " / " . $maxIndex . ") ";
+                        $debug .= "\n  \n  <hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . " (" . $numIndexed . " / " . $maxIndex . ") ";
                         $faq2beIndexed[]  = $url ;
                         break ;
                     }
                 }
                 $reversed = array_reverse($faq2beIndexed) ;
                 $debug .= " ******************************************* found " . count($reversed) . " ****************** ";
-                foreach ( $reversed as $url ) {
+                if ( count($reversed ) > 0 ) {
 
-                    $debug .= "<hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . "(" . $LastModDate . ") (" . $numIndexed . " / " . $maxIndex . ") ";
+                   foreach ( $reversed as $url ) {
+
+                        $debug .= "<hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . "(" . $LastModDate . ") (" . $numIndexed . " / " . $maxIndex . ") ";
 
 
-                    $numIndexed ++ ;
-                    //we are near last to be indexed FAQ .. Keep its lastMode Date
-                    if( $numIndexed >= ($maxIndex -10 ) && $LastModDate == "9999-99-99"  ) {
-                        $LastModDate = trim($url->lastmod );
-                    }
-                    if ( trim($url->lastmod) == $LastModDate ) {
-                        // if f.e. max Index is configured 100 and the first 90 FAQ are change on same day, we will index 190.
-                        // if first 200 have the same date, it will continue until date cahnges and indexer will index 100 (configure Number) FAQs more
-                        // and to be shure: if we get for all FAQs same lastmod date , this would lead to deadlock .. max should  3 times of config
-                        if(  $indexerObject->rowcount > 1 ) {
-                            if ( $maxIndex < ( $indexerObject->rowcount * 3 )) {
-                                $debug .= " - LINE: " . __LINE__ . "  (restricted maxIndex ++)" ;
+                        $numIndexed ++ ;
+                        //we are near last to be indexed FAQ .. Keep its lastMode Date
+                        if( $numIndexed >= ($maxIndex -10 ) && $LastModDate == "9999-99-99"  ) {
+                            $LastModDate = trim($url->lastmod );
+                        }
+                        if ( trim($url->lastmod) == $LastModDate ) {
+                            // if f.e. max Index is configured 100 and the first 90 FAQ are change on same day, we will index 190.
+                            // if first 200 have the same date, it will continue until date cahnges and indexer will index 100 (configure Number) FAQs more
+                            // and to be shure: if we get for all FAQs same lastmod date , this would lead to deadlock .. max should  3 times of config
+                            if(  $indexerObject->rowcount > 1 ) {
+                                if ( $maxIndex < ( $indexerObject->rowcount * 3 )) {
+                                    $debug .= " - LINE: " . __LINE__ . "  (restricted maxIndex ++)" ;
+                                    $maxIndex ++ ;
+                                }
+                            } else {
+                                $debug .= " - LINE: " . __LINE__ . "  (unrestricted maxIndex ++) " ;
                                 $maxIndex ++ ;
                             }
-                        } else {
-                            $debug .= " - LINE: " . __LINE__ . "  (unrestricted maxIndex ++) " ;
-                            $maxIndex ++ ;
-                        }
 
-                    }
-                    if( $numIndexed <= $maxIndex ) {
-                        if( $AllplanFaqIndexerUtility->indexSingleFAQ( $url->loc , $url->lastmod )) {
-                            $debug .= " .. Indexed " ;
-                            $count++;
-                        } else {
-                            $debug .= " ! ERROR ! " ;
-                            $error++;
                         }
+                        if( $numIndexed <= $maxIndex ) {
+                            if( $AllplanFaqIndexerUtility->indexSingleFAQ( $url->loc , $url->lastmod )) {
+                                $debug .= " .. Indexed " ;
+                                $count++;
+                            } else {
+                                $debug .= " ! ERROR ! " ;
+                                $error++;
+                            }
+                        }
+                        $debug .= " \n " ;
                     }
-                    $debug .= " \n " ;
+
                 }
             }
         }
         // var_dump( $debug ) ;
         if ( $error > 0 ) {
             $error = true ;
+            $introTag = "[FAQ-Indexer-ERROR]" ;
         } else {
-
+            $introTag = "[FAQ-Indexer]" ;
         }
 
         $details  =  "Allplan FAQ Indexer : got '" . $numIndexed  . "' entries, got " . $error . " Errors and had updated / inserted : '" . $count . "' entries. Crawled: " . $url
         . " and got xlm2 from string: " . substr( var_export( $xml2 , true ) , 0 , 500 )  . " .... Total: " . strlen( $xml2 ) . " chars .." ;
 
-        MailUtility::debugMail( array("jvelletti@allplan.com" , "slorenz@allplan.com" ) , "[FAQ-Indexer] FAQ Indexer has run on '" . $count . "' objects ", $details . " \n\n " . $debug ) ;
+        MailUtility::debugMail( array("jvelletti@allplan.com" , "slorenz@allplan.com" )
+            , $introTag . " FAQ Indexer has run on '" . $count . "' objects ", $details . " \n\n " . $debug ) ;
 
 
 
