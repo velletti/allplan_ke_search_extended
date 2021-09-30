@@ -60,6 +60,32 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             $debug = "Url to XML File set to: " . ($url) . "\n\n";
         }
 
+        /** @var \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool */
+        $connectionPool = GeneralUtility::makeInstance( "TYPO3\\CMS\\Core\\Database\\ConnectionPool");
+
+        $connection = $connectionPool->getConnectionForTable('tx_kesearch_index') ;
+
+        /** @var \TYPO3\CMS\Core\Database\Query\QueryBuilder $queryBuilder */
+        $queryBuilder = $connectionPool->getQueryBuilderForTable('tx_kesearch_index') ;
+        $latestIndexRows = $queryBuilder ->select('uid' , 'sortdate' , 'targetpid', 'tstamp' , 'urig_uid' ) ->from('tx_kesearch_index')
+            ->where( $queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter( "supportfa*" , Connection::PARAM_STR)) )
+            ->orderBy("sortdate" , "DESC")
+            ->setMaxResults(1)
+            ->execute()
+            ->fetchAllAssociative();
+
+
+
+
+        if( is_array($latestIndexRows )) {
+            $lastRun = date( "Y-m-d h:i:s" , $latestIndexRows['sortdate'] ) ;
+            $debug .="<hr> Lastest FAQ Entry in DB = " . $lastRun . " sortdate: " . $latestIndexRows['sortdate'] ;
+        } else {
+            $lastRun = "2014-12-31 00:00:00" ;
+            $debug .="<hr> Found no FAQ Entry in DB = set LastRun to " . $lastRun  ;
+
+        }
+
 
         $xmlFromUrl = $this->getExampleXml() ;
         // For testing  disable  the next command : $this->getJsonFile ... as something like above should come from ws call
@@ -83,9 +109,31 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
         if( is_object($xml2)) {
             if( is_object( $xml2->url ) ) {
+                $debug .= " ******************************************* put to array if newer than " . $lastRun . " ****************** ";
+                $faq2beIndexed = [] ;
                 foreach ($xml2->url as $url) {
+                    $notesLastMod = $url->lastmod;
+                    if (strlen(trim($url->lastmod)) == 10) {
+                        $notesLastMod .= " 23:59:59";
+                    }
+                    if ($notesLastMod > $lastRun) {
+
+                        $debug .= "<hr>url->loc: " . $url->loc . " : lastmod: " . $notesLastMod ;
+                        $faq2beIndexed[]  = $url ;
+                    } else {
+                        $debug .= " ******************************************* latest already indexed FAQ  ****************** ";
+                        $debug .= "<hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . " (" . $numIndexed . " / " . $maxIndex . ") ";
+                        $faq2beIndexed[]  = $url ;
+                        break ;
+                    }
+                }
+                $reversed = array_reverse($faq2beIndexed) ;
+                $debug .= " ******************************************* found " . count($reversed) . " ****************** ";
+                foreach ( $reversed as $url ) {
 
                     $debug .= "<hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . "(" . $LastModDate . ") (" . $numIndexed . " / " . $maxIndex . ") ";
+
+
                     $numIndexed ++ ;
                     //we are near last to be indexed FAQ .. Keep its lastMode Date
                     if( $numIndexed >= ($maxIndex -10 ) && $LastModDate == "9999-99-99"  ) {
