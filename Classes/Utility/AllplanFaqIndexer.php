@@ -104,6 +104,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $xml2 = simplexml_load_string ($xmlFromUrl  ) ;
 
         $debug .= "<hr>xlm2 from string:<br>" . substr( var_export( $xml2 , true ) , 0 , 200 )  . " .... " . strlen( $xml2 ) . " chars .. <hr />" ;
+        $debugLong = "" ;
         $error = 0 ;
         $count = 0 ;
         $numIndexed = 0 ;
@@ -127,8 +128,12 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                         $notesLastMod .= " 23:59:59";
                     }
                     if ($notesLastMod > $lastRun ) {
+                        if ( $debugLong == "" ) {
+                            $debug .= " ******************************************* first added FAQ  ****************** ";
+                            $debugLong .= " \n \n  <hr>url->loc: " . $url->loc . " : lastmod: " . $notesLastMod ;
+                        }
 
-                        $debug .= " \n \n  <hr>url->loc: " . $url->loc . " : lastmod: " . $notesLastMod ;
+                        $debugLong .= " \n \n  <hr>url->loc: " . $url->loc . " : lastmod: " . $notesLastMod ;
                         $faq2beIndexed[]  = $url ;
                     } else {
                         $debug .= " ******************************************* latest already indexed FAQ  ****************** ";
@@ -144,7 +149,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
                    foreach ( $reversed as $url ) {
 
-                        $debug .= "<hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . "(" . $LastModDate . ") (" . $numIndexed . " / " . $maxIndex . ") ";
+                       $debugLong .= "<hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . "(" . $LastModDate . ") (" . $numIndexed . " / " . $maxIndex . ") ";
 
 
                         $numIndexed ++ ;
@@ -163,21 +168,21 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                             // and to be shure: if we get for all FAQs same lastmod date , this would lead to deadlock .. max should  3 times of config
                             if(  $indexerObject->rowcount > 1 ) {
                                 if ( $maxIndex < ( $indexerObject->rowcount * 3 )) {
-                                    $debug .= " - LINE: " . __LINE__ . "  (restricted maxIndex ++)" ;
+                                    $debugLong .= " - LINE: " . __LINE__ . "  (restricted maxIndex ++)" ;
                                     $maxIndex ++ ;
                                 }
                             } else {
-                                $debug .= " - LINE: " . __LINE__ . "  (unrestricted maxIndex ++) " ;
+                                $debugLong .= " - LINE: " . __LINE__ . "  (unrestricted maxIndex ++) " ;
                                 $maxIndex ++ ;
                             }
 
                         }
                         if( $numIndexed <= $maxIndex ) {
                             if( $AllplanFaqIndexerUtility->indexSingleFAQ( $url->loc , $url->lastmod )) {
-                                $debug .= " .. Indexed " ;
+                                $debugLong .= " .. Indexed " ;
                                 $count++;
                             } else {
-                                $debug .= " ! ERROR ! " ;
+                                $debugLong .= " ! ERROR ! " ;
                                 $error++;
                             }
                         }
@@ -199,7 +204,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         . " and got xlm2 from string: " . substr( var_export( $xml2 , true ) , 0 , 500 )  . " .... Total: " . strlen( $xml2 ) . " chars .." ;
 
         MailUtility::debugMail( array("jvelletti@allplan.com" , "slorenz@allplan.com" )
-            , $introTag . " FAQ Indexer has run on '" . $count . "' objects ", $details . " \n\n " . $debug ) ;
+            , $introTag . " FAQ Indexer has run on '" . $count . "' objects ", $details . " \n \n " . $debug . " \n\n <hr> ****************** <hr> " . " \n\n " . $debugLong ) ;
 
 
 
