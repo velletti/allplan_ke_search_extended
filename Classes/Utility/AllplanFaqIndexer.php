@@ -86,7 +86,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             $lastRunTstamp = $latestIndexRows['sortdate']  ;
             $lastRunDay = date( "d" , ( $latestIndexRows['sortdate']  ) ) ;
 
-            $debug .="<hr> Lastest FAQ Entry in DB = UID: "  . $latestIndexRows['uid'] . " | lastRun : ". $lastRun . " sortdate: " . $latestIndexRows['sortdate'] ;
+            $debug .=" \n \n <hr> Lastest FAQ Entry in DB = UID: "  . $latestIndexRows['uid'] . " | lastRun : ". $lastRun .  "  | LastRun Day " .  $lastRunDay. " | ortdate: " . $latestIndexRows['sortdate'] ;
         } else {
             $lastRun = "2014-12-31 00:00:00" ;
             $lastRunTstamp = 1 ;
@@ -128,7 +128,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                     }
                     if ($notesLastMod > $lastRun ) {
 
-                        $debug .= "\n <hr>url->loc: " . $url->loc . " : lastmod: " . $notesLastMod ;
+                        $debug .= " \n \n  <hr>url->loc: " . $url->loc . " : lastmod: " . $notesLastMod ;
                         $faq2beIndexed[]  = $url ;
                     } else {
                         $debug .= " ******************************************* latest already indexed FAQ  ****************** ";
@@ -156,7 +156,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                             $LastModDay = substr($LastModDate , 9 , 2)  ;
                             $debug .= "<hr> Changed Last Mod Date to: " . $LastModDate . " and LastModDay to " . $LastModDay ;
                         }
-                        if ( substr( trim($url->lastmod) , 0, 10 )   == $LastModDate   ||  $lastRunDay ==   $LastModDay ) {
+                        if ( substr( trim($url->lastmod) , 0, 10 )   == $LastModDate   ||  $lastRunDay  ==   $LastModDay ) {
 
                             // if f.e. max Index is configured 100 and the first 90 FAQ are changed on SAME DAY, we will index 190.
                             // if first 200 have the same date, it will continue until date cahnges and indexer will index 100 (configure Number) FAQs more
