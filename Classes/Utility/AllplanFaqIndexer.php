@@ -207,11 +207,14 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $details  =  "Allplan FAQ Indexer : got '" . $numIndexed  . "' entries, got " . $error . " Errors and had updated / inserted : '" . $count . "' entries. Crawled: " . $url
         . " and got xlm2 from string: " . substr( var_export( $xml2 , true ) , 0 , 500 )  . " .... Total: " . strlen( $xml2 ) . " chars .." ;
 
+        if ( strlen( $debugLong ) > 40000) {
+            $debugLong = substr(  $debugLong , 0 , 10000) . " .... \n \n ..... " . substr(  $debugLong , -10000 , 10000)  ;
+        }
         MailUtility::debugMail( array("jvelletti@allplan.com" , "slorenz@allplan.com" )
             , $introTag . " FAQ Indexer has run on '" . $count . "' objects ", $details . " \n \n "
             . $errorDebug . " \n \n "
             . $debug . " \n\n <hr> ****************** <hr> " . " \n\n "
-            . substr(  $debugLong , 0 , 20000) ) ;
+            . $debugLong  ) ;
 
 
 
