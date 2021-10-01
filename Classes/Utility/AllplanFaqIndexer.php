@@ -80,10 +80,15 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
 
         if( is_array($latestIndexRows )) {
-            $lastRun = date( "Y-m-d h:i:s" , ( $latestIndexRows['sortdate'] - 60 ) ) ;
+            /* ****************  */
+            // reduce last run Time by 10 seconds . means to reindex some faq twice, but have more precision in this comlex process
+            $lastRun = date( "Y-m-d h:i:s" , ( $latestIndexRows['sortdate'] - 10 ) ) ;
+            $lastRunDay = date( "d" , ( $latestIndexRows['sortdate']  ) ) ;
+
             $debug .="<hr> Lastest FAQ Entry in DB = " . $lastRun . " sortdate: " . $latestIndexRows['sortdate'] ;
         } else {
             $lastRun = "2014-12-31 00:00:00" ;
+            $lastRunDay = "0" ;
             $debug .="<hr> Found no FAQ Entry in DB = set LastRun to " . $lastRun  ;
 
         }
@@ -102,6 +107,8 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $numIndexed = 0 ;
         $maxIndex =  $indexerObject->rowcount  ;
         $LastModDate = "9999-99-99" ;
+        $LastModDay  = "99" ;
+
         if(  $indexerObject->rowcount < 1 ) {
             $maxIndex = 10000 ;
             $debug .= "Max Entrys set to: " . int( $maxIndex ) . "\n\n";
@@ -113,10 +120,11 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                 $faq2beIndexed = [] ;
                 foreach ($xml2->url as $url) {
                     $notesLastMod = $url->lastmod;
+
                     if (strlen(trim($url->lastmod)) == 10) {
                         $notesLastMod .= " 23:59:59";
                     }
-                    if ($notesLastMod > $lastRun) {
+                    if ($notesLastMod > $lastRun ) {
 
                         $debug .= "\n <hr>url->loc: " . $url->loc . " : lastmod: " . $notesLastMod ;
                         $faq2beIndexed[]  = $url ;
@@ -138,12 +146,16 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
 
                         $numIndexed ++ ;
+
+
                         //we are near last to be indexed FAQ .. Keep its lastMode Date
                         if( $numIndexed >= ($maxIndex -10 ) && $LastModDate == "9999-99-99"  ) {
-                            $LastModDate = trim($url->lastmod );
+                            $LastModDate = substr( trim($url->lastmod ) , 0, 10 ) ;
+                            $LastModDay = substr($LastModDate , 9 , 2)  ;
                         }
-                        if ( trim($url->lastmod) == $LastModDate ) {
-                            // if f.e. max Index is configured 100 and the first 90 FAQ are change on same day, we will index 190.
+                        if ( substr( trim($url->lastmod) , 0, 10 )   == $LastModDate   && $lastRunDay ==   $LastModDay ) {
+
+                            // if f.e. max Index is configured 100 and the first 90 FAQ are changed on SAME DAY, we will index 190.
                             // if first 200 have the same date, it will continue until date cahnges and indexer will index 100 (configure Number) FAQs more
                             // and to be shure: if we get for all FAQs same lastmod date , this would lead to deadlock .. max should  3 times of config
                             if(  $indexerObject->rowcount > 1 ) {
