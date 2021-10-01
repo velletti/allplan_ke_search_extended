@@ -158,7 +158,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                         //we are near last to be indexed FAQ .. Keep its lastMode Date
                         if( $numIndexed >= ($maxIndex *.9 ) && $LastModDate == "9999-99-99"  ) {
                             $LastModDate = substr( trim($url->lastmod ) , 0, 10 ) ;
-                            $LastModDay = substr($LastModDate , 9 , 2)  ;
+                            $LastModDay = substr($LastModDate , 8 , 2)  ;
                             $debug .= "<hr> Changed Last Mod Date to: " . $LastModDate . " and LastModDay to " . $LastModDay ;
                         }
                         if ( substr( trim($url->lastmod) , 0, 10 )   == $LastModDate   ||  $lastRunDay  ==   $LastModDay ) {
