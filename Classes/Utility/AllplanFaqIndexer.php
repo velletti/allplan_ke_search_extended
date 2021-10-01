@@ -131,7 +131,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                     if ($notesLastMod > $lastRun ) {
                         if ( $debugLong == "" ) {
                             $debug .= " ******************************************* first added FAQ  ****************** ";
-                            $debugLong .= " \n \n  <hr>url->loc: " . $url->loc . " : lastmod: " . $notesLastMod ;
+                            $debug .= " \n \n  <hr>url->loc: " . $url->loc . " : lastmod: " . $notesLastMod ;
                         }
 
                         $debugLong .= " \n \n  <hr>url->loc: " . $url->loc . " : lastmod: " . $notesLastMod ;
