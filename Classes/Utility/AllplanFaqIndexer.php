@@ -167,7 +167,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                             // if first 200 have the same date, it will continue until date cahnges and indexer will index 100 (configure Number) FAQs more
                             // and to be shure: if we get for all FAQs same lastmod date , this would lead to deadlock .. max should  3 times of config
                             if(  $indexerObject->rowcount > 1 ) {
-                                if ( $maxIndex < ( $indexerObject->rowcount * 3 )) {
+                                if ( $maxIndex < ( $indexerObject->rowcount * 2 )) {
                                     $debugLong .= " - LINE: " . __LINE__ . "  (restricted maxIndex ++)" ;
                                     $maxIndex ++ ;
                                 }
@@ -204,7 +204,8 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         . " and got xlm2 from string: " . substr( var_export( $xml2 , true ) , 0 , 500 )  . " .... Total: " . strlen( $xml2 ) . " chars .." ;
 
         MailUtility::debugMail( array("jvelletti@allplan.com" , "slorenz@allplan.com" )
-            , $introTag . " FAQ Indexer has run on '" . $count . "' objects ", $details . " \n \n " . $debug . " \n\n <hr> ****************** <hr> " . " \n\n " . $debugLong ) ;
+            , $introTag . " FAQ Indexer has run on '" . $count . "' objects ", $details . " \n \n " . $debug . " \n\n <hr> ****************** <hr> " . " \n\n "
+            . substr(  $debugLong , 0 , 20000) ) ;
 
 
 
