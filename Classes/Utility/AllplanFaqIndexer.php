@@ -117,6 +117,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             $debug .= "Max Entrys set to: " . int( $maxIndex ) . "\n\n";
         }
 
+        $errorDebug = '' ;
         if( is_object($xml2)) {
             if( is_object( $xml2->url ) ) {
                 $debug .= " ******************************************* put to array if newer than " . $lastRun . " Tstamp : " . $lastRunTstamp . " ****************** ";
@@ -184,6 +185,8 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                             } else {
                                 $debugLong .= " ! ERROR ! " ;
                                 $error++;
+                                $errorDebug .= "<hr>ERROR on: url->loc: " . $url->loc . " : lastmod: " . $url->lastmod . "(" . $LastModDate . ")" ;
+
                             }
                         }
                         $debug .= " \n " ;
@@ -196,6 +199,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         if ( $error > 0 ) {
             $error = true ;
             $introTag = "[FAQ-Indexer-ERROR]" ;
+            $errorDebug = " <hr> ###########  See FAQs with ERRORS on Index ######  <hr>" .  " \n\n <hr>" . $errorDebug ;
         } else {
             $introTag = "[FAQ-Indexer]" ;
         }
@@ -204,7 +208,9 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         . " and got xlm2 from string: " . substr( var_export( $xml2 , true ) , 0 , 500 )  . " .... Total: " . strlen( $xml2 ) . " chars .." ;
 
         MailUtility::debugMail( array("jvelletti@allplan.com" , "slorenz@allplan.com" )
-            , $introTag . " FAQ Indexer has run on '" . $count . "' objects ", $details . " \n \n " . $debug . " \n\n <hr> ****************** <hr> " . " \n\n "
+            , $introTag . " FAQ Indexer has run on '" . $count . "' objects ", $details . " \n \n "
+            . $errorDebug . " \n \n "
+            . $debug . " \n\n <hr> ****************** <hr> " . " \n\n "
             . substr(  $debugLong , 0 , 20000) ) ;
 
 
