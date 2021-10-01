@@ -82,11 +82,13 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         if( is_array($latestIndexRows )) {
             /* ****************  */
             $lastRun = date( "Y-m-d h:i:s" , ( $latestIndexRows['sortdate']  ) ) ;
+            $lastRunTstamp = $latestIndexRows['sortdate']  ;
             $lastRunDay = date( "d" , ( $latestIndexRows['sortdate']  ) ) ;
 
             $debug .="<hr> Lastest FAQ Entry in DB = " . $lastRun . " sortdate: " . $latestIndexRows['sortdate'] ;
         } else {
             $lastRun = "2014-12-31 00:00:00" ;
+            $lastRunTstamp = 1 ;
             $lastRunDay = "0" ;
             $debug .="<hr> Found no FAQ Entry in DB = set LastRun to " . $lastRun  ;
 
@@ -115,7 +117,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
         if( is_object($xml2)) {
             if( is_object( $xml2->url ) ) {
-                $debug .= " ******************************************* put to array if newer than " . $lastRun . " ****************** ";
+                $debug .= " ******************************************* put to array if newer than " . $lastRun . " Tstamp : " . $lastRunTstamp . " ****************** ";
                 $faq2beIndexed = [] ;
                 foreach ($xml2->url as $url) {
                     $notesLastMod = $url->lastmod;
@@ -148,7 +150,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
 
                         //we are near last to be indexed FAQ .. Keep its lastMode Date
-                        if( $numIndexed >= ($maxIndex -10 ) && $LastModDate == "9999-99-99"  ) {
+                        if( $numIndexed >= ($maxIndex *.9 ) && $LastModDate == "9999-99-99"  ) {
                             $LastModDate = substr( trim($url->lastmod ) , 0, 10 ) ;
                             $LastModDay = substr($LastModDate , 9 , 2)  ;
                             $debug .= "<hr> Changed Last Mod Date to: " . $LastModDate . " and LastModDay to " . $LastModDay ;
