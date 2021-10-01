@@ -1,11 +1,15 @@
 function allplan_kesearch_change(e) {
     // first rename all existing selects to directory1, directory2 or directory3
     $('SELECT.kesearch-directory').each( function() {
+        console.log( "init  : " + $( this).data('cat') ) ;
         $( this).attr( 'name' , $( this).data('cat') )
     });
     // then set name of  changed select box to directory as this will be submitted
 
+  //  console.log( "Changed Element  Name : " + $( 'SELECT.kesearch-directory2' ).attr( 'name' ) ) ;
     $( e).attr( 'name' , 'tx_kesearch_pi1[directory]' )   ;
+  //  console.log( "After Changed  Name : " + $( 'SELECT.kesearch-directory2' ).attr( 'name' ) ) ;
+
     if($( e).data('cat') =='tx_kesearch_pi1[directory1]') {
         $( 'SELECT.kesearch-directory2').remove() ;
         $( 'SELECT.kesearch-directory3').remove() ;
@@ -30,10 +34,15 @@ function allplan_kesearch_directory(Level,pid,lng, directory ){
         success: function(result) {
             if(Level == 2 ){
                 $( 'SELECT.kesearch-directory1').after(result) ;
-                $('SELECT.kesearch-directory2').on('change' , allplan_kesearch_change )
+                $( 'SELECT.kesearch-directory2').on('change' , allplan_kesearch_change ) ;
+              //  console.log( "Level 2 Name : " + $( 'SELECT.kesearch-directory2' ).attr( 'name' ) ) ;
+
             }
             if(Level == 3 ){
                 $( 'SELECT.kesearch-directory2').after(result) ;
+              //  console.log( "Level 3 Name : " + $( 'SELECT.kesearch-directory2' ).attr( 'name' ) ) ;
+                $( 'SELECT.kesearch-directory2' ).attr( 'name' , 'tx_kesearch_pi1[directory]' )   ;
+              //  console.log( "After 3 Name : " + $( 'SELECT.kesearch-directory2' ).attr( 'name' ) ) ;
             }
         }
     });
