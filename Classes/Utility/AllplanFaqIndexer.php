@@ -71,6 +71,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             ->where( $queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter( "supportfa%" , Connection::PARAM_STR)) )
             ->andWhere( $queryBuilder->expr()->gt('sortdate', $queryBuilder->createNamedParameter( 0 , Connection::PARAM_INT)) )
             ->orderBy("sortdate" , "DESC")
+            ->addOrderBy("tstamp" , "DESC")
             ->setMaxResults(1)
             ->execute() ;
 
@@ -85,7 +86,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
             $lastRunTstamp = $latestIndexRows['sortdate']  ;
             $lastRunDay = date( "d" , ( $latestIndexRows['sortdate']  ) ) ;
 
-            $debug .="<hr> Lastest FAQ Entry in DB = " . $lastRun . " sortdate: " . $latestIndexRows['sortdate'] ;
+            $debug .="<hr> Lastest FAQ Entry in DB = UID: "  . $latestIndexRows['uid'] . " | lastRun : ". $lastRun . " sortdate: " . $latestIndexRows['sortdate'] ;
         } else {
             $lastRun = "2014-12-31 00:00:00" ;
             $lastRunTstamp = 1 ;
@@ -132,7 +133,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                     } else {
                         $debug .= " ******************************************* latest already indexed FAQ  ****************** ";
                         $debug .= "\n  \n  <hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod  ;
-                        $faq2beIndexed[]  = $url ;
+                    //    $faq2beIndexed[]  = $url ;
                         break ;
                     }
                 }
