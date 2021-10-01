@@ -82,7 +82,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
         if( is_array($latestIndexRows )) {
             /* ****************  */
-            $lastRun = date( "Y-m-d h:i:s" , ( $latestIndexRows['sortdate']  ) ) ;
+            $lastRun = date( "Y-m-d H:i:s" , ( $latestIndexRows['sortdate']  ) ) ;
             $lastRunTstamp = $latestIndexRows['sortdate']  ;
             $lastRunDay = date( "d" , ( $latestIndexRows['sortdate']  ) ) ;
 
