@@ -111,28 +111,20 @@ class AllplanFaqIndexerUtility
         $options['fromdecode'] = "ISO-8859-1" ;
 
         $urlSingleArray = parse_url( $url ) ;
-        $currentLang =  substr( $urlSingleArray['path'] , 1,2 ) ;
-        if( !in_array( $currentLang , array("en" , "de" , "it" , "fr" ,"es" , "ru" , "cz" , "tr" ) )) {
-            $currentLang = "en" ;
-        }
-        $docID = str_replace( ".html" , "" , substr( $urlSingleArray['path'] , strpos( strtolower( $urlSingleArray['path'] ) , "faqid") + 6 ) )  ;
 
-        $urlSingleArray = parse_url( $url ) ;
-        $indexlang = 0  ;
+        $currentLang = $this->getCurrentLangFromPathArray( $urlSingleArray )  ;
+        $docID = $this->getDocIdFromPathArray( $urlSingleArray )  ;
+
         $options['fromdecode'] = "ISO-8859-1" ;
 
         $langSettings= $this->getLanguageSettings( $currentLang ) ;
+        $indexlang = $this->getIndexLang( $langSettings ) ;
 
-        $lang = $langSettings['lang'] ;
-        $indexlang =  $langSettings['indexlang'] ; ;
+
         $indexerConfig['pid'] = $langSettings['pid'] ;
         $category = $langSettings['cat'] ;
         $options['fromdecode'] = $langSettings['fromdecode'] ;
 
-
-        if (  $indexlang == 0   ) {
-            $indexlang = $lang  ;
-        }
 
         $singleUid = $this->convertIdToINT( $docID , $indexlang );
         $debug[] = array( "LINE:" => __LINE__ ,  "singleUid" => $singleUid ) ;
@@ -306,7 +298,55 @@ class AllplanFaqIndexerUtility
         return true ;
     }
 
-    public function getLanguageSettings($currentLang) {
+    /** combine all function
+     * @param $url
+     * @return mixed
+     */
+
+    public function getIndexerRowFromPath( $url ) {
+        $urlSingleArray = parse_url( $url ) ;
+
+        $currentLang = $this->getCurrentLangFromPathArray( $urlSingleArray )  ;
+        $docID = $this->getDocIdFromPathArray( $urlSingleArray )  ;
+
+        $langSettings= $this->getLanguageSettings( $currentLang ) ;
+        $indexlang = $this->getIndexLang( $langSettings ) ;
+
+        $singleUid = $this->convertIdToINT( $docID , $indexlang );
+
+        return $this->getIndexerById($singleUid)  ;
+    }
+
+    public function getDocIdFromPathArray($urlSingleArray) {
+        return str_replace( ".html" , "" , substr( $urlSingleArray['path'] , strpos( strtolower( $urlSingleArray['path'] ) , "faqid") + 6 ) )  ;
+    }
+
+    public function getCurrentLangFromPathArray( array $urlSingleArray ) {
+        $currentLang =  substr( $urlSingleArray['path'] , 1,2 ) ;
+        if( !in_array( $currentLang , array("en" , "de" , "it" , "fr" ,"es" , "ru" , "cz" , "tr" ) )) {
+            $currentLang = "en" ;
+        }
+        return $currentLang ;
+    }
+
+    /** get TYPO3 sys_language_uid or -1 in case of DE and fallback to 0 for RU
+     *
+     * @param array $langSettings
+     * @return integer
+     */
+    public function getIndexLang( array  $langSettings ) {
+        $indexlang = 0  ;
+        $lang = $langSettings['lang'] ;
+        $indexlang =  $langSettings['indexlang'] ;
+
+        if (  $indexlang == 0  || !$langSettings['indexlang'] ) {
+            $indexlang = $lang  ;
+        }
+
+        return $indexlang ;
+    }
+
+    public function getLanguageSettings(string $currentLang) {
 
         switch($currentLang ) {
             case "de":

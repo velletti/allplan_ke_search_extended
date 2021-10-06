@@ -99,14 +99,17 @@ class AllplanKesearchIndexerTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask 
 
             $compareTime = time() - (60*60*12);
 
-            if ($lockTime < $compareTime || substr( $_SERVER['SERVER_NAME'] , -6 , 6 ) == ".local" ) {
+            if ($lockTime < $compareTime || substr( $_SERVER['SERVER_NAME'] , -9 , 9 ) == "ddev.site" || $_ENV['TYPO3_CONTEXT'] == "Development" ) {
                 // lock is older than 12 hours - remove
                 $indexer->registry->remove($nameSpace , $registryKey );
                 $indexer->registry->set($nameSpace, $registryKey , time());
             } else {
                 throw new \RuntimeException(
                     'You can\'t start the indexer twice. Please wait while first indexer process ' . $nameSpace  . " -> " . $registryKey
-                    .  ' is currently running : Locktime:' . date("d.m.Y H:i:s" , $lockTime ) . " > " . date("d.m.Y H:i:s" , $compareTime )  ,
+                    .  ' is currently running : Locktime:' . date("d.m.Y H:i:s" , $lockTime ) . " > " . date("d.m.Y H:i:s"  , $compareTime )
+                        . " - ENV: TYPO3_CONTEXT :" .  $_ENV['TYPO3_CONTEXT'] . " - Server: " . $_SERVER['SERVER_NAME']
+
+                       ,
                     1493994395218 
                 );
                 return false ;
