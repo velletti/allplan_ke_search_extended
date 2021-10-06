@@ -132,9 +132,9 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                 $faq2beIndexed = [] ;
                 foreach ($xml2->url as $url) {
                     $notesLastMod = $url->lastmod;
-                    if( count($faq2beIndexed) <  10 ) {
-                        MailUtility::debugMail( array("jvelletti@allplan.com" ) , "[FAQ-Indexer]  " . $notesLastMod . " " .  $url->lastmod ,
-                            "notesLastMod" . $notesLastMod . "  URL->lastmod ".  $url->lastmod  .  " lastRun " . $lastRun ) ;
+                    if( count($faq2beIndexed) <  1 ) {
+                        MailUtility::debugMail( array("jvelletti@allplan.com" ) , "[FAQ-Indexer] testing Notes last Date   " . $notesLastMod . " " .  $url->lastmod ,
+                            "notesLastMod" . $notesLastMod . " against date from XML;  URL->lastmod ".  $url->lastmod  .  " and date when lastRun " . $lastRun. " with this FAQ : " . $url->loc ) ;
                     }
 
 
