@@ -100,8 +100,6 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $xmlFromUrl = $this->getJsonFile($url , "urlset" , array('Accept: text/xml, Content-type:text/xml') , FALSE ) ;
         $xmlFromUrlDebug = strip_tags( str_replace( [ "<lastmod>" , "</lastmod>" , "<loc>" , "</loc>" ] , [" LastMod: " ,  "" , " \n URL: "  , " "] , $xmlFromUrl) ) ;
 
-        MailUtility::debugMail( array("jvelletti@allplan.com" ) , "[FAQ-Indexer] FAQ Indexer Will run with URL: $url ",
-            substr( $xmlFromUrlDebug , 0 , 1500 )  . " .... " .  strlen( $xmlFromUrlDebug ) . " chars .. " .  substr( $xmlFromUrlDebug , -200 , 200 ) . " \n\n "   ) ;
 
 
         $xml2 = simplexml_load_string ($xmlFromUrl  ) ;
@@ -113,6 +111,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $count = 0 ;
         $numIndexed = 0 ;
         $forgottenIndexed = 0 ;
+        $testedOldIndexed = 0 ;
         $maxIndex =  $indexerObject->rowcount  ;
         $LastModDate = "9999-99-99" ;
         $LastModDay  = "99" ;
@@ -124,6 +123,11 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $errorDebug = '' ;
         if( is_object($xml2)) {
             if( is_object( $xml2->url ) ) {
+
+                MailUtility::debugMail( array("jvelletti@allplan.com" ) , "[FAQ-Indexer] FAQ Indexer Will run with URL: $url " . " : entries : " . count( $xml2->url ),
+                    substr( $xmlFromUrlDebug , 0 , 1500 )  . " .... " .  strlen( $xmlFromUrlDebug ) . " chars .. " .  substr( $xmlFromUrlDebug , -200 , 200 ) . " \n\n "   ) ;
+
+
                 $debug .= " ******************************************* put to array if newer than " . $lastRun . " Tstamp : " . $lastRunTstamp . " ****************** ";
                 $faq2beIndexed = [] ;
                 foreach ($xml2->url as $url) {
@@ -145,6 +149,11 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
                         $debugLong .= " \n \n  <hr>url->loc: " . $url->loc . " : lastmod: " . $notesLastMod ;
                         $faq2beIndexed[]  = $url ;
+                        if( count($faq2beIndexed)/ 100 == round(count($faq2beIndexed)/ 100 , 0)) {
+                            MailUtility::debugMail( array("jvelletti@allplan.com" ) ,
+                                "[FAQ-Indexer] Get current FAQs ... found already " . count($faq2beIndexed)
+                                , $debug  ) ;
+                        }
                     } else {
 
                         if( $maxIndex < 1000 ) {
@@ -152,7 +161,7 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                             $debug .= "\n  \n  <hr>url->loc: " . $url->loc . " : lastmod: " . $url->lastmod  ;
                             break ;
                         }
-
+                        $testedOldIndexed++ ;
                         $currentRow = $AllplanFaqIndexerUtility->getIndexerRowFromPath( $url->loc )  ;
                         if ( $currentRow ) {
                             if ( date( "Y-m-d H:i:s" , $currentRow['sortdate'] )  <   $url->lastmod ) {
@@ -164,6 +173,13 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
                                 }
 
                             }
+                        }
+                        // ToDo remove last hard coded 100 OR ondition
+                        if ( $forgottenIndexed > 10 || $testedOldIndexed > $maxIndex || $testedOldIndexed > 100 ) {
+                            MailUtility::debugMail( array("jvelletti@allplan.com" ) ,
+                                "[FAQ-Indexer] Get forgotten Indexed FAQs ... found already : " . $forgottenIndexed
+                                , $debug  ) ;
+                            break ;
                         }
 
                     }
