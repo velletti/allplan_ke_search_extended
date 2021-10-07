@@ -174,8 +174,8 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
 
                             }
                         }
-                        // ToDo remove last hard coded 100 OR ondition
-                        if ( $forgottenIndexed > 10 || $testedOldIndexed > $maxIndex || $testedOldIndexed > 100 ) {
+                        // todo : maybe we need to check  maxindex * 3 or higher
+                        if ( $forgottenIndexed >  ( $maxIndex / 10 ) || $testedOldIndexed > ( $maxIndex * 2 ) ) {
                             MailUtility::debugMail( array("jvelletti@allplan.com" ) ,
                                 "[FAQ-Indexer] Get forgotten Indexed FAQs ... found already : " . $forgottenIndexed
                                 , $debug  ) ;
