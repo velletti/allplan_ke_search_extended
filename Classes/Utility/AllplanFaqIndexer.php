@@ -56,7 +56,10 @@ class AllplanFaqIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSea
         $debug = "Url to XML File in Config: " . ($url) . "\n\n";
         $debug .= "Max Entrys in Config: " . intval($indexerObject->rowcount) . "\n\n";
         if ( $url == "") {
-            $url = "http://212.29.3.155/hotline/FAQ_HOTD.nsf/0/05421C80A7EB2CE2C1257480004DDA2E/\$FILE/FAQIDs.xml?OpenElement";
+            // until 12.10.2021
+            // $url = "http://212.29.3.155/hotline/FAQ_HOTD.nsf/0/05421C80A7EB2CE2C1257480004DDA2E/\$FILE/FAQIDs.xml?OpenElement";
+            $url = "http://212.29.3.155/hotline/FAQ_HOTD.nsf/0/05D90839947490F7C1258767003338AC/\$FILE/FAQIDs.xml?OpenElement";
+
             $debug = "Url to XML File set to: " . ($url) . "\n\n";
         }
 
