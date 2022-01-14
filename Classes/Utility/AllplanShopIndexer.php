@@ -229,7 +229,7 @@ class AllplanShopIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\BaseKeSe
         $this->insertSyslog( $insertFields) ;
         return $count ;
     }
-    protected function putToIndex(array $single , \TeaminmediasPluswerk\KeSearch\Indexer\IndexerRunner $indexerObject , array  $indexerConfig ) {
+    protected function putToIndex(array $single , \Tpwd\KeSearch\Indexer\IndexerRunner $indexerObject , array  $indexerConfig ) {
 
         // take storage PID form indexexer Configuration ... Hard Coded by Language !!!
         $pid =  $indexerConfig['pid'] ;

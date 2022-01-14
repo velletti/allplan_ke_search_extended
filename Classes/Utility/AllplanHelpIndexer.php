@@ -91,7 +91,7 @@ class AllplanHelpIndexer extends BaseKeSearchIndexerHook
 
         return $count ;
     }
-    protected function putToIndex(array $single , \TeaminmediasPluswerk\KeSearch\Indexer\IndexerRunner $indexerObject , array  $indexerConfig ) {
+    protected function putToIndex(array $single , \Tpwd\KeSearch\Indexer\IndexerRunner $indexerObject , array  $indexerConfig ) {
 
         // Prepare data for the indexer
         $content = $single['title'] . PHP_EOL . nl2br($single['text']) ;

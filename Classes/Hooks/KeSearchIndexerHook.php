@@ -102,7 +102,7 @@ class KeSearchIndexerHook extends BaseKeSearchIndexerHook{
     /**
      * Own indexes, writing the data into tx_kesearch_index
      * @param array $indexerConfig configuration from TYPO3 backend
-     * @param \TeaminmediasPluswerk\KeSearch\Indexer\IndexerRunner $indexerObject reference to the indexer class
+     * @param \Tpwd\KeSearch\Indexer\IndexerRunner $indexerObject reference to the indexer class
      * @return  string output in the backend after indexing
      */
     public function customIndexer(&$indexerConfig, &$indexerObject) {

@@ -10,7 +10,7 @@ use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
  * TYPO3Fluid
  */
 
-use TeaminmediasPluswerk\KeSearch\Lib\Db;
+use Tpwd\KeSearch\Lib\Db;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;

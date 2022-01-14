@@ -117,7 +117,7 @@ class AllplanContentserveIndexer extends \Allplan\AllplanKeSearchExtended\Hooks\
         $this->insertSyslog( $insertFields) ;
         return $count ;
     }
-    protected function putToIndex(array $single , \TeaminmediasPluswerk\KeSearch\Indexer\IndexerRunner $indexerObject , array  $indexerConfig , $language ) {
+    protected function putToIndex(array $single , \Tpwd\KeSearch\Indexer\IndexerRunner $indexerObject , array  $indexerConfig , $language ) {
         if ($single['Header']['RESULTS'] == 0 ) {
             return false ;
         }
