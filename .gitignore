@@ -1,8 +1,0 @@
-# if adding a file to this list does not work : git rm --cached "filename"
-
-*.log
-.DS_Store
-.idea/*
-.idea
-.project
-.settings
