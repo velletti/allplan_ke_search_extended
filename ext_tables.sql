@@ -1,5 +1,5 @@
 
-
+# Todo Rename columns TYPO3 conform (tx...)
 #
 # Table structure for table 'tx_kesearch_allplan_url_ids'
 #
