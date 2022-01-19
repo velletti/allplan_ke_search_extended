@@ -53,7 +53,7 @@ class JvEventsIndexer
 
 		if($res){
 			$resCount = 0;
-			while(($record = $res->fetchAllAssociative())){
+			while(($record = $res->fetch())){
 
 				$resCount++;
 

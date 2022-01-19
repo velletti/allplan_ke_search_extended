@@ -47,7 +47,7 @@ class ForumIndexer
 
 		$debug .= 'Query LastRun : ' . $lastRunQuery->getSQL();
 
-		$lastRunRow = $lastRunQuery->execute()->fetchAllAssociative();
+		$lastRunRow = $lastRunQuery->execute()->fetch();
 		$debug .= 'Result: ' . var_export($lastRunRow, true);
 		if($indexerObject->period > 365){
 			$lastRun = time() - (60 * 60 * 24 * ($indexerObject->period));
@@ -103,7 +103,7 @@ class ForumIndexer
 			->execute()
 		;
 
-		if(!$result->fetchAllAssociative()){
+		if(!$result->fetch()){
 			// all new entries since last run are indexed => so wie need to index modified entries
 			$sortDate = 'p.tstamp';
 			$result =  $resultQuery
@@ -116,7 +116,7 @@ class ForumIndexer
 		$debug2 = '';
 		$count = 0;
 		$tagsFound = 0;
-		while($record = $result->fetchAllAssociative()){
+		while($record = $result->fetch()){
 
 			// Prepare data for the indexer
 			$title = $record['subject'];
@@ -146,7 +146,7 @@ class ForumIndexer
 			;
 
 			$content .=  PHP_EOL . 'Tag: ';
-			while($tagRow = $tagQuery->fetchAllAssociative()){
+			while($tagRow = $tagQuery->fetch()){
 				$content .= " " . $tagRow['name'];
 				$tagsFound ++;
 			}
@@ -159,7 +159,7 @@ class ForumIndexer
 				)
 			;
 
-			while( $attachmentRow = $attachmentRows->fetchAllAssociative()) {
+			while( $attachmentRow = $attachmentRows->fetch()) {
 				$content .=  PHP_EOL . 'File:' . $attachmentRow['filename'];
 			}
 
@@ -216,7 +216,7 @@ class ForumIndexer
 			;
 
 			$feGroupsArray = [];
-			while( $access = $accessData->fetchAllAssociative()){
+			while( $access = $accessData->fetch()){
 				if($access['login_level'] == 0 ||  $access['login_level'] == 1){
 					$type = 'allplanforum';
 				} else {
