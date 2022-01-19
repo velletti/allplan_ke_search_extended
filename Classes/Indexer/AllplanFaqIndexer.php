@@ -25,6 +25,7 @@ class AllplanFaqIndexer
 {
 
 	/**
+	 * Allplan Faq indexer
 	 * @param array $indexerConfig
 	 * @param AllplanKesearchIndexer $indexerObject
 	 * @return bool|int
