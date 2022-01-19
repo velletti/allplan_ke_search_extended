@@ -29,7 +29,7 @@ class AllplanKesearchIndexerTask extends AbstractTask
 	protected int $period;
 
 	/**
-	 * @var int language
+	 * @var string|int language
 	 */
 	protected int $language;
 
@@ -87,17 +87,17 @@ class AllplanKesearchIndexerTask extends AbstractTask
 	}
 
 	/**
-	 * @return int
+	 * @return string|int
 	 */
-	public function getLanguage(): int
+	public function getLanguage()
 	{
 		return $this->language;
 	}
 
 	/**
-	 * @param int $language
+	 * @param string|int $language
 	 */
-	public function setLanguage(int $language)
+	public function setLanguage($language)
 	{
 		$this->language = $language;
 	}
