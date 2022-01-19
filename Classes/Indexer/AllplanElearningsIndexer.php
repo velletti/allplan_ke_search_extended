@@ -1,10 +1,9 @@
 <?php
-namespace Allplan\AllplanKeSearchExtended\Utility;
+namespace Allplan\AllplanKeSearchExtended\Indexer;
 
 /**
  * AllplanKesearchIndexer
  */
-use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
 use Allplan\AllplanKeSearchExtended\Utility\DbUtility;
 use Allplan\AllplanKeSearchExtended\Utility\EnvironmentUtility;
 
@@ -12,7 +11,6 @@ use Allplan\AllplanKeSearchExtended\Utility\EnvironmentUtility;
  * TYPO3
  */
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
