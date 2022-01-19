@@ -1,228 +1,210 @@
 <?php
 namespace Allplan\AllplanKeSearchExtended\Task;
 
+/**
+ * AllplanKeSearchExtended
+ */
 use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
 
-/***************************************************************
-*  Copyright notice
-*
-*  (c) 2011 Andreas Kiefer <kiefer@kennziffer.com>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+/**
+ * TYPO3
+ */
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
+use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Scheduler\Task\AbstractTask;
+
+/**
+ * Php
+ */
+use RuntimeException;
+
+class AllplanKesearchIndexerTask extends AbstractTask
+{
+
+	/**
+	 * @var int The time period, after which the rows are deleted
+	 */
+	protected int $period;
+
+	/**
+	 * @var int language
+	 */
+	protected int $language;
+
+	/**
+	 * @var int rowcount
+	 */
+	protected int $rowcount;
+
+	/**
+	 * @var string externalUrl
+	 */
+	protected string $externalUrl;
+
+	/**
+	 * @var int storagePid
+	 */
+	protected int $storagePid;
+
+	/**
+	 * @var array The index Configs records that should be used for scheduler index
+	 */
+	public array $configs;
 
 
-class AllplanKesearchIndexerTask extends \TYPO3\CMS\Scheduler\Task\AbstractTask {
-
-    /**
-     * @var int The time period, after which the rows are deleted
-     */
-    protected $period ;
-
-    /**
-     * @var int language
-     */
-    protected $language ;
-
-    /**
-     * @var int rowcount
-     */
-    protected $rowcount ;
-
-    /**
-     * @var string externalUrl
-     */
-    protected $externalUrl ;
-
-    /**
-     * @var int storagePid
-     */
-    protected $storagePid ;
-
-    /**
-     * @var array The index Configs records that should be used for scheduler index
-     */
-    public $configs ;
-
-
-	public function execute() {
-        if (class_exists(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)) {
-            $this->extConf =
-                \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)
-                    ->get('ke_search');
-        } else {
-            // @extensionScannerIgnoreLine
-            $this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['ke_search']);
-        }
-
-
-		// make indexer instance
-        /** @var AllplanKesearchIndexer  $indexer */
-		$indexer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Allplan\\AllplanKeSearchExtended\\Indexer\\AllplanKesearchIndexer');
-
-        $indexer->configs = $this->configs ;
-        $indexer->period = $this->period ;
-        $indexer->language = $this->language ;
-        $indexer->externalUrl = $this->externalUrl ;
-        $indexer->rowcount = $this->rowcount ;
-        $indexer->storagePid = $this->storagePid ;
-
-        // First Remove the default ke Search registry entrys ( needed as default index will set it again ..
-        $indexer->registry->removeAllByNamespace('tx_kesearch');
-
-        // Now write starting timestamp into registry , but use $nameSpace tx_kesearch_<taskUid>
-        // this is a helper to delete all records which are older than starting timestamp in registry
-        // this also prevents starting the indexer twice
-        $nameSpace = 'tx_kesearch_extended' ;
-        $registryKey = 'startTimeOfIndexer' . $this->taskUid ;
-
-        if($indexer->registry->get($nameSpace, $registryKey ) === null) {
-            $indexer->registry->set($nameSpace, $registryKey, time());
-        } else {
-            // check lock time
-            $lockTime = $indexer->registry->get($nameSpace, $registryKey );
-
-            $compareTime = time() - (60*60*12);
-
-            if ($lockTime < $compareTime || substr( $_SERVER['SERVER_NAME'] , -9 , 9 ) == "ddev.site" || $_ENV['TYPO3_CONTEXT'] == "Development" ) {
-                // lock is older than 12 hours - remove
-                $indexer->registry->remove($nameSpace , $registryKey );
-                $indexer->registry->set($nameSpace, $registryKey , time());
-            } else {
-                throw new \RuntimeException(
-                    'You can\'t start the indexer twice. Please wait while first indexer process ' . $nameSpace  . " -> " . $registryKey
-                    .  ' is currently running : Locktime:' . date("d.m.Y H:i:s" , $lockTime ) . " > " . date("d.m.Y H:i:s"  , $compareTime )
-                        . " - ENV: TYPO3_CONTEXT :" .  $_ENV['TYPO3_CONTEXT'] . " - Server: " . $_SERVER['SERVER_NAME']
-
-                       ,
-                    1493994395218 
-                );
-                return false ;
-            }
-        }
-
-		// process
-		$indexer->startIndexing(true, $this->extConf, 'CLI');
-        // $indexer->registry->removeAllByNamespace($nameSpace);
-        $indexer->registry->remove($nameSpace , $registryKey );
-		return true;
+	/**
+	 * @return array
+	 */
+	public function getConfigs(): array
+	{
+		return $this->configs;
 	}
 
+	/**
+	 * @param array $configs
+	 */
+	public function setConfigs(array $configs)
+	{
+		$this->configs = $configs;
+	}
 
-    /**
-     * @return array
-     */
-    public function getConfigs()
-    {
-        return $this->configs;
-    }
+	/**
+	 * @return int
+	 */
+	public function getPeriod(): int
+	{
+		return $this->period;
+	}
 
-    /**
-     * @param array $configs
-     */
-    public function setConfigs($configs)
-    {
-        $this->configs = $configs;
-    }
+	/**
+	 * @param int $period
+	 */
+	public function setPeriod(int $period)
+	{
+		$this->period = $period;
+	}
 
-    /**
-     * @return int
-     */
-    public function getPeriod()
-    {
-        return $this->period;
-    }
+	/**
+	 * @return int
+	 */
+	public function getLanguage(): int
+	{
+		return $this->language;
+	}
 
-    /**
-     * @param int $period
-     */
-    public function setPeriod($period)
-    {
-        $this->period = $period;
-    }
+	/**
+	 * @param int $language
+	 */
+	public function setLanguage(int $language)
+	{
+		$this->language = $language;
+	}
 
-    /**
-     * @return int
-     */
-    public function getLanguage()
-    {
-        return $this->language;
-    }
+	/**
+	 * @return string
+	 */
+	public function getExternalUrl(): string
+	{
+		return $this->externalUrl;
+	}
 
-    /**
-     * @param int $language
-     */
-    public function setLanguage($language)
-    {
-        $this->language = $language;
-    }
+	/**
+	 * @param string $externalUrl
+	 */
+	public function setExternalUrl(string $externalUrl)
+	{
+		$this->externalUrl = $externalUrl;
+	}
 
-    /**
-     * @return string
-     */
-    public function getExternalUrl()
-    {
-        return $this->externalUrl;
-    }
+	/**
+	 * @return int
+	 */
+	public function getRowcount(): int
+	{
+		return $this->rowcount;
+	}
 
-    /**
-     * @param string $externalUrl
-     */
-    public function setExternalUrl($externalUrl)
-    {
-        $this->externalUrl = $externalUrl;
-    }
+	/**
+	 * @param int $rowcount
+	 */
+	public function setRowcount(int $rowcount)
+	{
+		$this->rowcount = $rowcount;
+	}
 
-    /**
-     * @return int
-     */
-    public function getRowcount()
-    {
-        return $this->rowcount;
-    }
+	/**
+	 * @return int
+	 */
+	public function getStoragePid(): int
+	{
+		return $this->storagePid;
+	}
 
-    /**
-     * @param int $rowcount
-     */
-    public function setRowcount($rowcount)
-    {
-        $this->rowcount = $rowcount;
-    }
+	/**
+	 * @param int $storagePid
+	 */
+	public function setStoragePid(int $storagePid)
+	{
+		$this->storagePid = $storagePid;
+	}
 
+	/**
+	 * @return bool
+	 * @throws ExtensionConfigurationExtensionNotConfiguredException
+	 * @throws ExtensionConfigurationPathDoesNotExistException
+	 */
+	public function execute(): bool
+	{
 
+		$this->extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('ke_search');
+		$indexer = GeneralUtility::makeInstance(AllplanKesearchIndexer::class);
+		$indexer->configs = $this->configs;
+		$indexer->period = $this->period;
+		$indexer->language = $this->language;
+		$indexer->externalUrl = $this->externalUrl;
+		$indexer->rowcount = $this->rowcount;
+		$indexer->storagePid = $this->storagePid;
 
+		// At first remove the default ke_search registry entries (needed, because default index will set it again)
+		$indexer->registry->removeAllByNamespace('tx_kesearch');
 
-    /**
-     * @return int
-     */
-    public function getStoragePid()
-    {
-        return $this->storagePid;
-    }
+		// Now write the starting timestamp into registry, but use $nameSpace tx_kesearch_<taskUid>
+		// this is a helper to delete all records which are older than starting timestamp in registry
+		// this also prevents starting the indexer twice
+		// Todo Check this...
+		$nameSpace = 'tx_kesearch_extended';
+		$registryKey = 'startTimeOfIndexer' . $this->taskUid;
 
-    /**
-     * @param int $storagePid
-     */
-    public function setStoragePid($storagePid)
-    {
-        $this->storagePid = $storagePid;
-    }
+		if($indexer->registry->get($nameSpace, $registryKey ) === null){
+			$indexer->registry->set($nameSpace, $registryKey, time());
+		} else {
 
+			// check lock time
+			$lockTime = $indexer->registry->get($nameSpace, $registryKey);
+			$compareTime = time() - (60*60*12);
 
+			// Todo put this into function
+			// If lock is older than 12 hours (or on dev environment) - remove
+			if ($lockTime < $compareTime || substr($_SERVER['SERVER_NAME'] , -9 , 9 ) == 'ddev.site' || $_ENV['TYPO3_CONTEXT'] == 'Development'){
+				$indexer->registry->remove($nameSpace , $registryKey );
+				$indexer->registry->set($nameSpace, $registryKey , time());
+			} else {
+				throw new RuntimeException(
+					'You cannot start the indexer twice. Please wait while the first indexer process ' . $nameSpace  . ' -> ' . $registryKey
+					. ' is currently running: lock time:' . date('d.m.Y H:i:s', $lockTime) . ' > ' . date('d.m.Y H:i:s', $compareTime)
+					. ' - ENV: TYPO3_CONTEXT :' .  $_ENV['TYPO3_CONTEXT'] . ' - server: ' . $_SERVER['SERVER_NAME'],
+					1493994395218
+				);
+			}
+		}
+
+		// Process
+		$indexer->startIndexing(true, $this->extConf,'CLI');
+		$indexer->registry->remove($nameSpace, $registryKey);
+		return true;
+
+	}
 
 }
