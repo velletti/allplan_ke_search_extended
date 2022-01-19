@@ -4,7 +4,6 @@ namespace Allplan\AllplanKeSearchExtended\Indexer;
 /**
  * AllplanKeSearchExtended
  */
-use Allplan\AllplanKeSearchExtended\Utility\AllplanFaqIndexerUtility;
 use Allplan\AllplanKeSearchExtended\Utility\DbUtility;
 use Allplan\AllplanKeSearchExtended\Utility\JsonUtility;
 use Allplan\AllplanKeSearchExtended\Utility\MailUtility;
