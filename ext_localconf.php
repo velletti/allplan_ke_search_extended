@@ -7,23 +7,17 @@ $boot = function(){
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['registerIndexerConfiguration'][] =
 		\Allplan\AllplanKeSearchExtended\Hooks\RegisterIndexerConfigurationHook::class;
 
-
-	# Todo the following 3...
-	// index custom content
+	// Index custom content
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['customIndexer'][] =
 		\Allplan\AllplanKeSearchExtended\Hooks\CustomIndexerHook::class;
 
-	// adding custom field(s) for indexing
+	// Modify the page content fields (own columns in tt_content)
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyPageContentFields'][] =
-		\Allplan\AllplanKeSearchExtended\Hooks\KeSearchIndexerHook::class;
+		\Allplan\AllplanKeSearchExtended\Hooks\ModifyPageContentFieldsHook::class;
 
-	// manipulate content from these custom field(s)
+	// Modify content from these custom field(s)
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyContentFromContentElement'][] =
-		\Allplan\AllplanKeSearchExtended\Hooks\KeSearchIndexerHook::class;
-
-
-
-
+		\Allplan\AllplanKeSearchExtended\Hooks\ModifyContentFromContentElementHook::class;
 
 	// Extend the indexer table with own columns
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['registerAdditionalFields'][] =
@@ -84,6 +78,7 @@ $boot = function(){
 		'description' => 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskDescription',
 		'additionalFields' => 'Allplan\AllplanKeSearchExtended\Task\AllplanKesearchIndexerTaskAdditionalFieldProvider'
 	];
+
 };
 
 $boot();
