@@ -7,10 +7,13 @@ namespace Allplan\AllplanKeSearchExtended\ViewHelpers;
 use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
 
 /**
+ * Doctrine
+ */
+use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
+
+/**
  * TYPO3Fluid
  */
-
-use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
@@ -18,26 +21,23 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
  */
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
-/**
- * Class KeSearchUnlockViewHelper
- * @package Allplan\AllplanKeSearchExtended\ViewHelpers
- */
 class KeSearchUnlockViewHelper extends AbstractViewHelper
 {
 
 	/**
+	 * Render
 	 * @return string
+	 * @throws DoctrineDBALDriverException
 	 * @throws RouteNotFoundException
 	 * @author Jörg Velletti <jvelletti@allplan.com>
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-	public function render()
+	public function render(): string
 	{
 
 		/**
@@ -90,9 +90,7 @@ class KeSearchUnlockViewHelper extends AbstractViewHelper
 		$content.= '<div class="col-xs-2"></div>';
 		$content.= '</div>';
 
-		$foundNone = true;
 		foreach ($rows as $key => $row){
-
 			$registryKey = 'startTimeOfIndexer' . $row['uid'];
 
 			// Put scheduler task to the list, if it is running
@@ -115,8 +113,6 @@ class KeSearchUnlockViewHelper extends AbstractViewHelper
 				}
 				$content.= '<div class="col-xs-2">' . $link . '</div>';
 				$content.= '</div><hr/>';
-				$foundNone = false;
-
 			}
 
 		}
