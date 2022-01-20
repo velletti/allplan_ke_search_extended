@@ -2,28 +2,24 @@
 namespace Allplan\AllplanKeSearchExtended\ViewHelpers;
 
 /**
- * AllplanKeSearchExtended
+ * Doctrine
  */
-use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
+use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
+
+/**
+ * KeSearch
+ */
+use Tpwd\KeSearch\Lib\Db;
 
 /**
  * TYPO3Fluid
  */
-
-use Tpwd\KeSearch\Lib\Db;
-use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
- * TYPO3
+ * PDO
  */
-use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
-use TYPO3\CMS\Backend\Routing\UriBuilder;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Core\Database\Query\QueryBuilder;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Database\Connection;
-use TYPO3\CMS\Core\Database\ConnectionPool;
+use PDO;
 
 /**
  * Class KeSearchUnlockViewHelper
@@ -31,63 +27,66 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
  */
 class KeSearchReportViewHelper extends AbstractViewHelper
 {
-    /**
-     * @var bool
-     */
-    protected $escapeOutput = false;
-
-    /**
-     * Needed as child node's output can return a DateTime object which can't be escaped
-     *
-     * @var bool
-     */
-    protected $escapeChildren = false;
-
-    /**
-     * Constructor
-     *
-     * @api
-     */
-    public function initializeArguments()
-    {
-        $this->registerArgument('amount', 'int', 'number of entrys to fetch' , false , 3 );
-        $this->registerArgument('search', 'string', 'additional Search condition' , false  );
-    }
+	/**
+	 * @var bool
+	 */
+	protected bool $escapeOutput = false;
 
 	/**
-	 * @return string
+	 * Needed as child node's output can return a DateTime object which can't be escaped
+	 *
+	 * @var bool
+	 */
+	protected bool $escapeChildren = false;
+
+	/**
+	 * Constructor
+	 *
+	 * @api
+	 */
+	public function initializeArguments()
+	{
+		$this->registerArgument('amount','int','number of entrys to fetch',false, 3);
+		$this->registerArgument('search','string','additional Search condition',false);
+	}
+
+	/**
+	 * @return array
 	 * @author Jörg Velletti <jvelletti@allplan.com>
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-	public function render()
+	public function render(): array
 	{
 
-        $amount = $this->arguments['amount'] ? $this->arguments['amount']  : 3 ;
-        $search = $this->arguments['search'] ? $this->arguments['search']  : false ;
+		$amount = $this->arguments['amount'] ?? 3;
+		$search = $this->arguments['search'] ?? false;
 
-        $queryBuilder = Db::getQueryBuilder('sys_log');
-        $queryBuilder
-            ->select('*')
-            ->from('sys_log')
-            ->where(
-                $queryBuilder->expr()->like(
-                    'details',
-                    $queryBuilder->quote('[ke_search]%', \PDO::PARAM_STR)
-                )
-            )
-            ->orderBy('tstamp', 'DESC')
-            ->setMaxResults($amount) ;
-        if ($search) {
-            $queryBuilder->andWhere(
-                $queryBuilder->expr()->like(
-                    'details',
-                    $queryBuilder->quote($search , \PDO::PARAM_STR)
-                )
-            ) ;
-        }
-        return  $queryBuilder
-            ->execute()
-            ->fetchAllAssociative() ;
+		$queryBuilder = Db::getQueryBuilder('sys_log');
+		$queryBuilder
+			->select('*')
+			->from('sys_log')
+			->where(
+				$queryBuilder->expr()->like(
+					'details',
+					$queryBuilder->quote('[ke_search]%', PDO::PARAM_STR)
+				)
+			)
+			->orderBy('tstamp', 'DESC')
+			->setMaxResults($amount);
+		if ($search) {
+			$queryBuilder->andWhere(
+				$queryBuilder->expr()->like(
+					'details',
+					$queryBuilder->quote($search,PDO::PARAM_STR)
+				)
+			) ;
+		}
+
+		try{
+			return $queryBuilder->execute()->fetchAllAssociative();
+		}catch(DoctrineDBALDriverException $e){
+			return [];
+		}
 
 	}
 
