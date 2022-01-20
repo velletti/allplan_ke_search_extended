@@ -2,7 +2,7 @@
 namespace Allplan\AllplanKeSearchExtended\Indexer;
 
 /**
- * AllplanKesearchIndexer
+ * AllplanKeSearchExtended
  */
 use Allplan\AllplanKeSearchExtended\Utility\DbUtility;
 use Allplan\AllplanKeSearchExtended\Utility\EnvironmentUtility;
