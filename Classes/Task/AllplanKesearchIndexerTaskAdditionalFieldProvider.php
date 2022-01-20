@@ -139,10 +139,10 @@ class AllplanKesearchIndexerTaskAdditionalFieldProvider extends  AbstractAdditio
 
 	/**
 	 * Gets the select-box from the TCA-fields
-	 * @param array $selectedConfigs
+	 * @param array|null $selectedConfigs
 	 * @return string
 	 */
-	protected function getLanguageSelectHtml(array $selectedConfigs = []): string
+	protected function getLanguageSelectHtml(?array $selectedConfigs = []): string
 	{
 		if (!is_array($selectedConfigs)){
 			$selectedConfigs = [];
