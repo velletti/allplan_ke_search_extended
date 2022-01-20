@@ -24,29 +24,29 @@ class AllplanKesearchIndexerTask extends AbstractTask
 {
 
 	/**
-	 * @var int The time period, after which the rows are deleted
+	 * @var int|string|null The time period, after which the rows are deleted
 	 */
-	protected int $period;
+	protected $period;
 
 	/**
-	 * @var string|int language
+	 * @var string|int|null
 	 */
-	protected int $language;
+	protected $language;
 
 	/**
-	 * @var int rowcount
+	 * @var string|int|null
 	 */
-	protected int $rowcount;
+	protected $rowcount;
 
 	/**
-	 * @var string externalUrl
+	 * @var string
 	 */
 	protected string $externalUrl;
 
 	/**
-	 * @var int storagePid
+	 * @var string|int|null
 	 */
-	protected int $storagePid;
+	protected $storagePid;
 
 	/**
 	 * @var array The index Configs records that should be used for scheduler index
@@ -71,23 +71,23 @@ class AllplanKesearchIndexerTask extends AbstractTask
 	}
 
 	/**
-	 * @return int
+	 * @return int|string|null
 	 */
-	public function getPeriod(): int
+	public function getPeriod()
 	{
 		return $this->period;
 	}
 
 	/**
-	 * @param int $period
+	 * @param int|string|null $period
 	 */
-	public function setPeriod(int $period)
+	public function setPeriod($period)
 	{
 		$this->period = $period;
 	}
 
 	/**
-	 * @return string|int
+	 * @return string|int|null
 	 */
 	public function getLanguage()
 	{
@@ -95,7 +95,7 @@ class AllplanKesearchIndexerTask extends AbstractTask
 	}
 
 	/**
-	 * @param string|int $language
+	 * @param string|int|null $language
 	 */
 	public function setLanguage($language)
 	{
@@ -119,33 +119,33 @@ class AllplanKesearchIndexerTask extends AbstractTask
 	}
 
 	/**
-	 * @return int
+	 * @return string|int|null
 	 */
-	public function getRowcount(): int
+	public function getRowcount()
 	{
 		return $this->rowcount;
 	}
 
 	/**
-	 * @param int $rowcount
+	 * @param string|int|null $rowcount
 	 */
-	public function setRowcount(int $rowcount)
+	public function setRowcount($rowcount)
 	{
 		$this->rowcount = $rowcount;
 	}
 
 	/**
-	 * @return int
+	 * @return string|int|null
 	 */
-	public function getStoragePid(): int
+	public function getStoragePid()
 	{
 		return $this->storagePid;
 	}
 
 	/**
-	 * @param int $storagePid
+	 * @param string|int|null $storagePid
 	 */
-	public function setStoragePid(int $storagePid)
+	public function setStoragePid($storagePid)
 	{
 		$this->storagePid = $storagePid;
 	}
