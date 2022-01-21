@@ -18,7 +18,7 @@ class AllplanKesearchIndexer extends IndexerRunner
 {
 
 	/**
-	 * @var array The index Configs records that should be used for scheduler index
+	 * @var array The index config records, that should be used for scheduler index
 	 */
 	public array $configs;
 
@@ -33,9 +33,9 @@ class AllplanKesearchIndexer extends IndexerRunner
 	var Registry $registry;
 
 	/**
-	 * @var int
+	 * @var array
 	 */
-	public int $language;
+	public array $language;
 
 	/**
 	 * @var string
@@ -50,6 +50,7 @@ class AllplanKesearchIndexer extends IndexerRunner
 
 	/**
 	 * Returns all indexer configurations found in DB independent of pid
+	 * Overwrites the parent function getConfigurations()
 	 * @return array
 	 */
 	public function getConfigurations(): array
