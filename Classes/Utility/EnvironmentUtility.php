@@ -26,4 +26,22 @@ class EnvironmentUtility
 
 	}
 
+	/**
+	 * Checks, if current environment is a dev environment
+	 * @return bool
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function isDevEnvironment(): bool
+	{
+		if(substr($_SERVER['SERVER_NAME'] , -9 , 9 ) == 'ddev.site'){
+			return true;
+		}
+
+		if($_ENV['TYPO3_CONTEXT'] == 'Development'){
+			return true;
+		}
+
+		return false;
+	}
+
 }

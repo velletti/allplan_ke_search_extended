@@ -56,6 +56,8 @@ class DbUtility
 		$queryBuilder = $connectionPool->getQueryBuilderForTable($table);
 		$queryBuilder->getRestrictions()->removeAll();
 
+		// Todo: change fetch() to ...?
+
 		$row = $queryBuilder
 			// ... => see: https://stackoverflow.com/questions/41124015/what-is-the-meaning-of-three-dots-in-php
 			->select(...GeneralUtility::trimExplode(',', $fields, true))
@@ -65,6 +67,35 @@ class DbUtility
 			->fetch();
 
 		return $row ?: false;
+	}
+
+	/**
+	 * Gets all records from a given table
+	 * @param string $table
+	 * @return array|null
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function getAllRecordsFromTable(string $table): ?array
+	{
+		$connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+		$queryBuilder = $connectionPool->getConnectionForTable($table)->createQueryBuilder();
+
+		try{
+			$records = $queryBuilder
+				->select('*')
+				->from($table)
+				->execute()
+				->fetchAllAssociative()
+			;
+		}catch(DoctrineDBALDriverException $e){
+			return null;
+		}
+
+		if (!count($records) > 0){
+			return null;
+		}
+
+		return $records;
 	}
 
 }
