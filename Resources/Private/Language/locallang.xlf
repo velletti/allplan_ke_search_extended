@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2017-12-19T10:00:00Z" product-name="pb_check_extensions">
+		<header/>
+		<body>
+			<trans-unit id="task.indexerTask.title">
+				<source>Indexing process for ke_search especially for Allplan purposes</source>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.description">
+				<source>Adds additional fields to scheduler task, you can select between various Allplan indexer types.</source>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.deleteOldEntriesPeriodInDays">
+				<source>Delete entries older than the following number of days (integer)</source>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.nrOfIndexRecordsOnOneRun">
+				<source>Number of records, which should be indexed on one run (integer)</source>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.indexerConfigUid">
+				<source>Indexer configuration</source>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.sysLanguageUid">
+				<source>Language</source>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.sysLanguageUid.default">
+				<source>Language from indexed record (default)</source>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.sysLanguageUid.allLanguages">
+				<source>All languages</source>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.externUrl">
+				<source>External url, where the indexer has to search, e.g. for the Allplan Online Help</source>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.storagePid">
+				<source>Explicit storage pid for the index entries (default: empty => storage pid of the indexer configuration)</source>
+			</trans-unit>
+
+			<trans-unit id="task.indexerTask.fieldProvider.validation.error.deleteOldEntriesPeriodInDays">
+				<source>The number of days for deleting entries has to be integer</source>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.fieldProvider.validation.error.nrOfIndexRecordsOnOneRun">
+				<source>The number of records on one run has to be integer</source>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.fieldProvider.validation.error.indexerConfigUid">
+				<source>Please select a indexer configuration</source>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.fieldProvider.validation.error.externUrl">
+				<source>The external url is not valid</source>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.fieldProvider.validation.error.storagePid">
+				<source>The explicit storage pid has to be integer</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
