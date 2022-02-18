@@ -20,6 +20,8 @@ use TYPO3\CMS\Scheduler\Task\AbstractTask;
  */
 use InvalidArgumentException;
 
+// Todo: Delete this file
+
 class AllplanKesearchIndexerTaskAdditionalFieldProvider extends  AbstractAdditionalFieldProvider implements AdditionalFieldProviderInterface
 {
 

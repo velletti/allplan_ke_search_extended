@@ -20,6 +20,8 @@ use TYPO3\CMS\Scheduler\Task\AbstractTask;
  */
 use RuntimeException;
 
+// Todo: Delete this file
+
 class AllplanKesearchIndexerTask extends AbstractTask
 {
 
