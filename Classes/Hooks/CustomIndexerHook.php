@@ -4,11 +4,15 @@ namespace Allplan\AllplanKeSearchExtended\Hooks;
 /**
  * AllplanKeSearchExtended
  */
-use Allplan\AllplanKeSearchExtended\Indexer\AllplanContentserveIndexer;
+# Todo: Sort
+use Allplan\AllplanKeSearchExtended\Indexer\Miscellaneous\AllplanOnlineHelpIndexer;
+use Allplan\AllplanKeSearchExtended\Indexer\IndexerRunner;
+
+use Allplan\AllplanKeSearchExtended\Indexer\ContentServeIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\AllplanDocumentationsIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\AllplanElearningsIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\AllplanFaqIndexer;
-use Allplan\AllplanKeSearchExtended\Indexer\AllplanHelpIndexer;
+
 use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\AllplanShopIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\ForumIndexer;
@@ -30,37 +34,40 @@ class CustomIndexerHook
 	/**
 	 * Own indexes, writing the data into tx_kesearch_index
 	 * @param array $indexerConfig configuration from TYPO3 backend
-	 * @param AllplanKesearchIndexer $indexerObject reference to the indexer class
+	 * @param IndexerRunner $indexerRunner reference to the indexer runner
 	 * @return string output in the backend after indexing
 	 * @throws DoctrineDBALDriverException
 	 * @author Jörg Velletti <jvelletti@allplan.com>
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-	public function customIndexer(array &$indexerConfig, AllplanKesearchIndexer &$indexerObject): string
+	public function customIndexer(array &$indexerConfig, IndexerRunner &$indexerRunner): string
 	{
 
 		$content = '';
 
 		switch ($indexerConfig['type']){
-
+/*
 			case 'jv_events':
 				$eventIndexer = GeneralUtility::makeInstance(JvEventsIndexer::class);
 				$resCount = $eventIndexer->main($indexerConfig, $indexerObject);
 				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' events where indexed.</p>';
 				break;
 
+			// Todo: spelling
 			case 'allplanforum':
 				$forumIndexer = GeneralUtility::makeInstance(ForumIndexer::class);
 				$resCount = $forumIndexer->main($indexerConfig, $indexerObject);
-				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' forum Entries where indexed.</p>';
+				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' forum entries where indexed.</p>';
 				break;
-
-			case 'onlinehelp':
-				$helpIndexer = GeneralUtility::makeInstance(AllplanHelpIndexer::class);
-				$resCount = $helpIndexer->main($indexerConfig, $indexerObject);
-				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' Allplan help entries where indexed.</p>';
+*/
+			case 'allplan_online_help':
+				$onlineHelpIndexer = GeneralUtility::makeInstance(AllplanOnlineHelpIndexer::class, $indexerRunner);
+				###$resCount = $onlineHelpIndexer->runIndexing($indexerConfig, $indexerRunner);
+				$resCount = $onlineHelpIndexer->startIndexing();
+				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' Allplan online help entries where indexed.</p>';
 				break;
-
+/*
+			// Todo: spelling
 			// Todo: Check first, if we are on Connect
 			case 'supportfaq':
 				$faqIndexer = GeneralUtility::makeInstance(AllplanFaqIndexer::class);
@@ -68,6 +75,7 @@ class CustomIndexerHook
 				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' FAQ entries where indexed.</p>';
 				break;
 
+			// Todo: spelling
 			case 'shop':
 				$shopIndexer = GeneralUtility::makeInstance(AllplanShopIndexer::class);
 				$resCount = $shopIndexer->main($indexerConfig, $indexerObject);
@@ -78,20 +86,22 @@ class CustomIndexerHook
 			case 'lessions':
 				$elearningIndexer = GeneralUtility::makeInstance(AllplanElearningsIndexer::class);
 				$resCount = $elearningIndexer->main($indexerConfig, $indexerObject);
-				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' Elearning Video entries where indexed.</p>';
+				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' Elearning video entries where indexed.</p>';
 				break;
 
 			case 'documentation':
 				$elearningIndexer = GeneralUtility::makeInstance(AllplanDocumentationsIndexer::class);
 				$resCount = $elearningIndexer->main($indexerConfig, $indexerObject);
-				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' Elearning Documentation entries where indexed.</p>';
+				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' Elearning documentation entries where indexed.</p>';
 				break;
 
+			// Todo: spelling
 			case 'contentserve':
-				$contentIndexer = GeneralUtility::makeInstance(AllplanContentserveIndexer::class);
+				$contentIndexer = GeneralUtility::makeInstance(ContentServeIndexer::class);
 				$resCount = $contentIndexer->main($indexerConfig, $indexerObject);
 				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' Contentserve entries where indexed.</p>';
 				break;
+*/
 		}
 
 		return $content;

@@ -14,70 +14,95 @@ class RegisterIndexerConfigurationHook
 	public function registerIndexerConfiguration(array &$params, $pObj)
 	{
 
-		$iconPath = 'EXT:allplan_ke_search_extended/Resources/Public/Icons/';
+		// Todo: check spelling / translate the titles
 
-		// Events (jv_events)
-		// =============================================================================================================
+		$iconPath = 'EXT:allplan_ke_search_extended/Resources/Public/Icons/IndexerConfiguration/';
+
+		/**
+		 * Www
+		 * =============================================================================================================
+		 */
+
+		// Todo: Events (EXT:jv_events)
+		// -------------------------------------------------------------------------------------------------------------
 		$params['items'][] = [
-			'Events (jv_events)',
+			'Events (EXT:jv_events)',
 			'jv_events',
-			$iconPath . 'indexer-jv_events.gif'
+			// $iconPath . 'indexer-jv_events.gif'
+			$iconPath . 'Www/jv-events.gif'
 		];
 
-		// Allplan Lessions (marit_elearning)
-		// =============================================================================================================
+
+		/**
+		 * Connect
+		 * =============================================================================================================
+		 */
+
+		// Todo: Elearning Videos (EXT:marit_elearning)
+		// -------------------------------------------------------------------------------------------------------------
 		$params['items'][] = [
-			'Allplan Lessions (marit_elearning)',
-			'lessions',
-			$iconPath . 'indexer-video-lesson.png'
+			'Elearning Videos (EXT:marit_elearning)',
+			'marit_elearning_videos',
+			$iconPath . 'Connect/marit-elearning-videos.png'
 		];
 
-		// Allplan Training Documentation (marit_elearning)
-		// =============================================================================================================
+		// Todo: Elearning Documentations (EXT:marit_elearning)
+		// -------------------------------------------------------------------------------------------------------------
 		$params['items'][] = [
-			'Allplan Training Documentation (marit_elearning)',
-			'documentation',
-			$iconPath . 'indexer-pdf-lesson.png'
+			'Elearning Documentations (EXT:marit_elearning)',
+			'marit_elearning_documentations',
+			$iconPath . 'Connect/marit-elearning-documentations.png'
 		];
 
-		// Allplan ContentServe downloads
-		// =============================================================================================================
+		// Todo: New indexer... Downloads (EXT:nemjv_getcontent)
+		// -------------------------------------------------------------------------------------------------------------
+		// $params['items'][] = [
+		// 	'Allplan ContentServe downloads',
+		// 	'contentserve',
+		// 	$iconPath . 'indexer-content-downloads.png'
+		// ];
 		$params['items'][] = [
-			'Allplan ContentServe downloads',
-			'contentserve',
-			$iconPath . 'indexer-content-downloads.png'
+			'Downloads (EXT:nemjv_getcontent)',
+			'nemjv_getcontent',
+			$iconPath . 'Connect/nemjv-getcontent.png'
 		];
 
-		// Allplan Forum
-		// =============================================================================================================
+		// Todo: Forum (EXT:mm_forum)
+		// -------------------------------------------------------------------------------------------------------------
 		$params['items'][] = [
-			'Allplan Forum',
-			'allplanforum',
-			$iconPath . 'indexer-forum.png'
+			'Forum (EXT:mm_forum)',
+			'mm_forum',
+			$iconPath . 'Connect/mm-forum.png'
+		];
+
+
+		/**
+		 * Miscellaneous
+		 * =============================================================================================================
+		 */
+
+		// Todo: Allplan FAQ
+		// -------------------------------------------------------------------------------------------------------------
+		$params['items'][] = [
+			'Allplan FAQ',
+			'allplan_faq',
+			$iconPath . 'Miscellaneous/allplan-faq.png'
 		];
 
 		// Allplan Online Help
-		// =============================================================================================================
+		// -------------------------------------------------------------------------------------------------------------
 		$params['items'][] = [
 			'Allplan Online Help',
-			'onlinehelp',
-			$iconPath . 'indexer-allplan-help.png'
+			'allplan_online_help',
+			$iconPath . 'Miscellaneous/allplan-online-help.png'
 		];
 
-		// Allplan Support FAQs
-		// =============================================================================================================
-		$params['items'][] = [
-			'Allplan Support FAQs',
-			'supportfaq',
-			$iconPath . 'indexer-allplan-faq.png'
-		];
-
-		// Allplan Shop
-		// =============================================================================================================
+		// Todo: Allplan Shop
+		// -------------------------------------------------------------------------------------------------------------
 		$params['items'][] = [
 			'Allplan Shop',
-			'shop',
-			$iconPath . 'indexer-allplan-shop.png'
+			'allplan_shop',
+			$iconPath . 'Miscellaneous/allplan-shop.png'
 		];
 
 	}

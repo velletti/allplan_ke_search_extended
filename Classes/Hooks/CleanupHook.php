@@ -29,6 +29,7 @@ class CleanupHook
 
 		switch ($pObj->indexerConfig['type']){
 
+			// Todo spelling
 			case 'onlinehelp':
 				$where .= " AND `type` = 'allplanhelp' ";
 				if($pObj->storagePid){
@@ -41,6 +42,7 @@ class CleanupHook
 				}
 				break;
 
+			// Todo spelling
 			case 'supportfaq':
 				$where .= " AND ( `type` = 'supportfaq' or `type` = 'supportfaq' ) AND tstamp < " . (time() - (60 * 60 * 24 * $pObj->period));
 				if($pObj->storagePid){
@@ -53,17 +55,21 @@ class CleanupHook
 				}
 				break;
 
+			// Todo spelling
 			case 'lessons':
 				$where .= " AND ( `type` = 'lessons' or `type` = 'lessonslocked' ) AND tstamp < " . (time() - (60 * 60 * 24 * ($pObj->period)));
 				break;
 
+			// Todo spelling
 			case 'documentations':
 				$where .= " AND ( `type` = 'documentation' or `type` = 'documentationlocked' ) AND tstamp < " . (time() - (60 * 60 * 24 * ($pObj->period)));
 				break ;
 
+			// Todo spelling
 			case 'allplanforum':
 				$where .= " AND (`type` = 'allplanforum' OR `type` = 'allplanforumsp' OR `type` = 'allplanforumlocked') AND tstamp < " . (time() - (60 * 60 * 24 * ($pObj->period)));
 				break;
+
 
 			default:
 				$where .= " AND `type` = '" . $pObj->indexerConfig['type'] .  "' ";
