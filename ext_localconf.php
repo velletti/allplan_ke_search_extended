@@ -3,6 +3,11 @@ defined('TYPO3_MODE') or die();
 
 $boot = function(){
 
+	/**
+	 * ke_search hooks
+	 * =================================================================================================================
+	 */
+
 	// Add custom indexers to the TCA of the indexer-configuration
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['registerIndexerConfiguration'][] =
 		\Allplan\AllplanKeSearchExtended\Hooks\RegisterIndexerConfigurationHook::class;
@@ -71,12 +76,24 @@ $boot = function(){
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['initials'][] =
 		\Allplan\AllplanKeSearchExtended\Hooks\InitialsHook::class;
 
-	// add scheduler task
+
+	/**
+	 * Scheduler task
+	 * =================================================================================================================
+	 */
+	// Todo: remove this old one indexer task
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\Allplan\AllplanKeSearchExtended\Task\AllplanKesearchIndexerTask::class] = [
 		'extension' => 'ke_search_extended',
 		'title' => 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskTitle',
 		'description' => 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskDescription',
 		'additionalFields' => 'Allplan\AllplanKeSearchExtended\Task\AllplanKesearchIndexerTaskAdditionalFieldProvider'
+	];
+
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\Allplan\AllplanKeSearchExtended\Task\IndexerTask::class] = [
+		'extension' => 'allplan_ke_search_extended',
+		'title' => 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang.xlf:task.indexerTask.title',
+		'description' => 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang.xlf:task.indexerTask.description',
+		'additionalFields' => 'Allplan\AllplanKeSearchExtended\Task\IndexerTaskAdditionalFieldProvider'
 	];
 
 };
