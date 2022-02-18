@@ -14,8 +14,7 @@ use Allplan\AllplanKeSearchExtended\Utility\JsonUtility;
 use DateTime;
 use Exception;
 
-// Todo Spelling
-class AllplanContentserveIndexer
+class ContentServeIndexer
 {
 
 	/**

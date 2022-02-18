@@ -7,12 +7,19 @@ namespace Allplan\AllplanKeSearchExtended\Indexer;
 use Tpwd\KeSearch\Indexer\IndexerRunner;
 
 /**
+ * Doctrine
+ */
+use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
+
+/**
  * TYPO3
  */
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+
+// Todo: Delete this file
 
 class AllplanKesearchIndexer extends IndexerRunner
 {
@@ -49,12 +56,17 @@ class AllplanKesearchIndexer extends IndexerRunner
 
 
 	/**
-	 * Returns all indexer configurations found in DB independent of pid
 	 * Overwrites the parent function getConfigurations()
+	 * Returns all indexer configurations found in DB independent of pid
+	 *
 	 * @return array
+	 *  @throws DoctrineDBALDriverException
 	 */
 	public function getConfigurations(): array
 	{
+
+		# print_r(['$this->configs' => $this->configs]);
+
 		if(is_array($this->configs)){
 
 			$connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
@@ -66,6 +78,14 @@ class AllplanKesearchIndexer extends IndexerRunner
 
 			$expr = $queryBuilder->expr();
 			$uids = implode(',', $this->configs);
+			$queryBuilder->where(
+				$expr->eq('uid', $queryBuilder->createNamedParameter($uids, Connection::PARAM_INT))
+			);
+			$result = $queryBuilder->execute()->fetchAllAssociative();
+print_r($result);
+			return $result;
+
+			/*
 			if(count($this->configs) > 1){
 				$queryBuilder->where(
 					$expr->in('uid', $queryBuilder->createNamedParameter($uids, Connection::PARAM_STR))
@@ -75,6 +95,7 @@ class AllplanKesearchIndexer extends IndexerRunner
 					$expr->eq('uid', $queryBuilder->createNamedParameter($uids, Connection::PARAM_INT))
 				);
 			}
+			*/
 			return $queryBuilder->execute()->fetchAll();
 
 		} else {
