@@ -40,7 +40,7 @@ class IndexerTaskConfiguration
 	protected $sysLanguageUid = null;
 
 	/**
-	 * External url, where the indexer has to search, e.g. for Allplan Online Help
+	 * External url for indexing and list in the frontend, e.g. for the Allplan Online Help
 	 * @var string|null
 	 */
 	protected ?string $externUrl;

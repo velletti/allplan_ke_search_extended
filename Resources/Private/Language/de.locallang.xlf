@@ -28,7 +28,7 @@
 				<target>Alle Sprachen</target>
 			</trans-unit>
 			<trans-unit id="task.indexerTask.externUrl">
-				<target>Externe Url, auf der der Indexer suchen soll, z.B. für die Allplan Online Hilfe</target>
+				<target>Externe Url für die Indizierung und die Ausgabe im Frontend, z.B. für die Allplan Online Hilfe</target>
 			</trans-unit>
 			<trans-unit id="task.indexerTask.storagePid">
 				<target>Explizite Storage-pid für die Index Einträge (Standard: leer => Storage-pid der Indexer Konfiguration wird verwendet)</target>

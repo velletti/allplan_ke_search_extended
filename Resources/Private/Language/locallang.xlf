@@ -28,7 +28,7 @@
 				<source>All languages</source>
 			</trans-unit>
 			<trans-unit id="task.indexerTask.externUrl">
-				<source>External url, where the indexer has to search, e.g. for the Allplan Online Help</source>
+				<source>External url for indexing and list in the frontend, e.g. for the Allplan Online Help</source>
 			</trans-unit>
 			<trans-unit id="task.indexerTask.storagePid">
 				<source>Explicit storage pid for the index entries (default: empty => storage pid of the indexer configuration)</source>
