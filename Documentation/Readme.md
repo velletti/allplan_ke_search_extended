@@ -25,3 +25,10 @@ E.g.: Allplan Online Help DE => Is shown on Germany, Austria and Switzerland => 
 5. So we have CustomIndexer with the originally settings from the scheduler task :-)
 6. Indexer starts in our own IndexerTask => there the parent startIndexing() function is called.
 
+## Tags
+
+The tags are set as follows:
+1. Inside the Indexer->storeInKeSearchIndex() function (hardcoded)
+2. Set in backend inside the indexer by selection of the filter (which has set a tag)
+=> So from these places a comma seperated list of tags is written into tx_kesearch_index.tags
+

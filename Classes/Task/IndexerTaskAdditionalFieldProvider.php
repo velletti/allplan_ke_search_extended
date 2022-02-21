@@ -53,7 +53,7 @@ class IndexerTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
 		// Editing a scheduler task
 		if ($schedulerModule->getCurrentAction() == 'edit'){
 
-			$indexerTaskConfiguration = $task->getConfiguration();
+			$indexerTaskConfiguration = $task->getTaskConfiguration();
 			$taskInfo['deleteOldEntriesPeriodInDays'] = $indexerTaskConfiguration->getDeleteOldEntriesPeriodInDays();
 			$taskInfo['nrOfIndexRecordsOnOneRun'] = $indexerTaskConfiguration->getNrOfIndexRecordsOnOneRun();
 			$taskInfo['indexerConfigUid'] = $indexerTaskConfiguration->getIndexerConfigUid();
@@ -146,7 +146,7 @@ class IndexerTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
 	{
 		$submittedData = $this->cleanupSubmittedData($submittedData);
 
-		$indexerTaskConfiguration = $task->getConfiguration();
+		$indexerTaskConfiguration = $task->getTaskConfiguration();
 
 		$indexerTaskConfiguration->setDeleteOldEntriesPeriodInDays($submittedData['deleteOldEntriesPeriodInDays']);
 		$indexerTaskConfiguration->setNrOfIndexRecordsOnOneRun($submittedData['nrOfIndexRecordsOnOneRun']);
@@ -155,7 +155,7 @@ class IndexerTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
 		$indexerTaskConfiguration->setExternUrl($submittedData['externUrl']);
 		$indexerTaskConfiguration->setStoragePid($submittedData['storagePid']);
 
-		$task->setConfiguration($indexerTaskConfiguration);
+		$task->setTaskConfiguration($indexerTaskConfiguration);
 
 	}
 

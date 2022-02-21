@@ -62,7 +62,6 @@ class CustomIndexerHook
 */
 			case 'allplan_online_help':
 				$onlineHelpIndexer = GeneralUtility::makeInstance(AllplanOnlineHelpIndexer::class, $indexerRunner);
-				###$resCount = $onlineHelpIndexer->runIndexing($indexerConfig, $indexerRunner);
 				$resCount = $onlineHelpIndexer->startIndexing();
 				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' Allplan online help entries where indexed.</p>';
 				break;

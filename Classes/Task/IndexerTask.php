@@ -36,22 +36,22 @@ class IndexerTask extends AbstractTask
 	/**
 	 * @var IndexerTaskConfiguration
 	 */
-	protected IndexerTaskConfiguration $configuration;
+	protected IndexerTaskConfiguration $taskConfiguration;
 
 	/**
 	 * @return IndexerTaskConfiguration
 	 */
-	public function getConfiguration(): IndexerTaskConfiguration
+	public function getTaskConfiguration(): IndexerTaskConfiguration
 	{
-		return $this->configuration;
+		return $this->taskConfiguration;
 	}
 
 	/**
-	 * @param IndexerTaskConfiguration $configuration
+	 * @param IndexerTaskConfiguration $taskConfiguration
 	 */
-	public function setConfiguration(IndexerTaskConfiguration $configuration): void
+	public function setTaskConfiguration(IndexerTaskConfiguration $taskConfiguration): void
 	{
-		$this->configuration = $configuration;
+		$this->taskConfiguration = $taskConfiguration;
 	}
 
 	/**
@@ -60,16 +60,16 @@ class IndexerTask extends AbstractTask
 	 */
 
 	/**
-	 * Initialize the task configuration object and call the parent constructor
-	 * @param IndexerTaskConfiguration|null $configuration
+	 * Initialize the task taskConfiguration object and call the parent constructor
+	 * @param IndexerTaskConfiguration|null $taskConfiguration
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-	public function __construct(?IndexerTaskConfiguration $configuration = null)
+	public function __construct(?IndexerTaskConfiguration $taskConfiguration = null)
 	{
-		if(!$configuration instanceof IndexerTaskConfiguration){
-			$configuration = GeneralUtility::makeInstance(IndexerTaskConfiguration::class);
+		if(!$taskConfiguration instanceof IndexerTaskConfiguration){
+			$taskConfiguration = GeneralUtility::makeInstance(IndexerTaskConfiguration::class);
 		}
-		$this->setConfiguration($configuration);
+		$this->setTaskConfiguration($taskConfiguration);
 		parent::__construct();
 	}
 
@@ -87,8 +87,8 @@ class IndexerTask extends AbstractTask
 		// Typoscript configuration of ke_search
 		$extensionConfigKeSearch = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('ke_search');
 
-		// Transfer the configuration from the scheduler task to the indexer runner, so we have the values there
-		$indexerRunner = GeneralUtility::makeInstance(IndexerRunner::class, $this->getConfiguration());
+		// Transfer the taskConfiguration from the scheduler task to the indexer runner, so we have the values there
+		$indexerRunner = GeneralUtility::makeInstance(IndexerRunner::class, $this->getTaskConfiguration());
 
 		// Remove the default ke_search registry entries (table 'sys_registry')
 		$indexerRunner->registry->removeAllByNamespace('tx_kesearch');

@@ -5,21 +5,24 @@ class EnvironmentUtility
 {
 
 	/**
-	 * Returns the server name
+	 * Returns the server name, either 'www' or 'connect'
 	 * @return string
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
 	public static function getServerName(): string
 	{
 
-		$serverName = $_SERVER['SERVER_NAME'];
-
-		if(in_array($serverName, ['connect-typo3.allplan.com', 'vm5012934.psmanaged.com', 'connect'])){
-			$serverName = 'connect.allplan.com';
+		$serverName = 'www';
+		if(preg_match('#connect#', $_SERVER['SERVER_NAME'])){
+			$serverName = 'connect';
 		}
 
-		if(in_array($serverName, ['www-typo3.allplan.com', 'vm5012986.psmanaged.com', 'allplan', 'www'])){
-			$serverName = 'www.allplan.com';
+		if(in_array($_SERVER['SERVER_NAME'], ['connect-typo3.allplan.com', 'vm5012934.psmanaged.com'])){
+			$serverName = 'connect';
+		}
+
+		if(in_array($_SERVER['SERVER_NAME'], ['www-typo3.allplan.com', 'vm5012986.psmanaged.com', 'allplan'])){
+			$serverName = 'www';
 		}
 
 		return $serverName;

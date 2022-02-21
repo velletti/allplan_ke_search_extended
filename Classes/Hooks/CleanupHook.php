@@ -85,6 +85,7 @@ class CleanupHook
 
 		}
 
+		// Todo: change query
 		$where .= " AND ( servername ='" . EnvironmentUtility::getServerName() . "' OR servername = '' ) ";
 		return $content . "\n After CleanupHook: Now $" . "where = " . $where;
 

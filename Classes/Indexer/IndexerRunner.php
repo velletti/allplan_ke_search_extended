@@ -28,22 +28,22 @@ class IndexerRunner extends KeSearchIndexerRunner
 	/**
 	 * @var IndexerTaskConfiguration
 	 */
-	protected IndexerTaskConfiguration $configuration;
+	protected IndexerTaskConfiguration $taskConfiguration;
 
 	/**
 	 * @return IndexerTaskConfiguration
 	 */
-	public function getConfiguration(): IndexerTaskConfiguration
+	public function getTaskConfiguration(): IndexerTaskConfiguration
 	{
-		return $this->configuration;
+		return $this->taskConfiguration;
 	}
 
 	/**
-	 * @param IndexerTaskConfiguration $configuration
+	 * @param IndexerTaskConfiguration $taskConfiguration
 	 */
-	public function setConfiguration(IndexerTaskConfiguration $configuration): void
+	public function setTaskConfiguration(IndexerTaskConfiguration $taskConfiguration): void
 	{
-		$this->configuration = $configuration;
+		$this->taskConfiguration = $taskConfiguration;
 	}
 
 	/**
@@ -52,13 +52,13 @@ class IndexerRunner extends KeSearchIndexerRunner
 	 */
 
 	/**
-	 * Initialize the task configuration object and call the parent constructor
-	 * @param IndexerTaskConfiguration $configuration
+	 * Initialize the task taskConfiguration object and call the parent constructor
+	 * @param IndexerTaskConfiguration $taskConfiguration
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-	public function __construct(IndexerTaskConfiguration $configuration)
+	public function __construct(IndexerTaskConfiguration $taskConfiguration)
 	{
-		$this->setConfiguration($configuration);
+		$this->setTaskConfiguration($taskConfiguration);
 		parent::__construct();
 	}
 
