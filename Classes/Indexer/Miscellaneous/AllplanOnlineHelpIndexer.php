@@ -81,7 +81,7 @@ class AllplanOnlineHelpIndexer extends IndexerBase
 		foreach ($records as $data){
 
 			// Build a useful record
-			$record = $this->getOnlineHelpRecordByRawData($data);
+			$record = $this->getIndexRecordByOnlineHelpEntry($data);
 
 			// Write record to index
 			if(!empty($record)){
@@ -129,7 +129,7 @@ class AllplanOnlineHelpIndexer extends IndexerBase
 	 * @return array|null
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-	private function getOnlineHelpRecordByRawData(string $data): ?array
+	private function getIndexRecordByOnlineHelpEntry(string $data): ?array
 	{
 
 		// if(preg_match('/url":"89280.htm/', $data)){
