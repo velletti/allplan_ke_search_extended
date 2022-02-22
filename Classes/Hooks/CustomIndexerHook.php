@@ -6,6 +6,7 @@ namespace Allplan\AllplanKeSearchExtended\Hooks;
  */
 # Todo: Sort
 use Allplan\AllplanKeSearchExtended\Indexer\Miscellaneous\AllplanOnlineHelpIndexer;
+use Allplan\AllplanKeSearchExtended\Indexer\Www\JvEventsIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\IndexerRunner;
 
 use Allplan\AllplanKeSearchExtended\Indexer\ContentServeIndexer;
@@ -16,7 +17,7 @@ use Allplan\AllplanKeSearchExtended\Indexer\AllplanFaqIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\AllplanShopIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\ForumIndexer;
-use Allplan\AllplanKeSearchExtended\Indexer\JvEventsIndexer;
+
 
 /**
  * Doctrine
@@ -28,6 +29,11 @@ use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
  */
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * Php
+ */
+use Exception;
+
 class CustomIndexerHook
 {
 
@@ -37,6 +43,7 @@ class CustomIndexerHook
 	 * @param IndexerRunner $indexerRunner reference to the indexer runner
 	 * @return string output in the backend after indexing
 	 * @throws DoctrineDBALDriverException
+	 * @throws Exception
 	 * @author Jörg Velletti <jvelletti@allplan.com>
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
@@ -46,25 +53,40 @@ class CustomIndexerHook
 		$content = '';
 
 		switch ($indexerConfig['type']){
-/*
+
+			/**
+			 * Www
+			 * =========================================================================================================
+			 */
 			case 'jv_events':
-				$eventIndexer = GeneralUtility::makeInstance(JvEventsIndexer::class);
-				$resCount = $eventIndexer->main($indexerConfig, $indexerObject);
-				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' events where indexed.</p>';
+# echo 'Starting indexer for Events' . PHP_EOL; print_r($indexerConfig); echo PHP_EOL;
+				$eventIndexer = GeneralUtility::makeInstance(JvEventsIndexer::class, $indexerRunner);
+				$resultCount = $eventIndexer->startIndexing();
+				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resultCount . ' events (EXT:jv_events) where indexed.</p>';
 				break;
 
+
+			/**
+			 * Miscellaneous
+			 * =========================================================================================================
+			 */
+			case 'allplan_online_help':
+# echo 'Starting indexer for Allplan Online Help' . PHP_EOL; print_r($indexerConfig); echo PHP_EOL;
+				$onlineHelpIndexer = GeneralUtility::makeInstance(AllplanOnlineHelpIndexer::class, $indexerRunner);
+				$resultCount = $onlineHelpIndexer->startIndexing();
+				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resultCount . ' Allplan Online Help entries where indexed.</p>';
+				break;
+
+
+			/*
 			// Todo: spelling
 			case 'allplanforum':
 				$forumIndexer = GeneralUtility::makeInstance(ForumIndexer::class);
 				$resCount = $forumIndexer->main($indexerConfig, $indexerObject);
 				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' forum entries where indexed.</p>';
 				break;
-*/
-			case 'allplan_online_help':
-				$onlineHelpIndexer = GeneralUtility::makeInstance(AllplanOnlineHelpIndexer::class, $indexerRunner);
-				$resCount = $onlineHelpIndexer->startIndexing();
-				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' Allplan online help entries where indexed.</p>';
-				break;
+			*/
+
 /*
 			// Todo: spelling
 			// Todo: Check first, if we are on Connect

@@ -28,7 +28,6 @@ class RegisterIndexerConfigurationHook
 		$params['items'][] = [
 			'Events (EXT:jv_events)',
 			'jv_events',
-			// $iconPath . 'indexer-jv_events.gif'
 			$iconPath . 'Www/jv-events.gif'
 		];
 

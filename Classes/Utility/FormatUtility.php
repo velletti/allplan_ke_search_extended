@@ -18,6 +18,7 @@ class FormatUtility
 
 	/**
 	 * Format file size from bytes to human-readable format
+	 * @author Peter Benke <pbenke@allplan.com>
 	 */
 	public static function formatFilesize($size, $decimals = 0): string
 	{
@@ -27,6 +28,33 @@ class FormatUtility
 		} else {
 			return (round($size / pow(1024, ($i = floor(log($size, 1024)))), $decimals) . $sizes[$i]);
 		}
+	}
+
+	/**
+	 * Cleans a given string for an entry in table tx_kesearch_index
+	 * @param string $string
+	 * @return string
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function cleanStringForIndex(string $string): string
+	{
+
+		$pattern[] = '#@#';
+		$replace[] = ' ';
+
+		$pattern[] = "#\\\\t#"; // \t
+		$replace[] = ' ';
+
+		$pattern[] = '#\s+#'; // Multiple spaces, tabs and the rest of linebreaks => to spaces
+		$replace[] = ' ';
+
+		$string = preg_replace($pattern, $replace, $string);
+
+		$string = strip_tags($string);
+		$string = nl2br($string);
+		$string = trim($string, "\""); // trim " endings
+		return trim($string);
+
 	}
 
 }

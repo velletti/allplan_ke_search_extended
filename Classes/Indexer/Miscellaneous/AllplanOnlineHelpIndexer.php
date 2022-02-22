@@ -7,6 +7,7 @@ namespace Allplan\AllplanKeSearchExtended\Indexer\Miscellaneous;
 use Allplan\AllplanKeSearchExtended\Indexer\IndexerRunner;
 use Allplan\AllplanKeSearchExtended\Utility\DbUtility;
 use Allplan\AllplanKeSearchExtended\Utility\EnvironmentUtility;
+use Allplan\AllplanKeSearchExtended\Utility\FormatUtility;
 use Allplan\AllplanKeSearchExtended\Utility\IndexerUtility;
 use Allplan\AllplanKeSearchExtended\Utility\JsonUtility;
 
@@ -152,23 +153,7 @@ class AllplanOnlineHelpIndexer extends IndexerBase
 
 			$key = $temp[0];
 			$value = $temp[1];
-
-			$pattern[] = '#@#';
-			$replace[] = ' ';
-
-			$pattern[] = "#\\\\t#"; // \t
-			$replace[] = ' ';
-
-			$pattern[] = '#\s+#'; // Multiple spaces, tabs and the rest of linebreaks => to spaces
-			$replace[] = ' ';
-
-			$value = preg_replace($pattern, $replace, $value);
-
-			$value = strip_tags($value);
-			$value = nl2br($value);
-			$value = trim(rtrim($value, "\"")); // trim " endings
-
-			$record[$key] = $value;
+			$record[$key] = FormatUtility::cleanStringForIndex($value);
 
 		}
 

@@ -82,12 +82,12 @@ $boot = function(){
 	 * =================================================================================================================
 	 */
 	// Todo: remove this old one indexer task
-	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\Allplan\AllplanKeSearchExtended\Task\AllplanKesearchIndexerTask::class] = [
-		'extension' => 'ke_search_extended',
-		'title' => 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskTitle',
-		'description' => 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskDescription',
-		'additionalFields' => 'Allplan\AllplanKeSearchExtended\Task\AllplanKesearchIndexerTaskAdditionalFieldProvider'
-	];
+	#$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\Allplan\AllplanKeSearchExtended\Task\AllplanKesearchIndexerTask::class] = [
+	#	'extension' => 'ke_search_extended',
+	#	'title' => 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskTitle',
+	#	'description' => 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskDescription',
+	#	'additionalFields' => 'Allplan\AllplanKeSearchExtended\Task\AllplanKesearchIndexerTaskAdditionalFieldProvider'
+	#];
 
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\Allplan\AllplanKeSearchExtended\Task\IndexerTask::class] = [
 		'extension' => 'allplan_ke_search_extended',
