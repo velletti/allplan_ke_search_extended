@@ -5,31 +5,78 @@ namespace Allplan\AllplanKeSearchExtended\Hooks;
  * AllplanKeSearchExtended
  */
 use Allplan\AllplanKeSearchExtended\Utility\EnvironmentUtility;
+use Allplan\AllplanKeSearchExtended\Utility\IndexerUtility;
+use Allplan\AllplanKeSearchExtended\Indexer\IndexerRunner;
 
 /**
- * KeSearch
+ * Php
  */
-use Tpwd\KeSearch\Indexer\IndexerRunner;
+use Exception;
 
 class CleanupHook
 {
 
 	/**
 	 * Cleanup for counting and deleting old index records
+	 * Called in ke_search/Classes/Indexer/IndexerRunner.php->cleanUpIndex()
 	 * @param string $where
-	 * @param IndexerRunner $pObj
+	 * @param IndexerRunner $indexerRunner
 	 * @return string
-	 * @author Jörg Velletti <jvelletti@allplan.com>
+	 * @throws Exception
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-	public function cleanup(string &$where, IndexerRunner $pObj): string
+	public function cleanup(string &$where, IndexerRunner $indexerRunner): string
 	{
 
+		$content = '<p>Where-condition before CleanupHook: ' . $where . '</p>';
+
+		$indexerConfig = $indexerRunner->indexerConfig;
+		$storagePid = (int)IndexerUtility::getStoragePid($indexerRunner, $indexerConfig);
+		try{
+			$language = IndexerUtility::getLanguage($indexerRunner);
+		}catch(Exception $e){
+			$language  = null;
+		}
+		$indexerType = $indexerConfig['type'];
+
+		// print_r([
+		// 	'$where' => $where,
+		// 	'$storagePid' => $storagePid,
+		// 	'$indexerType' => $indexerType,
+		// 	'$indexerConfig' => $indexerConfig,
+		// ]);
+
+		$conditions = [];
+
+		// Where-conditions for all records
+		$conditions[] = "`pid` = " . $storagePid;
+		$conditions[] = "`type` = '" . $indexerType . "'";
+		// Consider language only, if explicit set
+		if(!empty($language)){
+			$conditions[] = "`language` = '" . $language . "'";
+		}
+		$conditions[] = "`tx_allplan_ke_search_extended_server_name` = '" . EnvironmentUtility::getServerName() . "'";
+
+		$where.= " AND " . implode(' AND ', $conditions);
+		$content.= '<p>Where-condition after CleanupHook: ' . $where . '</p>';
+
+		// Used in TYPO3 backend
+		return $content;
+
+		#switch($indexerType){
+		#	case 'allplan_online_help':
+		#		break;
+		#}#
+
+
+		# allplan_online_help
+
+/*
 		$content = "\n Before CleanupHook: Got $" . "where = " . $where;
 
 		switch ($pObj->indexerConfig['type']){
 
-			// Todo spelling
+
 			case 'onlinehelp':
 				$where .= " AND `type` = 'allplanhelp' ";
 				if($pObj->storagePid){
@@ -42,7 +89,7 @@ class CleanupHook
 				}
 				break;
 
-			// Todo spelling
+			// Todo
 			case 'supportfaq':
 				$where .= " AND ( `type` = 'supportfaq' or `type` = 'supportfaq' ) AND tstamp < " . (time() - (60 * 60 * 24 * $pObj->period));
 				if($pObj->storagePid){
@@ -55,22 +102,23 @@ class CleanupHook
 				}
 				break;
 
-			// Todo spelling
+			// Todo
 			case 'lessons':
 				$where .= " AND ( `type` = 'lessons' or `type` = 'lessonslocked' ) AND tstamp < " . (time() - (60 * 60 * 24 * ($pObj->period)));
 				break;
 
-			// Todo spelling
+			// Todo
 			case 'documentations':
 				$where .= " AND ( `type` = 'documentation' or `type` = 'documentationlocked' ) AND tstamp < " . (time() - (60 * 60 * 24 * ($pObj->period)));
 				break ;
 
-			// Todo spelling
+			// Todo
 			case 'allplanforum':
 				$where .= " AND (`type` = 'allplanforum' OR `type` = 'allplanforumsp' OR `type` = 'allplanforumlocked') AND tstamp < " . (time() - (60 * 60 * 24 * ($pObj->period)));
 				break;
 
 
+			// Todo
 			default:
 				$where .= " AND `type` = '" . $pObj->indexerConfig['type'] .  "' ";
 				if($pObj->storagePid){
@@ -88,7 +136,7 @@ class CleanupHook
 		// Todo: change query
 		$where .= " AND ( servername ='" . EnvironmentUtility::getServerName() . "' OR servername = '' ) ";
 		return $content . "\n After CleanupHook: Now $" . "where = " . $where;
-
+*/
 	}
 
 }
