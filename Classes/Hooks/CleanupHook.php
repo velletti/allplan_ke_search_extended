@@ -22,7 +22,6 @@ class CleanupHook
 	 * @param string $where
 	 * @param IndexerRunner $indexerRunner
 	 * @return string
-	 * @throws Exception
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
 	public function cleanup(string &$where, IndexerRunner $indexerRunner): string
