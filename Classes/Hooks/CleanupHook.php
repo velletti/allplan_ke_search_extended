@@ -51,7 +51,7 @@ class CleanupHook
 		$conditions[] = "`pid` = " . $storagePid;
 		$conditions[] = "`type` = '" . $indexerType . "'";
 		// Consider language only, if explicit set
-		if(!is_null($language)){
+		if(!is_null($language) && $language != ''){
 			$conditions[] = "`language` = '" . $language . "'";
 		}
 		$conditions[] = "`tx_allplan_ke_search_extended_server_name` = '" . EnvironmentUtility::getServerName() . "'";
