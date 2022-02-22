@@ -119,6 +119,7 @@ class JvEventsIndexer extends IndexerBase
 	 * @param IndexerRunner $indexerRunner
 	 * @param array $indexerConfig
 	 * @return bool|int
+	 * @throws Exception
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
 	private function storeInKeSearchIndex(array $record, IndexerRunner $indexerRunner, array $indexerConfig)
@@ -150,11 +151,7 @@ class JvEventsIndexer extends IndexerBase
 			'tx_jvevents_events[controller]=Event'
 		]); // additional parameters for the link in frontend
 		$abstract = FormatUtility::cleanStringForIndex($record['teaser']);
-		$language = $taskConfiguration->getSysLanguageUid(); // sys_language_uid
-		// If set to default in scheduler
-		if(empty($language)){
-			$language = $record['sys_language_uid'];
-		}
+		$language = IndexerUtility::getLanguage($indexerRunner, $record['sys_language_uid']); // sys_language_uid
 		$startTime = 0;
 		$endTime = $record['end_date'];
 		if ($endTime < 1){

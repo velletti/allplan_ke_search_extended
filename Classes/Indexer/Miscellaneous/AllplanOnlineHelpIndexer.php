@@ -92,9 +92,9 @@ class AllplanOnlineHelpIndexer extends IndexerBase
 			}
 
 			// Faster debug
-			# if($count > 3){
-			# 	return $count;
-			# }
+			#if($count > 3){
+			#	return $count;
+			#}
 
 			unset($record);
 
@@ -178,6 +178,7 @@ class AllplanOnlineHelpIndexer extends IndexerBase
 	 * @param IndexerRunner $indexerRunner
 	 * @param array $indexerConfig
 	 * @return bool|int
+	 * @throws Exception
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
 	private function storeInKeSearchIndex(array $record, IndexerRunner $indexerRunner, array $indexerConfig)
@@ -195,7 +196,7 @@ class AllplanOnlineHelpIndexer extends IndexerBase
 		$tags = '#onlinehelp#'; // tags
 		$params = '_blank'; // additional parameters for the link in frontend
 		$abstract = trim(substr($record['text'],0,200));
-		$language = $taskConfiguration->getSysLanguageUid(); // sys_language_uid
+		$language = IndexerUtility::getLanguage($indexerRunner); // sys_language_uid
 		$startTime = 0; // not used here
 		$endTime = 0; // not used here
 		$feGroup = ''; // not used here

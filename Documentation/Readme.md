@@ -9,6 +9,7 @@ Everything is stored in storage folders considering the same tree structure with
 2. Create a new indexer on sys_folder [5080]/[5081] (www/connect). Create a sys_folder<sup>1</sup> for the index entries.
 3. Add a new entry to **CustomIndexerHook**
 4. Create a new Indexer inside Classes/Indexer/
+5. Add some cleanup in **CleanupHook**, if needed
 
 **Footnotes**:\
 <sup>1</sup>sys_folder for the index entries:\

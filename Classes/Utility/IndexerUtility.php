@@ -7,18 +7,6 @@ namespace Allplan\AllplanKeSearchExtended\Utility;
 use Allplan\AllplanKeSearchExtended\Indexer\IndexerRunner;
 
 /**
- * Doctrine
- */
-use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
-
-/**
- * TYPO3
- */
-use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\QueryGenerator;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-
-/**
  * Php
  */
 use Exception;
@@ -46,6 +34,42 @@ class IndexerUtility
 		}
 
 		return (string)$pid;
+
+	}
+
+	/**
+	 * Gets the language, which should be written to tx_kesearch_index.language
+	 * There are the following possibilities from scheduler task configuration:
+	 * - '':   empty => language from indexed record should be taken
+	 * - '-1': All languages
+	 * - '0':  Default language
+	 * - '1':  Germany
+	 * - ...
+	 * If the language is not set in indexer runner (''), the language of the indexed record has to be set,
+	 * otherwise Exception will be thrown here
+	 * @param IndexerRunner $indexerRunner
+	 * @param int|string|null $recordLanguage
+	 * @return int|string
+	 * @throws Exception
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function getLanguage(IndexerRunner $indexerRunner, $recordLanguage = null)
+	{
+
+		$schedulerLanguage = $indexerRunner->getTaskConfiguration()->getSysLanguageUid();
+
+		// If scheduler language is empty => take the language of the record
+		if($schedulerLanguage == ''){
+
+			if(is_null($recordLanguage)){
+				throw new Exception('No language is set in indexer runner => language hast to be set by indexed record, but it is null');
+			}
+
+			return $recordLanguage;
+
+		}
+
+		return $schedulerLanguage;
 
 	}
 
