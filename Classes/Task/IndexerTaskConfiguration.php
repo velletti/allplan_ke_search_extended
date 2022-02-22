@@ -154,9 +154,4 @@ class IndexerTaskConfiguration
 		$this->storagePid = $storagePid;
 	}
 
-	public function __construct()
-	{
-
-	}
-
 }
