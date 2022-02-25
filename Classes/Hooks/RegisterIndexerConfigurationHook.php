@@ -22,9 +22,6 @@ class RegisterIndexerConfigurationHook
 		 * Www
 		 * =============================================================================================================
 		 */
-
-		// Todo: Events (EXT:jv_events)
-		// -------------------------------------------------------------------------------------------------------------
 		$params['items'][] = [
 			'Events (EXT:jv_events)',
 			'jv_events',
@@ -39,19 +36,23 @@ class RegisterIndexerConfigurationHook
 
 		// Todo: Elearning Videos (EXT:marit_elearning)
 		// -------------------------------------------------------------------------------------------------------------
+		/*
 		$params['items'][] = [
 			'Elearning Videos (EXT:marit_elearning)',
 			'marit_elearning_videos',
 			$iconPath . 'Connect/marit-elearning-videos.png'
 		];
+		*/
 
 		// Todo: Elearning Documentations (EXT:marit_elearning)
 		// -------------------------------------------------------------------------------------------------------------
+		/*
 		$params['items'][] = [
 			'Elearning Documentations (EXT:marit_elearning)',
 			'marit_elearning_documentations',
 			$iconPath . 'Connect/marit-elearning-documentations.png'
 		];
+		*/
 
 		// Todo: New indexer... Downloads (EXT:nemjv_getcontent)
 		// -------------------------------------------------------------------------------------------------------------
@@ -60,19 +61,23 @@ class RegisterIndexerConfigurationHook
 		// 	'contentserve',
 		// 	$iconPath . 'indexer-content-downloads.png'
 		// ];
+		/*
 		$params['items'][] = [
 			'Downloads (EXT:nemjv_getcontent)',
 			'nemjv_getcontent',
 			$iconPath . 'Connect/nemjv-getcontent.png'
 		];
+		*/
 
 		// Todo: Forum (EXT:mm_forum)
 		// -------------------------------------------------------------------------------------------------------------
+		/*
 		$params['items'][] = [
 			'Forum (EXT:mm_forum)',
 			'mm_forum',
 			$iconPath . 'Connect/mm-forum.png'
 		];
+		*/
 
 
 		/**
@@ -82,11 +87,13 @@ class RegisterIndexerConfigurationHook
 
 		// Todo: Allplan FAQ
 		// -------------------------------------------------------------------------------------------------------------
+		/*
 		$params['items'][] = [
 			'Allplan FAQ',
 			'allplan_faq',
 			$iconPath . 'Miscellaneous/allplan-faq.png'
 		];
+		*/
 
 		// Allplan Online Help
 		// -------------------------------------------------------------------------------------------------------------
@@ -98,11 +105,13 @@ class RegisterIndexerConfigurationHook
 
 		// Todo: Allplan Shop
 		// -------------------------------------------------------------------------------------------------------------
+		/*
 		$params['items'][] = [
 			'Allplan Shop',
 			'allplan_shop',
 			$iconPath . 'Miscellaneous/allplan-shop.png'
 		];
+		*/
 
 	}
 
