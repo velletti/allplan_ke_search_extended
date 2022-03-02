@@ -9,15 +9,17 @@ use Allplan\AllplanKeSearchExtended\Task\IndexerTaskConfiguration;
 /**
  * KeSearch
  */
-
-use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 use Tpwd\KeSearch\Indexer\IndexerBase;
 use Tpwd\KeSearch\Indexer\IndexerRunner as KeSearchIndexerRunner;
 
 /**
+ * Doctrine
+ */
+use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
+
+/**
  * TYPO3
  */
-
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
