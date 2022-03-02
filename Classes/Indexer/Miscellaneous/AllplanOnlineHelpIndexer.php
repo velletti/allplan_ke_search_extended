@@ -4,6 +4,7 @@ namespace Allplan\AllplanKeSearchExtended\Indexer\Miscellaneous;
 /**
  * AllplanKeSearchExtended
  */
+use Allplan\AllplanKeSearchExtended\Indexer\IndexerBase;
 use Allplan\AllplanKeSearchExtended\Indexer\IndexerRunner;
 use Allplan\AllplanKeSearchExtended\Utility\DbUtility;
 use Allplan\AllplanKeSearchExtended\Utility\EnvironmentUtility;
@@ -14,7 +15,7 @@ use Allplan\AllplanKeSearchExtended\Utility\JsonUtility;
 /**
  * KeSearch
  */
-use Tpwd\KeSearch\Indexer\IndexerBase;
+use Tpwd\KeSearch\Indexer\IndexerRunner as KeSearchIndexerRunner;
 
 /**
  * Php
@@ -33,19 +34,6 @@ class AllplanOnlineHelpIndexer extends IndexerBase
 	 */
 
 	/**
-	 * @param IndexerRunner $indexerRunner
-	 * @author Peter Benke <pbenke@allplan.com>
-	 */
-	public function __construct($indexerRunner)
-	{
-		parent::__construct($indexerRunner);
-		// Set the indexerRunner (defined in parent class in ke_search, variable name is not-quite-correct)
-		$this->pObj = $indexerRunner;
-	}
-
-	/**
-	 * Indexer for the Allplan Online Help
-	 *
 	 * Test on LOCAL:
 	 * 1) Before every start => DB:
 	 * UPDATE tx_scheduler_task SET nextexecution='1642431600', lastexecution_failure='', serialized_executions='' WHERE uid=[scheduler_task_uid];
@@ -175,7 +163,7 @@ class AllplanOnlineHelpIndexer extends IndexerBase
 	/**
 	 * Write data to index (tx_kesearch_index)
 	 * @param array $record
-	 * @param IndexerRunner $indexerRunner
+	 * @param IndexerRunner|KeSearchIndexerRunner $indexerRunner
 	 * @param array $indexerConfig
 	 * @return bool|int
 	 * @throws Exception
@@ -192,7 +180,10 @@ class AllplanOnlineHelpIndexer extends IndexerBase
 		$title = $record['title']; // title in the result list
 		$type = 'allplan_online_help'; // content type (to differ in frontend (css class))
 		$targetPid = $taskConfiguration->getExternUrl() . 'index.htm#' . $record['url']; // target pid for the detail link / external url
-		$content = $record['title'] . ': ' . $record['text']; // below the title in the result list
+		$content = FormatUtility::buildContentForIndex([
+			$record['title'],
+			$record['text'],
+		]); // below the title in the result list
 		$tags = '#onlinehelp#'; // tags
 		$params = '_blank'; // additional parameters for the link in frontend
 		$abstract = trim(substr($record['text'],0,200));
