@@ -27,6 +27,8 @@ class CleanupHook
 	public function cleanup(string &$where, IndexerRunner $indexerRunner): string
 	{
 
+		// Todo Delete older than x days...
+
 		$content = '<p>Where-condition before CleanupHook: ' . $where . '</p>';
 
 		$indexerConfig = $indexerRunner->indexerConfig;

@@ -1,6 +1,17 @@
 <?php
 defined('TYPO3_MODE') or die();
 
+// Todo: START
+// type 'documentation' => change in css to 'marit_elearning_documents'
+// type 'lessions' => change in css to 'marit_elearning_lessons'
+// type 'allplanhelp' => change in css to 'allplan_online_help' => done in www
+
+// Sync script: Problem server_name only "connect"...?
+
+// Change git repository to git.allplan.com
+// Todo: END
+
+
 $boot = function(){
 
 	/**

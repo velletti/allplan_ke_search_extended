@@ -5,13 +5,14 @@ namespace Allplan\AllplanKeSearchExtended\Hooks;
  * AllplanKeSearchExtended
  */
 # Todo: Sort
-use Allplan\AllplanKeSearchExtended\Indexer\Miscellaneous\AllplanOnlineHelpIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\Www\JvEventsIndexer;
+use Allplan\AllplanKeSearchExtended\Indexer\Miscellaneous\AllplanOnlineHelpIndexer;
+use Allplan\AllplanKeSearchExtended\Indexer\Connect\MaritElearningDocumentsIndexer;
+use Allplan\AllplanKeSearchExtended\Indexer\Connect\MaritElearningLessonsIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\IndexerRunner;
 
 use Allplan\AllplanKeSearchExtended\Indexer\ContentServeIndexer;
-use Allplan\AllplanKeSearchExtended\Indexer\AllplanDocumentationsIndexer;
-use Allplan\AllplanKeSearchExtended\Indexer\AllplanElearningsIndexer;
+
 use Allplan\AllplanKeSearchExtended\Indexer\AllplanFaqIndexer;
 
 use Allplan\AllplanKeSearchExtended\Indexer\AllplanKesearchIndexer;
@@ -59,21 +60,35 @@ class CustomIndexerHook
 			 * =========================================================================================================
 			 */
 			case 'jv_events':
-# echo 'Starting indexer for Events' . PHP_EOL; print_r($indexerConfig); echo PHP_EOL;
-				$eventIndexer = GeneralUtility::makeInstance(JvEventsIndexer::class, $indexerRunner);
-				$resultCount = $eventIndexer->startIndexing();
+				$jvEventsIndexer = GeneralUtility::makeInstance(JvEventsIndexer::class, $indexerRunner);
+				$resultCount = $jvEventsIndexer->startIndexing();
 				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resultCount . ' events (EXT:jv_events) where indexed.</p>';
 				break;
 
+
+			/**
+			 * Connect
+			 * =============================================================================================================
+			 */
+			case 'marit_elearning_lessons':
+				$maritElearningLessonsIndexer = GeneralUtility::makeInstance(MaritElearningLessonsIndexer::class, $indexerRunner);
+				$resultCount = $maritElearningLessonsIndexer->startIndexing();
+				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resultCount . ' Elearning lessons (videos) (EXT:marit_elearning) where indexed.</p>';
+				break;
+
+			case 'marit_elearning_documents':
+				$maritElearningLessonsIndexer = GeneralUtility::makeInstance(MaritElearningDocumentsIndexer::class, $indexerRunner);
+				$resultCount = $maritElearningLessonsIndexer->startIndexing();
+				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resultCount . ' Elearning documents (EXT:marit_elearning) where indexed.</p>';
+				break;
 
 			/**
 			 * Miscellaneous
 			 * =========================================================================================================
 			 */
 			case 'allplan_online_help':
-# echo 'Starting indexer for Allplan Online Help' . PHP_EOL; print_r($indexerConfig); echo PHP_EOL;
-				$onlineHelpIndexer = GeneralUtility::makeInstance(AllplanOnlineHelpIndexer::class, $indexerRunner);
-				$resultCount = $onlineHelpIndexer->startIndexing();
+				$allplanOnlineHelpIndexer = GeneralUtility::makeInstance(AllplanOnlineHelpIndexer::class, $indexerRunner);
+				$resultCount = $allplanOnlineHelpIndexer->startIndexing();
 				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resultCount . ' Allplan Online Help entries where indexed.</p>';
 				break;
 
@@ -103,13 +118,8 @@ class CustomIndexerHook
 				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' Shop entries where indexed.</p>';
 				break;
 
-			// Todo check spelling
-			case 'lessions':
-				$elearningIndexer = GeneralUtility::makeInstance(AllplanElearningsIndexer::class);
-				$resCount = $elearningIndexer->main($indexerConfig, $indexerObject);
-				$content = '<p><strong>Indexer "' . $indexerConfig['title'] . '"</strong>:<br>' . $resCount . ' Elearning video entries where indexed.</p>';
-				break;
 
+			// Todo
 			case 'documentation':
 				$elearningIndexer = GeneralUtility::makeInstance(AllplanDocumentationsIndexer::class);
 				$resCount = $elearningIndexer->main($indexerConfig, $indexerObject);

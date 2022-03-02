@@ -8,7 +8,7 @@ Everything is stored in storage folders considering the same tree structure with
 1. Register a new indexer configuration in **RegisterIndexerConfigurationHook**
 2. Create a new indexer on sys_folder [5080]/[5081] (www/connect). Create a sys_folder<sup>1</sup> for the index entries.
 3. Add a new entry to **CustomIndexerHook**
-4. Create a new Indexer inside Classes/Indexer/
+4. Create a new Indexer inside Classes/Indexer/. Extend from **IndexerBase** and implement **IndexerInterface**
 5. Add some cleanup in **CleanupHook**, if needed
 
 **Footnotes**:\
@@ -32,4 +32,16 @@ The tags are set as follows:
 1. Inside the Indexer->storeInKeSearchIndex() function (hardcoded)
 2. Set in backend inside the indexer by selection of the filter (which has set a tag)
 => So from these places a comma seperated list of tags is written into tx_kesearch_index.tags
+
+## Test task on LOCAL cli
+
+### Before every start => DB:
+
+    UPDATE tx_scheduler_task SET nextexecution='1642431600', lastexecution_failure='', serialized_executions='' WHERE uid=[scheduler_task_uid];
+    TRUNCATE Table sys_registry;
+    TRUNCATE Table tx_kesearch_index;
+
+### Cli
+
+    /var/www/html/http/typo3/sysext/core/bin/typo3 scheduler:run --task=[scheduler_task_uid] -vv
 
