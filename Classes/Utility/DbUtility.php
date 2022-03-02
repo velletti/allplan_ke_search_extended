@@ -14,6 +14,11 @@ use TYPO3\CMS\Core\Database\QueryGenerator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
+ * PDO
+ */
+use PDO;
+
+/**
  * Php
  */
 use Exception;
@@ -120,6 +125,41 @@ class DbUtility
 		}
 
 		return $records;
+
+	}
+
+	/**
+	 * Get the sys_file.uid by a given tx_maritelearning_domain_model_download.uid
+	 * @param string|int $uid
+	 * @return int|null
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function getSysFileUidByMaritElearningDocumentUid($uid): ?int
+	{
+		$connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+		$queryBuilder = $connectionPool->getConnectionForTable('sys_file')->createQueryBuilder();
+		$expr = $queryBuilder->expr();
+
+		$queryBuilder
+			->select('sf.uid')
+			->from('sys_file','sf')
+			->leftJoin('sf','sys_file_reference','sfr','sf.uid = sfr.uid_local')
+			->where($expr->eq('sf.missing',0))
+			->andWhere($expr->eq('sfr.fieldname', $queryBuilder->createNamedParameter('tx_maritelearning_domain_model_download_download')))
+			->andWhere($expr->eq('sfr.uid_foreign', $queryBuilder->createNamedParameter(intval($uid),PDO::PARAM_INT))
+		);
+
+		try{
+			$sysFileUid = $queryBuilder->execute()->fetchOne();
+		}catch(DoctrineDBALDriverException $e){
+			return null;
+		}
+
+		if(empty($sysFileUid)){
+			return null;
+		}
+
+		return (int)$sysFileUid;
 
 	}
 

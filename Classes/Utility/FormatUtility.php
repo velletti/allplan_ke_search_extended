@@ -57,4 +57,22 @@ class FormatUtility
 
 	}
 
+	/**
+	 * Build the content string for tx_kesearch_index.content by multiple parts
+	 * @param array $contentParts
+	 * @return string
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function buildContentForIndex(array $contentParts): string
+	{
+
+		$cleanContentParts = [];
+		foreach($contentParts as $contentPart){
+			$cleanContentParts[] = self::cleanStringForIndex($contentPart);
+		}
+
+		return implode(PHP_EOL, $cleanContentParts);
+
+	}
+
 }
