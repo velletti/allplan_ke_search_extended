@@ -22,6 +22,7 @@ class LanguageUtility
 	public static function getSysLanguageUid(): int
 	{
 
+		// Todo better code
 		if (class_exists(\TYPO3\CMS\Core\Context\Context::class)) {
 
 			try{

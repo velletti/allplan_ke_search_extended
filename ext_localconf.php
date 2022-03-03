@@ -1,16 +1,15 @@
 <?php
 defined('TYPO3_MODE') or die();
 
-// Todo: START
-// type 'documentation' => change in css to 'marit_elearning_documents'
-// type 'lessions' => change in css to 'marit_elearning_lessons'
-// type 'allplanhelp' => change in css to 'allplan_online_help' => done in www
+// Todo: type 'documentation' => change in css to 'marit_elearning_documents'
+// Todo: type 'lessions' => change in css to 'marit_elearning_lessons'
+// Todo: type 'allplanhelp' => change in css to 'allplan_online_help' => done in www
 
-// Sync script: Problem server_name only "connect"...?
+// Todo: Sync script: Problem server_name only "connect"...?
 
-// Change git repository to git.allplan.com
-// Todo: END
+// Todo: Change git repository to git.allplan.com
 
+// Todo: Configure ke_search, that we get email notices
 
 $boot = function(){
 
@@ -87,19 +86,10 @@ $boot = function(){
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['initials'][] =
 		\Allplan\AllplanKeSearchExtended\Hooks\InitialsHook::class;
 
-
 	/**
 	 * Scheduler task
 	 * =================================================================================================================
 	 */
-	// Todo: remove this old one indexer task
-	#$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\Allplan\AllplanKeSearchExtended\Task\AllplanKesearchIndexerTask::class] = [
-	#	'extension' => 'ke_search_extended',
-	#	'title' => 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskTitle',
-	#	'description' => 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_tasks.xlf:indexerTaskDescription',
-	#	'additionalFields' => 'Allplan\AllplanKeSearchExtended\Task\AllplanKesearchIndexerTaskAdditionalFieldProvider'
-	#];
-
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\Allplan\AllplanKeSearchExtended\Task\IndexerTask::class] = [
 		'extension' => 'allplan_ke_search_extended',
 		'title' => 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang.xlf:task.indexerTask.title',

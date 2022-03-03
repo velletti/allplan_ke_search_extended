@@ -51,6 +51,7 @@ class TyposcriptUtility
 	 * @param false $getConstants
 	 * @return array
 	 */
+	// Todo cleanup
 	public static function loadTypoScriptFromScratch($pageUid = 0, $extKey = '', $conditions = false, $getConstants = false)
 	{
 

@@ -5,6 +5,7 @@ namespace Allplan\AllplanKeSearchExtended\Hooks;
  * AllplanKeSearchExtended
  */
 use Allplan\AllplanKeSearchExtended\Utility\EnvironmentUtility;
+use Allplan\AllplanKeSearchExtended\Utility\FormatUtility;
 use Allplan\AllplanKeSearchExtended\Utility\IndexerUtility;
 use Allplan\AllplanKeSearchExtended\Indexer\IndexerRunner;
 
@@ -19,6 +20,14 @@ class CleanupHook
 	/**
 	 * Cleanup for counting and deleting old index records
 	 * Called in ke_search/Classes/Indexer/IndexerRunner.php->cleanUpIndex()
+	 * Deletes all index elements that are older than starting timestamp in registry + conditions from us
+	 * Normally all records would be deleted by ke_search
+	 * Added conditions here:
+	 * - pid
+	 * - type
+	 * - language
+	 * - period of days to delete records
+	 * - server name
 	 * @param string $where
 	 * @param IndexerRunner $indexerRunner
 	 * @return string
@@ -29,33 +38,35 @@ class CleanupHook
 
 		// Todo Delete older than x days...
 
-		$content = '<p>Where-condition before CleanupHook: ' . $where . '</p>';
-
+		$content = '<p><br>Where-condition before CleanupHook: ' . $where . '</p>';
 		$indexerConfig = $indexerRunner->indexerConfig;
-		$storagePid = (int)IndexerUtility::getStoragePid($indexerRunner, $indexerConfig);
+		$schedulerTaskConfiguration = $indexerRunner->getTaskConfiguration();
+
+		$conditions = [];
+
+		// pid
+		$conditions[] = "`pid` = " . (int)IndexerUtility::getStoragePid($indexerRunner, $indexerConfig);
+
+		// type
+		$conditions[] = "`type` = '" . $indexerConfig['type'] . "'";
+
+		// language => consider language only, if explicit set
 		try{
 			$language = IndexerUtility::getLanguage($indexerRunner);
 		}catch(Exception $e){
 			$language  = null;
 		}
-		$indexerType = $indexerConfig['type'];
-
-		// print_r([
-		// 	'$where' => $where,
-		// 	'$storagePid' => $storagePid,
-		// 	'$indexerType' => $indexerType,
-		// 	'$indexerConfig' => $indexerConfig,
-		// ]);
-
-		$conditions = [];
-
-		// Where-conditions for all records
-		$conditions[] = "`pid` = " . $storagePid;
-		$conditions[] = "`type` = '" . $indexerType . "'";
-		// Consider language only, if explicit set
 		if(!is_null($language) && $language != ''){
 			$conditions[] = "`language` = '" . $language . "'";
 		}
+
+		// period of days to delete records
+		$deleteOldEntriesPeriodInSeconds = FormatUtility::getSecondsByDays($schedulerTaskConfiguration->getDeleteOldEntriesPeriodInDays());
+		if(!empty($deleteOldEntriesPeriodInSeconds)){
+			$conditions[] = "`crdate` < '" . (time() - $deleteOldEntriesPeriodInSeconds) . "'";
+		}
+
+		// server name
 		$conditions[] = "`tx_allplan_ke_search_extended_server_name` = '" . EnvironmentUtility::getServerName() . "'";
 
 		$where.= " AND " . implode(' AND ', $conditions);

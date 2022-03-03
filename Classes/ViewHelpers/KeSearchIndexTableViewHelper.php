@@ -21,7 +21,7 @@ use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
  */
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
-
+// Todo cleanup
 class KeSearchIndexTableViewHelper extends AbstractViewHelper
 {
 

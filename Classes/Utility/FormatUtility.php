@@ -75,4 +75,19 @@ class FormatUtility
 
 	}
 
+	/**
+	 * Get the number of seconds by a given number of days
+	 * @param int|string|null $days
+	 * @return int|null
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function getSecondsByDays($days)
+	{
+		$days = (int)$days;
+		if(!($days > 0)){
+			return null;
+		}
+		return (int)$days * 24 * 60 * 60;
+	}
+
 }

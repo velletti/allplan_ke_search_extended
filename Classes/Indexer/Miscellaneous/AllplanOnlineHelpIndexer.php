@@ -50,6 +50,7 @@ class AllplanOnlineHelpIndexer extends IndexerBase
 	{
 
 		// Better variable name
+		/** @var KeSearchIndexerRunner|IndexerRunner $indexerRunner */
 		$indexerRunner = $this->pObj;
 
 		// Set the configs from scheduler and from the indexer (tx_kesearch_indexerconfig)

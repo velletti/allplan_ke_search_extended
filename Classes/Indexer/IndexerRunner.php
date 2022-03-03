@@ -81,6 +81,7 @@ class IndexerRunner extends KeSearchIndexerRunner
 	public function startIndexing($verbose = true, $extConf = array(), $mode = '', $indexingMode = IndexerBase::INDEXING_MODE_FULL): string
 	{
 		// Parent function (there the CustomIndexerHook will be called)
+		$mode = 'CLI'; // => email will be sent to us after finishing (must be activated in ke_search extension configuration)
 		return parent::startIndexing($verbose, $extConf, $mode, $indexingMode);
 	}
 

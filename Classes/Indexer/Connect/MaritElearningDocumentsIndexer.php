@@ -22,8 +22,6 @@ use Tpwd\KeSearch\Indexer\IndexerRunner as KeSearchIndexerRunner;
 /**
  * TYPO3
  */
-use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -35,7 +33,6 @@ use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 /**
  * Php
  */
-use DateTime;
 use Exception;
 
 /**

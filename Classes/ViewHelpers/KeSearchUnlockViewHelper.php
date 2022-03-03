@@ -29,6 +29,8 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 class KeSearchUnlockViewHelper extends AbstractViewHelper
 {
 
+	// Todo repair viewhelper
+
 	/**
 	 * Render
 	 * @return string
@@ -39,7 +41,7 @@ class KeSearchUnlockViewHelper extends AbstractViewHelper
 	 */
 	public function render(): string
 	{
-
+return 'Hello world KeSearchUnlockViewHelper';
 		/**
 		 * @var AllplanKesearchIndexer $indexer
 		 * @var ConnectionPool $connectionPool

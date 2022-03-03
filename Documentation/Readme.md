@@ -23,8 +23,16 @@ E.g.: Allplan Online Help DE => Is shown on Germany, Austria and Switzerland => 
 2. On start the scheduler task (IndexerTask) transfers its settings to the IndexerRunner-properties (which extends the ke_search indexer runner) on start.
 3. After that, the IndexerTask starts the IndexerRunner->startIndexing(), which starts the parent startIndexing() function.
 4. There ke_search has a hook implemented, which calls our CustomIndexerHook->customIndexer() with the IndexRunner (and its properties)
-5. So we have CustomIndexer with the originally settings from the scheduler task :-)
+5. So we have a CustomIndexer with the originally settings from the scheduler task :-)
 6. Indexer starts in our own IndexerTask => there the parent startIndexing() function is called.
+
+### Notes
+
+* On start indexing, ke_search writes an entry to sys_registry with current timestamp, the next step is, that ke_search deletes all entries (**after** update records), which are older than this timestamp in its cleanUpIndex() function, which is hooked by our cleanUp() function.
+* Index records will be updated (instead of deleted and new created) => in function prepareStatements()
+
+From the "official" documentation:
+"Full indexing goes through all the data which should be indexed (records, files, custom indexers) and checks for each record if it has been changed or if it is new. In this case the data will be updated or stored to the index. **After that** a cleanup process is started and all old data will be deleted."
 
 ## Tags
 

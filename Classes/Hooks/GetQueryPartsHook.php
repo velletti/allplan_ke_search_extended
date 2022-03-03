@@ -32,6 +32,9 @@ class GetQueryPartsHook
 	 */
 	public function getQueryParts(array $queryParts , $pibase , $searchwordQuoted=null)
 	{
+		// Todo check this
+
+
 		/*
 		 * see connect TYPO Script file f.e.:
 		 * http/typo3conf/ext/connect_template/Configuration/TypoScript/Base/Setup/Extensions/ke_search_for_support.ts

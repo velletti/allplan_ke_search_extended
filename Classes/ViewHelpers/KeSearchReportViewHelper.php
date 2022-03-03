@@ -50,6 +50,9 @@ class KeSearchReportViewHelper extends AbstractViewHelper
 		$this->registerArgument('search','string','additional Search condition',false);
 	}
 
+
+	// Todo repair viewhelper
+
 	/**
 	 * @return array
 	 * @author Jörg Velletti <jvelletti@allplan.com>
@@ -57,7 +60,7 @@ class KeSearchReportViewHelper extends AbstractViewHelper
 	 */
 	public function render(): array
 	{
-
+return ['Hello world KeSearchReportViewHelper'];
 		$amount = $this->arguments['amount'] ?? 3;
 		$search = $this->arguments['search'] ?? false;
 
