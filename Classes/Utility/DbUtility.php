@@ -163,4 +163,71 @@ class DbUtility
 
 	}
 
+
+	/**
+	 * Get the newest tstamp from table tx_kesearch_index, where we have a forum entry
+	 * ≙ the date of latest indexed forum entry
+	 * @return int|null
+	 * @throws DoctrineDBALDriverException
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function getNewestForumIndexTsStamp(): ?int
+	{
+		$possibleIndexerTypes = IndexerUtility::getPossibleIndexerTypesForForum();
+
+		$connectionPool = GeneralUtility::makeInstance( ConnectionPool::class);
+		$queryBuilder = $connectionPool->getQueryBuilderForTable('tx_kesearch_index');
+
+		$newestRecord = $queryBuilder
+			->select('sortdate')
+			// Todo change to correct table
+			###################->from('tx_kesearch_index')
+			->from('tx_kesearch_index_ORIG')
+			->where($queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter('allplanforu%')))
+			->setMaxResults(1)
+			->orderBy('sortdate','DESC')
+			->execute()
+			->fetchAssociative()
+		;
+
+		if(empty($newestRecord)){
+			return null;
+		}
+
+		return (int)$newestRecord['sortdate'];
+
+	}
+
+
+	/**
+	 * Get the indexer type by a given indexer config uid (table tx_kesearch_indexerconfig)
+	 * @param int|string $uid
+	 * @return mixed|null
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function getIndexerTypeByIndexerConfigUid($uid)
+	{
+		$connectionPool = GeneralUtility::makeInstance( ConnectionPool::class);
+		$queryBuilder = $connectionPool->getQueryBuilderForTable('tx_kesearch_indexerconfig');
+
+		try{
+			$indexerConfig = $queryBuilder
+				->select('type')
+				->from('tx_kesearch_indexerconfig')
+				->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter(intval($uid),PDO::PARAM_INT)))
+				->execute()
+				->fetchAssociative()
+			;
+		}catch(DoctrineDBALDriverException $e){
+			return null;
+		}
+
+		if(empty($indexerConfig)){
+			return null;
+		}
+
+		return $indexerConfig['type'];
+
+	}
+
 }

@@ -15,18 +15,6 @@ class IndexerTaskConfiguration
 	 */
 
 	/**
-	 * Delete entries older than number of days
-	 * @var int|string|null
-	 */
-	protected $deleteOldEntriesPeriodInDays;
-
-	/**
-	 * Number of records, which should be indexed on one run
-	 * @var int|string|null
-	 */
-	protected $nrOfIndexRecordsOnOneRun;
-
-	/**
 	 * Indexer configuration uid (column: tx_kesearch_indexerconfig.uid)
 	 * @var int|string
 	 */
@@ -40,55 +28,35 @@ class IndexerTaskConfiguration
 	protected $sysLanguageUid = null;
 
 	/**
-	 * External url for indexing and list in the frontend, e.g. for the Allplan Online Help
-	 * @var string|null
-	 */
-	protected ?string $externUrl;
-
-	/**
 	 * Explicit set pid for the index entry
 	 * Default: null (then the storage pid of the indexer configuration will be set (column tx_kesearch_indexerconfig.pid))
 	 * @var int|string|null
 	 */
 	protected $storagePid = null;
 
+	/**
+	 * Delete entries older than number of days
+	 * @var int|string|null
+	 */
+	protected $deleteOldEntriesPeriodInDays;
+
+	/**
+	 * Number of records, which should be indexed on one run
+	 * @var int|string|null
+	 */
+	protected $nrOfIndexRecordsOnOneRun;
+
+	/**
+	 * External url for indexing and list in the frontend, e.g. for the Allplan Online Help
+	 * @var string|null
+	 */
+	protected ?string $externUrl;
+
 
 	/**
 	 * Getters and setters
 	 * =================================================================================================================
 	 */
-
-	/**
-	 * @return int|string|null
-	 */
-	public function getDeleteOldEntriesPeriodInDays()
-	{
-		return $this->deleteOldEntriesPeriodInDays;
-	}
-
-	/**
-	 * @param int|string|null $deleteOldEntriesPeriodInDays
-	 */
-	public function setDeleteOldEntriesPeriodInDays($deleteOldEntriesPeriodInDays): void
-	{
-		$this->deleteOldEntriesPeriodInDays = $deleteOldEntriesPeriodInDays;
-	}
-
-	/**
-	 * @return int|string|null
-	 */
-	public function getNrOfIndexRecordsOnOneRun()
-	{
-		return $this->nrOfIndexRecordsOnOneRun;
-	}
-
-	/**
-	 * @param int|string|null $nrOfIndexRecordsOnOneRun
-	 */
-	public function setNrOfIndexRecordsOnOneRun($nrOfIndexRecordsOnOneRun): void
-	{
-		$this->nrOfIndexRecordsOnOneRun = $nrOfIndexRecordsOnOneRun;
-	}
 
 	/**
 	 * @return int|string
@@ -123,22 +91,6 @@ class IndexerTaskConfiguration
 	}
 
 	/**
-	 * @return string|null
-	 */
-	public function getExternUrl(): ?string
-	{
-		return $this->externUrl;
-	}
-
-	/**
-	 * @param string|null $externUrl
-	 */
-	public function setExternUrl(?string $externUrl): void
-	{
-		$this->externUrl = $externUrl;
-	}
-
-	/**
 	 * @return int|string|null
 	 */
 	public function getStoragePid()
@@ -152,6 +104,54 @@ class IndexerTaskConfiguration
 	public function setStoragePid($storagePid): void
 	{
 		$this->storagePid = $storagePid;
+	}
+
+	/**
+	 * @return int|string|null
+	 */
+	public function getDeleteOldEntriesPeriodInDays()
+	{
+		return $this->deleteOldEntriesPeriodInDays;
+	}
+
+	/**
+	 * @param int|string|null $deleteOldEntriesPeriodInDays
+	 */
+	public function setDeleteOldEntriesPeriodInDays($deleteOldEntriesPeriodInDays): void
+	{
+		$this->deleteOldEntriesPeriodInDays = $deleteOldEntriesPeriodInDays;
+	}
+
+	/**
+	 * @return int|string|null
+	 */
+	public function getNrOfIndexRecordsOnOneRun()
+	{
+		return $this->nrOfIndexRecordsOnOneRun;
+	}
+
+	/**
+	 * @param int|string|null $nrOfIndexRecordsOnOneRun
+	 */
+	public function setNrOfIndexRecordsOnOneRun($nrOfIndexRecordsOnOneRun): void
+	{
+		$this->nrOfIndexRecordsOnOneRun = $nrOfIndexRecordsOnOneRun;
+	}
+
+	/**
+	 * @return string|null
+	 */
+	public function getExternUrl(): ?string
+	{
+		return $this->externUrl;
+	}
+
+	/**
+	 * @param string|null $externUrl
+	 */
+	public function setExternUrl(?string $externUrl): void
+	{
+		$this->externUrl = $externUrl;
 	}
 
 }

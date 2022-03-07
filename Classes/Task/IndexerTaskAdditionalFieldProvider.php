@@ -54,12 +54,12 @@ class IndexerTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
 		if ($schedulerModule->getCurrentAction() == 'edit'){
 
 			$indexerTaskConfiguration = $task->getTaskConfiguration();
-			$taskInfo['deleteOldEntriesPeriodInDays'] = $indexerTaskConfiguration->getDeleteOldEntriesPeriodInDays();
-			$taskInfo['nrOfIndexRecordsOnOneRun'] = $indexerTaskConfiguration->getNrOfIndexRecordsOnOneRun();
 			$taskInfo['indexerConfigUid'] = $indexerTaskConfiguration->getIndexerConfigUid();
 			$taskInfo['sysLanguageUid'] = $indexerTaskConfiguration->getSysLanguageUid();
-			$taskInfo['externUrl'] = $indexerTaskConfiguration->getExternUrl();
 			$taskInfo['storagePid'] = $indexerTaskConfiguration->getStoragePid();
+			$taskInfo['deleteOldEntriesPeriodInDays'] = $indexerTaskConfiguration->getDeleteOldEntriesPeriodInDays();
+			$taskInfo['nrOfIndexRecordsOnOneRun'] = $indexerTaskConfiguration->getNrOfIndexRecordsOnOneRun();
+			$taskInfo['externUrl'] = $indexerTaskConfiguration->getExternUrl();
 
 		}
 
@@ -67,14 +67,6 @@ class IndexerTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
 
 		return[
 
-			'deleteOldEntriesPeriodInDays' => [
-				'code' => '<input type="text" class="form-control" name="tx_scheduler[deleteOldEntriesPeriodInDays]" value="' . $taskInfo['deleteOldEntriesPeriodInDays'] . '">',
-				'label' => $localLangPrefix . 'deleteOldEntriesPeriodInDays',
-			],
-			'nrOfIndexRecordsOnOneRun' => [
-				'code' => '<input type="text" class="form-control" name="tx_scheduler[nrOfIndexRecordsOnOneRun]" value="' . $taskInfo['nrOfIndexRecordsOnOneRun'] . '">',
-				'label' => $localLangPrefix . 'nrOfIndexRecordsOnOneRun',
-			],
 			'indexerConfigUid' => [
 				'code' => $this->getSelectBox('indexerConfigUid', $this->getIndexerConfigArray(), $taskInfo['indexerConfigUid']),
 				'label' => $localLangPrefix . 'indexerConfigUid',
@@ -83,13 +75,21 @@ class IndexerTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
 				'code' => $this->getSelectBox('sysLanguageUid', $this->getSysLanguageArray(), $taskInfo['sysLanguageUid']),
 				'label' => $localLangPrefix . 'sysLanguageUid',
 			],
-			'externUrl' => [
-				'code' => '<input type="text" class="form-control" name="tx_scheduler[externUrl]" value="' . $taskInfo['externUrl'] . '">',
-				'label' => $localLangPrefix . 'externUrl',
-			],
 			'storagePid' => [
 				'code' => '<input type="text" class="form-control" name="tx_scheduler[storagePid]" value="' . $taskInfo['storagePid'] . '">',
 				'label' => $localLangPrefix . 'storagePid',
+			],
+			'deleteOldEntriesPeriodInDays' => [
+				'code' => '<input type="text" class="form-control" name="tx_scheduler[deleteOldEntriesPeriodInDays]" value="' . $taskInfo['deleteOldEntriesPeriodInDays'] . '">',
+				'label' => $localLangPrefix . 'deleteOldEntriesPeriodInDays',
+			],
+			'nrOfIndexRecordsOnOneRun' => [
+				'code' => '<input type="text" class="form-control" name="tx_scheduler[nrOfIndexRecordsOnOneRun]" value="' . $taskInfo['nrOfIndexRecordsOnOneRun'] . '">',
+				'label' => $localLangPrefix . 'nrOfIndexRecordsOnOneRun',
+			],
+			'externUrl' => [
+				'code' => '<input type="text" class="form-control" name="tx_scheduler[externUrl]" value="' . $taskInfo['externUrl'] . '">',
+				'label' => $localLangPrefix . 'externUrl',
 			],
 
 		];
@@ -108,20 +108,25 @@ class IndexerTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
 
 		$errorMessages = [];
 
+		if(empty($submittedData['indexerConfigUid'])){
+			$errorMessages[] = 'task.indexerTask.fieldProvider.validation.error.indexerConfigUid';
+		}
+		if(!empty($submittedData['storagePid']) && !is_numeric($submittedData['storagePid'])){
+			$errorMessages[] = 'task.indexerTask.fieldProvider.validation.error.storagePid';
+		}
 		if(!empty($submittedData['deleteOldEntriesPeriodInDays']) && !is_numeric($submittedData['deleteOldEntriesPeriodInDays'])){
 			$errorMessages[] = 'task.indexerTask.fieldProvider.validation.error.deleteOldEntriesPeriodInDays';
 		}
 		if(!empty($submittedData['nrOfIndexRecordsOnOneRun']) && !is_numeric($submittedData['nrOfIndexRecordsOnOneRun'])){
 			$errorMessages[] = 'task.indexerTask.fieldProvider.validation.error.nrOfIndexRecordsOnOneRun';
 		}
-		if(empty($submittedData['indexerConfigUid'])){
-			$errorMessages[] = 'task.indexerTask.fieldProvider.validation.error.indexerConfigUid';
+		// For some indexer types the number of records on one run has to be set
+		if($this->nrOfIndexRecordsOnOneRunHasToBeSet($submittedData['indexerConfigUid']) && empty($submittedData['nrOfIndexRecordsOnOneRun'])){
+			$errorMessages[] = 'task.indexerTask.fieldProvider.validation.error.nrOfIndexRecordsOnOneRunHasToBeSetForIndexerConfig';
 		}
+
 		if (!empty($submittedData['externUrl']) && filter_var($submittedData['externUrl'], FILTER_VALIDATE_URL) === FALSE) {
 			$errorMessages[] = 'task.indexerTask.fieldProvider.validation.error.externUrl';
-		}
-		if(!empty($submittedData['storagePid']) && !is_numeric($submittedData['storagePid'])){
-			$errorMessages[] = 'task.indexerTask.fieldProvider.validation.error.storagePid';
 		}
 
 		if(!empty($errorMessages)){
@@ -148,12 +153,12 @@ class IndexerTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
 
 		$indexerTaskConfiguration = $task->getTaskConfiguration();
 
-		$indexerTaskConfiguration->setDeleteOldEntriesPeriodInDays($submittedData['deleteOldEntriesPeriodInDays']);
-		$indexerTaskConfiguration->setNrOfIndexRecordsOnOneRun($submittedData['nrOfIndexRecordsOnOneRun']);
 		$indexerTaskConfiguration->setIndexerConfigUid($submittedData['indexerConfigUid']);
 		$indexerTaskConfiguration->setSysLanguageUid($submittedData['sysLanguageUid']);
-		$indexerTaskConfiguration->setExternUrl($submittedData['externUrl']);
 		$indexerTaskConfiguration->setStoragePid($submittedData['storagePid']);
+		$indexerTaskConfiguration->setDeleteOldEntriesPeriodInDays($submittedData['deleteOldEntriesPeriodInDays']);
+		$indexerTaskConfiguration->setNrOfIndexRecordsOnOneRun($submittedData['nrOfIndexRecordsOnOneRun']);
+		$indexerTaskConfiguration->setExternUrl($submittedData['externUrl']);
 
 		$task->setTaskConfiguration($indexerTaskConfiguration);
 
@@ -257,6 +262,33 @@ class IndexerTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
 
 		// We do not use array_merge here, because then the original keys get lost
 		return $defaultLanguage + $allLanguages + $sysLanguageArray;
+
+	}
+
+	/**
+	 * Checks, if the number of records on one run has to be set for a given indexer configuration uid
+	 * @param $indexerConfigUid
+	 * @return bool
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	private function nrOfIndexRecordsOnOneRunHasToBeSet($indexerConfigUid): bool
+	{
+
+		$indexerTypes = [
+			'mm_forum',
+			'nem_solution',
+		];
+
+		$indexerType = DbUtility::getIndexerTypeByIndexerConfigUid((int)$indexerConfigUid);
+		if(empty($indexerType)){
+			return false;
+		}
+
+		if(!in_array($indexerType, $indexerTypes)){
+			return false;
+		}
+
+		return true;
 
 	}
 
