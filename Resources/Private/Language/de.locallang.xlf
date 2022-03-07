@@ -40,6 +40,9 @@
 			<trans-unit id="task.indexerTask.fieldProvider.validation.error.nrOfIndexRecordsOnOneRun">
 				<target>Die Anzahl an Datensätzen, die einem einem Lauf indiziert werden sollen, muss integer sein</target>
 			</trans-unit>
+			<trans-unit id="task.indexerTask.fieldProvider.validation.error.nrOfIndexRecordsOnOneRunHasToBeSetForIndexerConfig">
+				<target>Für diese Indexer Konfiguration muss die Anzahl an Datensätzen, die einem einem Lauf indiziert werden sollen, gesetzt sein</target>
+			</trans-unit>
 			<trans-unit id="task.indexerTask.fieldProvider.validation.error.indexerConfigUid">
 				<target>Bitte wählen Sie eine Indexer Konfiguration</target>
 			</trans-unit>
