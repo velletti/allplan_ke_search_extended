@@ -42,6 +42,12 @@ class MaritElearningDocumentsIndexer extends IndexerBase implements IndexerInter
 {
 
 	/**
+	 * Clean up the index before indexing starts (see more annotation details in IndexerInterface)
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public function cleanUpBeforeIndexing(){}
+
+	/**
 	 * @return int
 	 * @throws DoctrineDBALDriverException
 	 * @throws Exception
@@ -51,6 +57,7 @@ class MaritElearningDocumentsIndexer extends IndexerBase implements IndexerInter
 	{
 
 		// Better variable name
+		/** @var KeSearchIndexerRunner|IndexerRunner $indexerRunner */
 		$indexerRunner = $this->pObj;
 		$indexerConfig = $this->indexerConfig;
 
@@ -78,7 +85,7 @@ class MaritElearningDocumentsIndexer extends IndexerBase implements IndexerInter
 		// Write to sys_log
 		DbUtility::saveIndexerResultInSysLog(
 			'Indexer: Elearning documents (EXT:marit_elearning)',
-			'Updated ' . $count . ' entries'
+			$count
 		);
 
 		return $count;

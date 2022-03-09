@@ -4,12 +4,19 @@ namespace Allplan\AllplanKeSearchExtended\Utility;
 /**
  * AllplanKeSearchExtended
  */
+use Allplan\AllplanKeSearchExtended\Indexer\Connect\MmForumIndexerTypes;
 use Allplan\AllplanKeSearchExtended\Indexer\IndexerRunner;
+
+/**
+ * TYPO3
+ */
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Php
  */
 use Exception;
+
 
 class IndexerUtility
 {
@@ -71,6 +78,26 @@ class IndexerUtility
 
 		return $schedulerLanguage;
 
+	}
+
+	/**
+	 * Checks, if a given type is a forum indexer type
+	 * (for forum, we have multiple indexer types)
+	 * @param string $type
+	 * @return bool
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function isForumIndexerType(string $type): bool
+	{
+		$mmForumIndexerTypes = GeneralUtility::makeInstance(MmForumIndexerTypes::class);
+		if(in_array($type, [
+			$mmForumIndexerTypes::FORUM_INDEXER_TYPE_DEFAULT,
+			$mmForumIndexerTypes::FORUM_INDEXER_TYPE_SP,
+			$mmForumIndexerTypes::FORUM_INDEXER_TYPE_LOCKED
+		])){
+			return true;
+		}
+		return false;
 	}
 
 }

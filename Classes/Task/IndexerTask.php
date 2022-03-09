@@ -112,6 +112,7 @@ class IndexerTask extends AbstractTask
 
 	/**
 	 * Write a lock into sys_registry
+	 * Todo: documentation
 	 * @param IndexerRunner $indexerRunner
 	 * @param string $nameSpace
 	 * @param string $registryKey

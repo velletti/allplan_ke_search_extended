@@ -20,7 +20,17 @@ class CleanupHook
 	/**
 	 * Cleanup for counting and deleting old index records
 	 * Called in ke_search/Classes/Indexer/IndexerRunner.php->cleanUpIndex()
-	 * Deletes all index elements that are older than starting timestamp in registry + conditions from us
+	 * -----------------------------------------------------------------------------------------------------------------
+	 * Deletes all index elements that are older than starting timestamp in registry (+ conditions from us)
+	 * Todo: => Into documentation
+	 * Explanation:
+	 * - At first ke_search runs an indexer and inserts / updates index entries in table tx_kesearch_index
+	 *   On start ke_search writes a tstamp in sys_registry with data 'tx_kesearch' => 'startTimeOfIndexer'
+	 * - After the index process is finished, the ke_search->cleanUpIndex() function is called, which calls this hook here
+	 *   ke_search deletes all index entries, where the tstamp is older than the 'startTimeOfIndexer' in sys_registry
+	 * => This is good for indexers, which do a full index everytime, but not e.g. for forum, where we have an indexing
+	 *    process step by step because of the big number of records
+	 * -----------------------------------------------------------------------------------------------------------------
 	 * Normally all records would be deleted by ke_search
 	 * Added conditions here:
 	 * - pid
@@ -36,19 +46,30 @@ class CleanupHook
 	public function cleanup(string &$where, IndexerRunner $indexerRunner): string
 	{
 
-		// Todo Delete older than x days...
-
 		$content = '<p><br>Where-condition before CleanupHook: ' . $where . '</p>';
+
 		$indexerConfig = $indexerRunner->indexerConfig;
 		$schedulerTaskConfiguration = $indexerRunner->getTaskConfiguration();
+		$deleteOldEntriesPeriodInSeconds = FormatUtility::getSecondsByDays($schedulerTaskConfiguration->getDeleteOldEntriesPeriodInDays());
 
-		$conditions = [];
+		$deleteConditions = [];
+
+		// Do not delete ANYTHING here for the following indexer types (but only, if deleteOldEntriesPeriodInDays is not set)
+		// => Set a delete-condition, which will never match
+		if(
+			empty($deleteOldEntriesPeriodInSeconds)
+			&&
+			// Forum
+			IndexerUtility::isForumIndexerType($indexerConfig['type'])
+		){
+			$deleteConditions[] = '1 = 2';
+		}
 
 		// pid
-		$conditions[] = "`pid` = " . (int)IndexerUtility::getStoragePid($indexerRunner, $indexerConfig);
+		$deleteConditions[] = "`pid` = " . (int)IndexerUtility::getStoragePid($indexerRunner, $indexerConfig);
 
 		// type
-		$conditions[] = "`type` = '" . $indexerConfig['type'] . "'";
+		$deleteConditions[] = "`type` = '" . $indexerConfig['type'] . "'";
 
 		// language => consider language only, if explicit set
 		try{
@@ -57,28 +78,22 @@ class CleanupHook
 			$language  = null;
 		}
 		if(!is_null($language) && $language != ''){
-			$conditions[] = "`language` = '" . $language . "'";
+			$deleteConditions[] = "`language` = '" . $language . "'";
 		}
 
 		// period of days to delete records
-		$deleteOldEntriesPeriodInSeconds = FormatUtility::getSecondsByDays($schedulerTaskConfiguration->getDeleteOldEntriesPeriodInDays());
 		if(!empty($deleteOldEntriesPeriodInSeconds)){
-			$conditions[] = "`crdate` < '" . (time() - $deleteOldEntriesPeriodInSeconds) . "'";
+			$deleteConditions[] = "`crdate` < '" . (time() - $deleteOldEntriesPeriodInSeconds) . "'";
 		}
 
 		// server name
-		$conditions[] = "`tx_allplan_ke_search_extended_server_name` = '" . EnvironmentUtility::getServerName() . "'";
+		$deleteConditions[] = "`tx_allplan_ke_search_extended_server_name` = '" . EnvironmentUtility::getServerName() . "'";
 
-		$where.= " AND " . implode(' AND ', $conditions);
+		$where.= " AND " . implode(' AND ', $deleteConditions);
 		$content.= '<p>Where-condition after CleanupHook: ' . $where . '</p>';
 
-		// Used in TYPO3 backend
+		// Used in TYPO3 backend / email (CLI mode)
 		return $content;
-
-		#switch($indexerType){
-		#	case 'allplan_online_help':
-		#		break;
-		#}#
 
 
 		# allplan_online_help

@@ -5,6 +5,7 @@ namespace Allplan\AllplanKeSearchExtended\Indexer\Miscellaneous;
  * AllplanKeSearchExtended
  */
 use Allplan\AllplanKeSearchExtended\Indexer\IndexerBase;
+use Allplan\AllplanKeSearchExtended\Indexer\IndexerInterface;
 use Allplan\AllplanKeSearchExtended\Indexer\IndexerRunner;
 use Allplan\AllplanKeSearchExtended\Utility\DbUtility;
 use Allplan\AllplanKeSearchExtended\Utility\EnvironmentUtility;
@@ -25,13 +26,19 @@ use Exception;
 /**
  * Indexer for the Allplan Online Help
  */
-class AllplanOnlineHelpIndexer extends IndexerBase
+class AllplanOnlineHelpIndexer extends IndexerBase implements IndexerInterface
 {
 
 	/**
 	 * Public functions
 	 * =================================================================================================================
 	 */
+
+	/**
+	 * Clean up the index before indexing starts (see more annotation details in IndexerInterface)
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public function cleanUpBeforeIndexing(){}
 
 	/**
 	 * Test on LOCAL:
@@ -92,10 +99,68 @@ class AllplanOnlineHelpIndexer extends IndexerBase
 		// Write to sys_log
 		DbUtility::saveIndexerResultInSysLog(
 			'Indexer: Allplan Online Help',
-			'Updated ' . $count . ' entries from URL ' . $externUrl
+			$count
 		);
 
 		return $count;
+
+	}
+
+
+	/**
+	 * Write data to index (tx_kesearch_index)
+	 * @param array $record
+	 * @param IndexerRunner|KeSearchIndexerRunner $indexerRunner
+	 * @param array $indexerConfig
+	 * @return bool|int
+	 * @throws Exception
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public function storeInKeSearchIndex(array $record, IndexerRunner $indexerRunner, array $indexerConfig)
+	{
+
+		// Scheduler task configuration
+		$taskConfiguration = $indexerRunner->getTaskConfiguration();
+
+		// Set the fields
+		$pid = IndexerUtility::getStoragePid($indexerRunner, $indexerConfig); // storage pid, where the indexed data should be stored
+		$title = $record['title']; // title in the result list
+		$type = 'allplan_online_help'; // content type (to differ in frontend (css class))
+		$targetPid = $taskConfiguration->getExternUrl() . 'index.htm#' . $record['url']; // target pid for the detail link / external url
+		$content = FormatUtility::buildContentForIndex([
+			$record['title'],
+			$record['text'],
+		]); // below the title in the result list
+		$tags = '#onlinehelp#'; // tags
+		$params = '_blank'; // additional parameters for the link in frontend
+		$abstract = trim(substr($record['text'],0,200));
+		$language = IndexerUtility::getLanguage($indexerRunner); // sys_language_uid
+		$startTime = 0; // not used here
+		$endTime = 0; // not used here
+		$feGroup = ''; // not used here
+		$debugOnly = false;
+		$additionalFields = [
+			'orig_uid' => $record['uid'],
+			'tx_allplan_ke_search_extended_server_name' => EnvironmentUtility::getServerName(),
+		];
+
+		// Call the function from ke_search
+		return $indexerRunner->storeInIndex(
+			$pid,
+			$title,
+			$type,
+			$targetPid,
+			$content,
+			$tags,
+			$params,
+			$abstract,
+			$language,
+			$startTime,
+			$endTime,
+			$feGroup,
+			$debugOnly,
+			$additionalFields
+		);
 
 	}
 
@@ -158,63 +223,6 @@ class AllplanOnlineHelpIndexer extends IndexerBase
 		}
 
 		return $record;
-
-	}
-
-	/**
-	 * Write data to index (tx_kesearch_index)
-	 * @param array $record
-	 * @param IndexerRunner|KeSearchIndexerRunner $indexerRunner
-	 * @param array $indexerConfig
-	 * @return bool|int
-	 * @throws Exception
-	 * @author Peter Benke <pbenke@allplan.com>
-	 */
-	private function storeInKeSearchIndex(array $record, IndexerRunner $indexerRunner, array $indexerConfig)
-	{
-
-		// Scheduler task configuration
-		$taskConfiguration = $indexerRunner->getTaskConfiguration();
-
-		// Set the fields
-		$pid = IndexerUtility::getStoragePid($indexerRunner, $indexerConfig); // storage pid, where the indexed data should be stored
-		$title = $record['title']; // title in the result list
-		$type = 'allplan_online_help'; // content type (to differ in frontend (css class))
-		$targetPid = $taskConfiguration->getExternUrl() . 'index.htm#' . $record['url']; // target pid for the detail link / external url
-		$content = FormatUtility::buildContentForIndex([
-			$record['title'],
-			$record['text'],
-		]); // below the title in the result list
-		$tags = '#onlinehelp#'; // tags
-		$params = '_blank'; // additional parameters for the link in frontend
-		$abstract = trim(substr($record['text'],0,200));
-		$language = IndexerUtility::getLanguage($indexerRunner); // sys_language_uid
-		$startTime = 0; // not used here
-		$endTime = 0; // not used here
-		$feGroup = ''; // not used here
-		$debugOnly = false;
-		$additionalFields = [
-			'orig_uid' => $record['uid'],
-			'tx_allplan_ke_search_extended_server_name' => EnvironmentUtility::getServerName(),
-		];
-
-		// Call the function from ke_search
-		return $indexerRunner->storeInIndex(
-			$pid,
-			$title,
-			$type,
-			$targetPid,
-			$content,
-			$tags,
-			$params,
-			$abstract,
-			$language,
-			$startTime,
-			$endTime,
-			$feGroup,
-			$debugOnly,
-			$additionalFields
-		);
 
 	}
 

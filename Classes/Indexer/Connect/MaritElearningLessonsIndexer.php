@@ -35,10 +35,16 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Exception;
 
 /**
- * Indexer for EXT:marit_elearning lessons (videos) (EXT:marit_elearning)
+ * Indexer for marit elearning lessons (videos) (EXT:marit_elearning)
  */
 class MaritElearningLessonsIndexer extends IndexerBase implements IndexerInterface
 {
+
+	/**
+	 * Clean up the index before indexing starts (see more annotation details in IndexerInterface)
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public function cleanUpBeforeIndexing(){}
 
 	/**
 	 * @return int
@@ -51,6 +57,7 @@ class MaritElearningLessonsIndexer extends IndexerBase implements IndexerInterfa
 	{
 
 		// Better variable name
+		/** @var KeSearchIndexerRunner|IndexerRunner $indexerRunner */
 		$indexerRunner = $this->pObj;
 		$indexerConfig = $this->indexerConfig;
 
@@ -78,7 +85,7 @@ class MaritElearningLessonsIndexer extends IndexerBase implements IndexerInterfa
 		// Write to sys_log
 		DbUtility::saveIndexerResultInSysLog(
 			'Indexer: Elearning lessons (videos) (EXT:marit_elearning)',
-			'Updated ' . $count . ' entries'
+			$count
 		);
 
 		return $count;

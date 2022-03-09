@@ -33,7 +33,7 @@ class RegisterIndexerConfigurationHook
 		 * Connect
 		 * =============================================================================================================
 		 */
-		// Todo: Elearning videos (EXT:marit_elearning) => cleanup is still missing
+		// Elearning lessons (videos) (EXT:marit_elearning)
 		// -------------------------------------------------------------------------------------------------------------
 		$params['items'][] = [
 			'Elearning lessons (videos) (EXT:marit_elearning)',
@@ -41,12 +41,20 @@ class RegisterIndexerConfigurationHook
 			$iconPath . 'Connect/marit-elearning-lessons.png'
 		];
 
-		// Todo: Elearning documents (EXT:marit_elearning)
+		// Elearning documents (EXT:marit_elearning)
 		// -------------------------------------------------------------------------------------------------------------
 		$params['items'][] = [
-			'Elearning Documentations (EXT:marit_elearning)',
+			'Elearning documents (EXT:marit_elearning)',
 			'marit_elearning_documents',
 			$iconPath . 'Connect/marit-elearning-documents.png'
+		];
+
+		// Todo: Forum (EXT:mm_forum)
+		// -------------------------------------------------------------------------------------------------------------
+		$params['items'][] = [
+			'Forum (EXT:mm_forum)',
+			'mm_forum',
+			$iconPath . 'Connect/mm-forum.png'
 		];
 
 		// Todo: New indexer... Downloads (EXT:nemjv_getcontent)
@@ -64,15 +72,6 @@ class RegisterIndexerConfigurationHook
 		];
 		*/
 
-		// Todo: Forum (EXT:mm_forum)
-		// -------------------------------------------------------------------------------------------------------------
-		/*
-		$params['items'][] = [
-			'Forum (EXT:mm_forum)',
-			'mm_forum',
-			$iconPath . 'Connect/mm-forum.png'
-		];
-		*/
 
 
 		/**

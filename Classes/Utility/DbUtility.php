@@ -2,6 +2,11 @@
 namespace Allplan\AllplanKeSearchExtended\Utility;
 
 /**
+ * AllplanKeSearchExtended
+ */
+use Allplan\AllplanKeSearchExtended\Indexer\Connect\MmForumIndexerTypes;
+
+/**
  * Doctrine
  */
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
@@ -30,17 +35,17 @@ class DbUtility
 	 * Writes into table sys_log especially for indexer entries
 	 * @see https://docs.typo3.org/m/typo3/reference-coreapi/10.4/en-us/ApiOverview/SystemLog/Index.html
 	 * @param string $title
-	 * @param string $description
+	 * @param int|string $numberOfRecords
 	 * @throws Exception
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-	public static function saveIndexerResultInSysLog(string $title, string $description)
+	public static function saveIndexerResultInSysLog(string $title, $numberOfRecords)
 	{
 		if(empty($title)){
 			throw new Exception('Write indexer result to sys_log: No title given');
 		}
-		if(empty($description)){
-			throw new Exception('Write indexer result to sys_log: No description given');
+		if($numberOfRecords == ''){
+			throw new Exception('Write indexer result to sys_log: No number of records given');
 		}
 		$record = [
 			'action' => 1,
@@ -50,7 +55,7 @@ class DbUtility
 			'details' => $title,
 			'tstamp' => time(),
 			'type' => 1,
-			'message' => $description,
+			'message' => 'Inserted / updated ' . $numberOfRecords . ' entries',
 		];
 		$connectionPool = GeneralUtility::makeInstance( ConnectionPool::class);
 		$queryBuilder = $connectionPool->getConnectionForTable('sys_log')->createQueryBuilder();
@@ -165,37 +170,51 @@ class DbUtility
 
 
 	/**
-	 * Get the newest tstamp from table tx_kesearch_index, where we have a forum entry
-	 * ≙ the date of latest indexed forum entry
+	 * Get the timestamp of the oldest forum index entry in table 'tx_kesearch_index'
+	 * This is the original timestamp of 'tx_mmforum_domain_model_forum_post' record
+	 * for this purpose we use the column tx_kesearch_index.sortdate
 	 * @return int|null
 	 * @throws DoctrineDBALDriverException
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-	public static function getNewestForumIndexTsStamp(): ?int
+	public static function getTsStampOfOldestCreatedForumIndexEntry(): ?int
 	{
-		$possibleIndexerTypes = IndexerUtility::getPossibleIndexerTypesForForum();
 
 		$connectionPool = GeneralUtility::makeInstance( ConnectionPool::class);
-		$queryBuilder = $connectionPool->getQueryBuilderForTable('tx_kesearch_index');
 
-		$newestRecord = $queryBuilder
+		$queryBuilder = $connectionPool->getQueryBuilderForTable('tx_kesearch_index');
+		$oldestRecord = $queryBuilder
 			->select('sortdate')
-			// Todo change to correct table
-			###################->from('tx_kesearch_index')
-			->from('tx_kesearch_index_ORIG')
-			->where($queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter('allplanforu%')))
+			->from('tx_kesearch_index')
+			->where(
+				$queryBuilder->expr()->in(
+					'type',
+					self::getForumIndexerTypesForSql()
+				)
+			)
 			->setMaxResults(1)
-			->orderBy('sortdate','DESC')
+			->orderBy('sortdate','ASC')
 			->execute()
 			->fetchAssociative()
 		;
 
-		if(empty($newestRecord)){
+		if(empty($oldestRecord)){
 			return null;
 		}
 
-		return (int)$newestRecord['sortdate'];
+		return (int)$oldestRecord['sortdate'];
 
+	}
+
+	/**
+	 * Get the various forum indexer types as a comma separated list, wrapped in ' for sql queries
+	 * @return string
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function getForumIndexerTypesForSql(): string
+	{
+		$mmForumIndexerTypes = GeneralUtility::makeInstance(MmForumIndexerTypes::class);
+		return "'" . $mmForumIndexerTypes::FORUM_INDEXER_TYPE_DEFAULT . "','". $mmForumIndexerTypes::FORUM_INDEXER_TYPE_SP . "','" . $mmForumIndexerTypes::FORUM_INDEXER_TYPE_LOCKED . "'";
 	}
 
 
@@ -227,6 +246,124 @@ class DbUtility
 		}
 
 		return $indexerConfig['type'];
+
+	}
+
+	/**
+	 * Get the type and the fe_group for a forum index entry by a given forum uid
+	 * (tx_kesearch_index.type, tx_kesearch_index.fe_group)
+	 * Returns an array like:
+	 * [
+	 *     'type' => ...,
+	 *     'fe_group' => ...,
+	 * ]
+	 * @param int|string $forumUid
+	 * @return array
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function getForumIndexerTypeAndFeGroupByForumUid($forumUid): array
+	{
+
+		$mmForumIndexerTypes = GeneralUtility::makeInstance(MmForumIndexerTypes::class);
+		$connectionPool = GeneralUtility::makeInstance( ConnectionPool::class);
+		$queryBuilder = $connectionPool->getQueryBuilderForTable('tx_mmforum_domain_model_forum_access');
+
+		// Get the various access levels for the given forum
+		$queryBuilder
+			->select('login_level', 'affected_group')
+			->from('tx_mmforum_domain_model_forum_access')
+			->where($queryBuilder->expr()->eq('operation', $queryBuilder->createNamedParameter('read')))
+			->andWhere($queryBuilder->expr()->eq('forum', $queryBuilder->createNamedParameter(intval($forumUid),PDO::PARAM_INT)))
+			->orderBy('affected_group','DESC')
+		;
+
+		try{
+			$result = $queryBuilder->execute()->fetchAllAssociative();
+		}catch(DoctrineDBALDriverException $e){
+			$result = null;
+		}
+
+		/**
+		 * Login levels:
+		 * @see /typo3conf/ext/mm_forum/Classes/Domain/Model/Forum/Access.php
+		 * We do not use this class here to avoid possible problems on www, where we do not have the extension mm_forum
+		 * 0: Everyone
+		 * 1: Any user, which is logged in
+		 * 2: A specific user group
+		 *
+		 * We want to show all entries in index except these, which are visible only for Allplan employees or similar
+		 * => so fe_group will only be filled, if type is FORUM_INDEXER_TYPE_LOCKED and fe_groups are set (except 1,3)
+		 */
+
+		// default
+		$type = $mmForumIndexerTypes::FORUM_INDEXER_TYPE_LOCKED;
+		$feGroups = [];
+		$feGroup = '';
+
+		foreach($result as $access){
+
+			// Any user and any logged-in user
+			if(in_array($access['login_level'], [0,1])){
+
+				$type = $mmForumIndexerTypes::FORUM_INDEXER_TYPE_DEFAULT;
+
+			}else{
+
+				// fe_user group 'ForumUser'
+				if($access['affected_group'] == 1){
+					$type = $mmForumIndexerTypes::FORUM_INDEXER_TYPE_DEFAULT;
+				}
+
+				// fe_user group 'SP user'
+				if($access['affected_group'] == 3){
+					$type = $mmForumIndexerTypes::FORUM_INDEXER_TYPE_SP;
+				}
+
+				$feGroups[] = $access['affected_group'];
+
+			}
+		}
+
+		// Build a comma separated list of fe_user groups, if we have any
+		if($type == $mmForumIndexerTypes::FORUM_INDEXER_TYPE_LOCKED && count($feGroups) > 0){
+			$feGroup = implode(',' , $feGroups);
+		}
+
+		return [
+			'type' => $type,
+			'fe_group' => $feGroup,
+		];
+
+	}
+
+	/**
+	 * Get the tags added to a topic as a space separated string
+	 * @param int|string $topicUid
+	 * @return string
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function getForumTopicTagsByTopicUid($topicUid): string
+	{
+		$connectionPool = GeneralUtility::makeInstance( ConnectionPool::class);
+		$queryBuilder = $connectionPool->getQueryBuilderForTable('tx_mmforum_domain_model_forum_tag');
+		$result = $queryBuilder
+			->select('t.name')
+			->from('tx_mmforum_domain_model_forum_tag_topic','mm')
+			->join(
+				'mm',
+				'tx_mmforum_domain_model_forum_tag',
+				't',
+				$queryBuilder->expr()->eq('t.uid', $queryBuilder->quoteIdentifier('mm.uid_foreign')))
+			->where($queryBuilder->expr()->eq('mm.uid_local', (int)$topicUid))
+			->execute()
+		;
+
+		$topicTags = '';
+		foreach($result as $tagRecord){
+			$topicTags .= ' ' . $tagRecord['name'];
+		}
+
+		return $topicTags;
 
 	}
 

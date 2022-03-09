@@ -9,6 +9,7 @@ use Allplan\AllplanKeSearchExtended\Indexer\Www\JvEventsIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\Miscellaneous\AllplanOnlineHelpIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\Connect\MaritElearningDocumentsIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\Connect\MaritElearningLessonsIndexer;
+use Allplan\AllplanKeSearchExtended\Indexer\Connect\MmForumIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\IndexerRunner;
 
 use Allplan\AllplanKeSearchExtended\Indexer\ContentServeIndexer;
@@ -84,9 +85,25 @@ class CustomIndexerHook
 				break;
 
 			case 'marit_elearning_documents':
-				$maritElearningLessonsIndexer = GeneralUtility::makeInstance(MaritElearningDocumentsIndexer::class, $indexerRunner);
-				$resultCount = $maritElearningLessonsIndexer->startIndexing();
-				$content = '<p><strong>Indexer *' . $indexerConfig['title'] . '*</strong>:<br>' . $resultCount . ' Elearning documents (EXT:marit_elearning) where indexed.</p>';
+				$maritElearningDocumentsIndexer = GeneralUtility::makeInstance(MaritElearningDocumentsIndexer::class, $indexerRunner);
+				$resultCount = $maritElearningDocumentsIndexer->startIndexing();
+				$content = $this->formatContent(
+					$indexerConfig['title'],
+					'Elearning documents (EXT:marit_elearning)',
+					$resultCount
+				);
+				break;
+
+			// Todo
+			case 'mm_forum':
+				$mmForumIndexer = GeneralUtility::makeInstance(MmForumIndexer::class, $indexerRunner);
+				$mmForumIndexer->cleanUpBeforeIndexing();
+				$resultCount = $mmForumIndexer->startIndexing();
+				$content = $this->formatContent(
+					$indexerConfig['title'],
+					'Forum (EXT:mm_forum)',
+					$resultCount
+				);
 				break;
 
 			/**
@@ -96,23 +113,21 @@ class CustomIndexerHook
 			case 'allplan_online_help':
 				$allplanOnlineHelpIndexer = GeneralUtility::makeInstance(AllplanOnlineHelpIndexer::class, $indexerRunner);
 				$resultCount = $allplanOnlineHelpIndexer->startIndexing();
-				$content = '<p><strong>Indexer *"' . $indexerConfig['title'] . '*</strong>:<br>' . $resultCount . ' Allplan Online Help entries where indexed.</p>';
+				$content = $this->formatContent(
+					$indexerConfig['title'],
+					'Allplan Online Help',
+					$resultCount
+				);
 				break;
 
 
-			/*
-			// Todo: spelling
-			case 'allplanforum':
-				$forumIndexer = GeneralUtility::makeInstance(ForumIndexer::class);
-				$resCount = $forumIndexer->main($indexerConfig, $indexerObject);
-				$content = '<p><strong>Indexer *' . $indexerConfig['title'] . '*</strong>:<br>' . $resCount . ' forum entries where indexed.</p>';
-				break;
-			*/
+
 
 /*
 			// Todo: spelling
 			// Todo: Check first, if we are on Connect
-			case 'supportfaq':
+			case 'OLD-supportfaq':
+			case 'nem_solution':
 				$faqIndexer = GeneralUtility::makeInstance(AllplanFaqIndexer::class);
 				$resCount = $faqIndexer->main($indexerConfig, $indexerObject);
 				$content = '<p><strong>Indexer *' . $indexerConfig['title'] . '*</strong>:<br>' . $resCount . ' FAQ entries where indexed.</p>';
@@ -123,14 +138,6 @@ class CustomIndexerHook
 				$shopIndexer = GeneralUtility::makeInstance(AllplanShopIndexer::class);
 				$resCount = $shopIndexer->main($indexerConfig, $indexerObject);
 				$content = '<p><strong>Indexer *' . $indexerConfig['title'] . '*</strong>:<br>' . $resCount . ' Shop entries where indexed.</p>';
-				break;
-
-
-			// Todo
-			case 'documentation':
-				$elearningIndexer = GeneralUtility::makeInstance(AllplanDocumentationsIndexer::class);
-				$resCount = $elearningIndexer->main($indexerConfig, $indexerObject);
-				$content = '<p><strong>Indexer *' . $indexerConfig['title'] . '*</strong>:<br>' . $resCount . ' Elearning documentation entries where indexed.</p>';
 				break;
 
 			// Todo: spelling

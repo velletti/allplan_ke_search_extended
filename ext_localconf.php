@@ -11,6 +11,10 @@ defined('TYPO3_MODE') or die();
 
 // Todo: Configure ke_search, that we get email notices
 
+// Todo: Mark unused hooks
+
+// Todo: Delete deleted data also in index (e.g. cleanupBefore function)
+
 $boot = function(){
 
 	/**
