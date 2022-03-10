@@ -104,10 +104,11 @@ class IndexerTask extends AbstractTask
 		// Start the indexer
 		$indexerRunner->startIndexing(true, $extensionConfigKeSearch,'CLI');
 
-		// Remove locking registry entry
+		// Remove the locking entry from sys_registry again
 		$indexerRunner->registry->remove($nameSpace, $registryKey);
 
 		return true;
+
 	}
 
 	/**

@@ -34,25 +34,28 @@ class FormatUtility
 	 * Cleans a given string for an entry in table tx_kesearch_index
 	 * @param string $string
 	 * @return string
+	 * @see https://www.php.net/manual/en/regexp.reference.escape.php
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
 	public static function cleanStringForIndex(string $string): string
 	{
 
-		$pattern[] = '#@#';
-		$replace[] = ' ';
-
 		$pattern[] = "#\\\\t#"; // \t
 		$replace[] = ' ';
 
-		$pattern[] = '#\s+#'; // Multiple spaces, tabs and the rest of linebreaks => to spaces
+		// $pattern[] = '#\s+#'; // Multiple spaces, tabs and the rest of linebreaks => to spaces
+		$pattern[] = '#\h+#'; // Multiple spaces, tabs => to spaces
 		$replace[] = ' ';
+
+		// Forum stuff like [...]Text[/...]
+		$pattern[] = "/\[(.*)\]/siU";
+		$replace[] = '';
 
 		$string = preg_replace($pattern, $replace, $string);
 
 		$string = strip_tags($string);
-		$string = nl2br($string);
 		$string = trim($string, "\""); // trim " endings
+
 		return trim($string);
 
 	}
@@ -68,7 +71,9 @@ class FormatUtility
 
 		$cleanContentParts = [];
 		foreach($contentParts as $contentPart){
-			$cleanContentParts[] = self::cleanStringForIndex($contentPart);
+			if(!empty($contentPart)){
+				$cleanContentParts[] = self::cleanStringForIndex($contentPart);
+			}
 		}
 
 		return implode(PHP_EOL, $cleanContentParts);

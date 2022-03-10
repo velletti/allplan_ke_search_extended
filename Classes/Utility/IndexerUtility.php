@@ -4,7 +4,7 @@ namespace Allplan\AllplanKeSearchExtended\Utility;
 /**
  * AllplanKeSearchExtended
  */
-use Allplan\AllplanKeSearchExtended\Indexer\Connect\MmForumIndexerTypes;
+use Allplan\AllplanKeSearchExtended\Indexer\Connect\MmForumIndexerProperties;
 use Allplan\AllplanKeSearchExtended\Indexer\IndexerRunner;
 
 /**
@@ -23,16 +23,39 @@ class IndexerUtility
 
 	/**
 	 * Gets the storage pid, where the index record should be stored
-	 * If the pid was defined in scheduler task, it will be preferred, otherwise the pid from indexer configuration
-	 * will be taken
+	 * If the pid was defined in scheduler task, it will be preferred, otherwise the pid from indexer configuration will be taken
+	 * Special case forum: here we have multiple forum pids
 	 * @param IndexerRunner $indexerRunner
 	 * @param array $indexerConfig
-	 * @return string
+	 * @param null|string|int $sysLanguageUid
+	 * @return int|string
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-	public static function getStoragePid(IndexerRunner $indexerRunner, array $indexerConfig): string
+	public static function getStoragePid(IndexerRunner $indexerRunner, array $indexerConfig, $sysLanguageUid = null): string
 	{
 
+		// Special case indexer type: forum  (with different storage folders)
+		$indexerType = DbUtility::getIndexerTypeByIndexerConfigUid($indexerConfig['uid']);
+		if(self::isForumIndexerType($indexerType) && !is_null($sysLanguageUid)){
+
+			$mmForumIndexerProperties = GeneralUtility::makeInstance(MmForumIndexerProperties::class);
+			switch((int)$sysLanguageUid){
+				// EN
+				case 0:
+					return $mmForumIndexerProperties::FORUM_INDEXER_STORAGE_PID_EN;
+
+				// DACH
+				case 1:
+					return $mmForumIndexerProperties::FORUM_INDEXER_STORAGE_PID_DACH;
+
+				// OTHER languages
+				default:
+					return $mmForumIndexerProperties::FORUM_INDEXER_STORAGE_PID_OTHERS;
+			}
+
+		}
+
+		// All other indexer types
 		$pid = $indexerConfig['pid'];
 		$taskConfiguration = $indexerRunner->getTaskConfiguration();
 
@@ -40,7 +63,7 @@ class IndexerUtility
 			$pid = $taskConfiguration->getStoragePid();
 		}
 
-		return (string)$pid;
+		return intval($pid);
 
 	}
 
@@ -89,11 +112,11 @@ class IndexerUtility
 	 */
 	public static function isForumIndexerType(string $type): bool
 	{
-		$mmForumIndexerTypes = GeneralUtility::makeInstance(MmForumIndexerTypes::class);
+		$mmForumIndexerProperties = GeneralUtility::makeInstance(MmForumIndexerProperties::class);
 		if(in_array($type, [
-			$mmForumIndexerTypes::FORUM_INDEXER_TYPE_DEFAULT,
-			$mmForumIndexerTypes::FORUM_INDEXER_TYPE_SP,
-			$mmForumIndexerTypes::FORUM_INDEXER_TYPE_LOCKED
+			$mmForumIndexerProperties::FORUM_INDEXER_TYPE_DEFAULT,
+			$mmForumIndexerProperties::FORUM_INDEXER_TYPE_SP,
+			$mmForumIndexerProperties::FORUM_INDEXER_TYPE_LOCKED
 		])){
 			return true;
 		}

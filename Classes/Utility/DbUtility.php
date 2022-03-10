@@ -4,7 +4,7 @@ namespace Allplan\AllplanKeSearchExtended\Utility;
 /**
  * AllplanKeSearchExtended
  */
-use Allplan\AllplanKeSearchExtended\Indexer\Connect\MmForumIndexerTypes;
+use Allplan\AllplanKeSearchExtended\Indexer\Connect\MmForumIndexerProperties;
 
 /**
  * Doctrine
@@ -15,6 +15,7 @@ use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
  * TYPO3
  */
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\QueryGenerator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -73,34 +74,6 @@ class DbUtility
 		$depth = 10;
 		$queryGenerator = GeneralUtility::makeInstance(QueryGenerator::class);
 		return $queryGenerator->getTreeList($startPageUid, $depth, 0, 1);
-	}
-
-	/**
-	 * Get raw record from database
-	 * @param string $table
-	 * @param string $where
-	 * @param string $fields
-	 * @return array|false
-	 * @throws DoctrineDBALDriverException
-	 * @author Peter Benke <pbenke@allplan.com>
-	 */
-	public static function getRawRecord(string $table, string $where = '', string $fields = '*')
-	{
-		$connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-		$queryBuilder = $connectionPool->getQueryBuilderForTable($table);
-		$queryBuilder->getRestrictions()->removeAll();
-
-		// Todo: change fetch() to ...? (Only called from Shop indexer)
-
-		$row = $queryBuilder
-			// ... => see: https://stackoverflow.com/questions/41124015/what-is-the-meaning-of-three-dots-in-php
-			->select(...GeneralUtility::trimExplode(',', $fields, true))
-			->from($table)
-			->where($where)
-			->execute()
-			->fetch();
-
-		return $row ?: false;
 	}
 
 	/**
@@ -168,44 +141,6 @@ class DbUtility
 
 	}
 
-
-	/**
-	 * Get the timestamp of the oldest forum index entry in table 'tx_kesearch_index'
-	 * This is the original timestamp of 'tx_mmforum_domain_model_forum_post' record
-	 * for this purpose we use the column tx_kesearch_index.sortdate
-	 * @return int|null
-	 * @throws DoctrineDBALDriverException
-	 * @author Peter Benke <pbenke@allplan.com>
-	 */
-	public static function getTsStampOfOldestCreatedForumIndexEntry(): ?int
-	{
-
-		$connectionPool = GeneralUtility::makeInstance( ConnectionPool::class);
-
-		$queryBuilder = $connectionPool->getQueryBuilderForTable('tx_kesearch_index');
-		$oldestRecord = $queryBuilder
-			->select('sortdate')
-			->from('tx_kesearch_index')
-			->where(
-				$queryBuilder->expr()->in(
-					'type',
-					self::getForumIndexerTypesForSql()
-				)
-			)
-			->setMaxResults(1)
-			->orderBy('sortdate','ASC')
-			->execute()
-			->fetchAssociative()
-		;
-
-		if(empty($oldestRecord)){
-			return null;
-		}
-
-		return (int)$oldestRecord['sortdate'];
-
-	}
-
 	/**
 	 * Get the various forum indexer types as a comma separated list, wrapped in ' for sql queries
 	 * @return string
@@ -213,10 +148,20 @@ class DbUtility
 	 */
 	public static function getForumIndexerTypesForSql(): string
 	{
-		$mmForumIndexerTypes = GeneralUtility::makeInstance(MmForumIndexerTypes::class);
-		return "'" . $mmForumIndexerTypes::FORUM_INDEXER_TYPE_DEFAULT . "','". $mmForumIndexerTypes::FORUM_INDEXER_TYPE_SP . "','" . $mmForumIndexerTypes::FORUM_INDEXER_TYPE_LOCKED . "'";
+		$mmForumIndexerProperties = GeneralUtility::makeInstance(MmForumIndexerProperties::class);
+		return "'" . $mmForumIndexerProperties::FORUM_INDEXER_TYPE_DEFAULT . "','". $mmForumIndexerProperties::FORUM_INDEXER_TYPE_SP . "','" . $mmForumIndexerProperties::FORUM_INDEXER_TYPE_LOCKED . "'";
 	}
 
+	/**
+	 * Get the various forum indexer types as a comma separated list, wrapped in ' for sql queries
+	 * @return string
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function getForumIndexerStoragePidsForSql(): string
+	{
+		$mmForumIndexerProperties = GeneralUtility::makeInstance(MmForumIndexerProperties::class);
+		return "'" . $mmForumIndexerProperties::FORUM_INDEXER_STORAGE_PID_EN . "','". $mmForumIndexerProperties::FORUM_INDEXER_STORAGE_PID_DACH . "','" . $mmForumIndexerProperties::FORUM_INDEXER_STORAGE_PID_OTHERS . "'";
+	}
 
 	/**
 	 * Get the indexer type by a given indexer config uid (table tx_kesearch_indexerconfig)
@@ -264,7 +209,7 @@ class DbUtility
 	public static function getForumIndexerTypeAndFeGroupByForumUid($forumUid): array
 	{
 
-		$mmForumIndexerTypes = GeneralUtility::makeInstance(MmForumIndexerTypes::class);
+		$mmForumIndexerProperties = GeneralUtility::makeInstance(MmForumIndexerProperties::class);
 		$connectionPool = GeneralUtility::makeInstance( ConnectionPool::class);
 		$queryBuilder = $connectionPool->getQueryBuilderForTable('tx_mmforum_domain_model_forum_access');
 
@@ -296,7 +241,7 @@ class DbUtility
 		 */
 
 		// default
-		$type = $mmForumIndexerTypes::FORUM_INDEXER_TYPE_LOCKED;
+		$type = $mmForumIndexerProperties::FORUM_INDEXER_TYPE_LOCKED;
 		$feGroups = [];
 		$feGroup = '';
 
@@ -305,18 +250,18 @@ class DbUtility
 			// Any user and any logged-in user
 			if(in_array($access['login_level'], [0,1])){
 
-				$type = $mmForumIndexerTypes::FORUM_INDEXER_TYPE_DEFAULT;
+				$type = $mmForumIndexerProperties::FORUM_INDEXER_TYPE_DEFAULT;
 
 			}else{
 
 				// fe_user group 'ForumUser'
 				if($access['affected_group'] == 1){
-					$type = $mmForumIndexerTypes::FORUM_INDEXER_TYPE_DEFAULT;
+					$type = $mmForumIndexerProperties::FORUM_INDEXER_TYPE_DEFAULT;
 				}
 
 				// fe_user group 'SP user'
 				if($access['affected_group'] == 3){
-					$type = $mmForumIndexerTypes::FORUM_INDEXER_TYPE_SP;
+					$type = $mmForumIndexerProperties::FORUM_INDEXER_TYPE_SP;
 				}
 
 				$feGroups[] = $access['affected_group'];
@@ -325,7 +270,7 @@ class DbUtility
 		}
 
 		// Build a comma separated list of fe_user groups, if we have any
-		if($type == $mmForumIndexerTypes::FORUM_INDEXER_TYPE_LOCKED && count($feGroups) > 0){
+		if($type == $mmForumIndexerProperties::FORUM_INDEXER_TYPE_LOCKED && count($feGroups) > 0){
 			$feGroup = implode(',' , $feGroups);
 		}
 
@@ -364,6 +309,109 @@ class DbUtility
 		}
 
 		return $topicTags;
+
+	}
+
+	/**
+	 * Get all forum posts by a given topic uid
+	 * @param int|string $topicUid
+	 * @return array|null
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function getForumPostsForTopic($topicUid): ?array
+	{
+		$connectionPool = GeneralUtility::makeInstance( ConnectionPool::class);
+		$queryBuilder = $connectionPool->getQueryBuilderForTable('tx_mmforum_domain_model_forum_post');
+		$queryBuilder
+			->select(
+				'crdate',
+				'tstamp',
+				'text'
+			)
+			->from('tx_mmforum_domain_model_forum_post')
+			->where($queryBuilder->expr()->eq('topic', $queryBuilder->createNamedParameter((int)$topicUid,PDO::PARAM_INT)))
+			->orderBy('tstamp','DESC')
+		;
+
+		try{
+			$posts = $queryBuilder->execute()->fetchAllAssociative();
+		}catch(DoctrineDBALDriverException $e){
+			return null;
+		}
+
+		if(empty($posts)){
+			return null;
+		}
+
+		return $posts;
+	}
+
+	/**
+	 * Adds the contents from all posts and the tstamp of the latest post to the topic as follows:
+	 * - 'post_contents'
+	 * - 'post_last_post_tstamp'
+	 * @param array|null $topic
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function addForumPostDataToTopic(?array &$topic)
+	{
+
+		if(empty($topic)){
+			return;
+		}
+
+		$posts = self::getForumPostsForTopic($topic['topic_uid']);
+		if(empty($posts)){
+			return;
+		}
+
+		$contents = [];
+		foreach($posts as $post){
+			$contents[] = preg_replace('#\s+#', ' ', $post['text']); // Multiple spaces, tabs and the rest of linebreaks => to spaces
+		}
+
+		$topic['post_contents'] = implode(PHP_EOL, $contents);
+		$topic['post_last_post_tstamp'] = $posts[0]['tstamp'];
+
+	}
+
+	/**
+	 * Get the main query builder to get the topics (joined with forum)
+	 * @return QueryBuilder
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function getMainQueryBuilderForForumTopics(): QueryBuilder
+	{
+
+		$connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+		$queryBuilder = $connectionPool->getQueryBuilderForTable('tx_mmforum_domain_model_forum_post');
+		$expr = $queryBuilder->expr();
+
+		$queryBuilder
+			->select(
+				'forum.uid AS forum_uid',
+				'forum.displayed_pid AS forum_displayed_pid',
+				'forum.title AS forum_title',
+				'forum.sys_language_uid',
+				'forum.hidden AS forum_hidden',
+				'forum.deleted AS forum_deleted',
+				'topic.uid AS topic_uid',
+				'topic.subject AS topic_subject',
+				'topic.hidden AS topic_hidden',
+				'topic.deleted AS topic_deleted',
+			)
+			->from('tx_mmforum_domain_model_forum_topic','topic')
+			->join(
+				'topic',
+				'tx_mmforum_domain_model_forum_forum',
+				'forum',
+				$expr->eq('topic.forum', $queryBuilder->quoteIdentifier('forum.uid')))
+			->where($expr->eq('topic.hidden', 0)) // could not add HiddenRestriction in queryBuilder...
+			->andWhere($expr->eq('forum.hidden', 0))
+			->orderBy('topic.uid','DESC')
+		;
+
+		return $queryBuilder;
 
 	}
 

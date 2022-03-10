@@ -4,6 +4,8 @@ namespace Allplan\AllplanKeSearchExtended\Hooks;
 /**
  * AllplanKeSearchExtended
  */
+
+use Allplan\AllplanKeSearchExtended\Utility\DbUtility;
 use Allplan\AllplanKeSearchExtended\Utility\EnvironmentUtility;
 use Allplan\AllplanKeSearchExtended\Utility\FormatUtility;
 use Allplan\AllplanKeSearchExtended\Utility\IndexerUtility;
@@ -54,39 +56,43 @@ class CleanupHook
 
 		$deleteConditions = [];
 
-		// Do not delete ANYTHING here for the following indexer types (but only, if deleteOldEntriesPeriodInDays is not set)
-		// => Set a delete-condition, which will never match
-		if(
-			empty($deleteOldEntriesPeriodInSeconds)
-			&&
-			// Forum
-			IndexerUtility::isForumIndexerType($indexerConfig['type'])
-		){
-			$deleteConditions[] = '1 = 2';
+		// pid and type
+		// -------------------------------------------------------------------------------------------------------------
+		// Special case: Forum indexer (multiple indexer types and storage pids, same in connect and www)
+		if(IndexerUtility::isForumIndexerType($indexerConfig['type'])){
+
+			$deleteConditions[] = "`pid` IN (" . DbUtility::getForumIndexerStoragePidsForSql() . ")";
+			$deleteConditions[] = "`type` IN (" . DbUtility::getForumIndexerTypesForSql() . ")";
+			// do not consider language
+			$language  = null;
+
+		// all the other indexers
+		}else{
+
+			$deleteConditions[] = "`pid` = " . (int)IndexerUtility::getStoragePid($indexerRunner, $indexerConfig);
+			$deleteConditions[] = "`type` = '" . $indexerConfig['type'] . "'";
+			try{
+				$language = IndexerUtility::getLanguage($indexerRunner);
+			}catch(Exception $e){
+				$language  = null;
+			}
+
 		}
-
-		// pid
-		$deleteConditions[] = "`pid` = " . (int)IndexerUtility::getStoragePid($indexerRunner, $indexerConfig);
-
-		// type
-		$deleteConditions[] = "`type` = '" . $indexerConfig['type'] . "'";
 
 		// language => consider language only, if explicit set
-		try{
-			$language = IndexerUtility::getLanguage($indexerRunner);
-		}catch(Exception $e){
-			$language  = null;
-		}
+		// -------------------------------------------------------------------------------------------------------------
 		if(!is_null($language) && $language != ''){
 			$deleteConditions[] = "`language` = '" . $language . "'";
 		}
 
 		// period of days to delete records
+		// -------------------------------------------------------------------------------------------------------------
 		if(!empty($deleteOldEntriesPeriodInSeconds)){
 			$deleteConditions[] = "`crdate` < '" . (time() - $deleteOldEntriesPeriodInSeconds) . "'";
 		}
 
 		// server name
+		// -------------------------------------------------------------------------------------------------------------
 		$deleteConditions[] = "`tx_allplan_ke_search_extended_server_name` = '" . EnvironmentUtility::getServerName() . "'";
 
 		$where.= " AND " . implode(' AND ', $deleteConditions);
@@ -164,6 +170,33 @@ class CleanupHook
 		$where .= " AND ( servername ='" . EnvironmentUtility::getServerName() . "' OR servername = '' ) ";
 		return $content . "\n After CleanupHook: Now $" . "where = " . $where;
 */
+	}
+
+	private function getDeleteConditionsDefault($indexerRunner, $indexerConfig)
+	{
+		$deleteConditions = [];
+
+		// pid
+		$deleteConditions[] = "`pid` = " . (int)IndexerUtility::getStoragePid($indexerRunner, $indexerConfig);
+
+		// type
+		$deleteConditions[] = "`type` = '" . $indexerConfig['type'] . "'";
+
+		// consider language only, if explicit set
+		try{
+			$language = IndexerUtility::getLanguage($indexerRunner);
+		}catch(Exception $e){
+			$language  = null;
+		}
+		if(!is_null($language) && $language != ''){
+			$deleteConditions[] = "`language` = '" . $language . "'";
+		}
+
+	}
+
+	private function getDeleteConditionsIndexForum()
+	{
+
 	}
 
 }

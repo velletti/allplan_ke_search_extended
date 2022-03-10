@@ -28,8 +28,16 @@ E.g.: Allplan Online Help DE => Is shown on Germany, Austria and Switzerland => 
 
 ### Notes
 
-* On start indexing, ke_search writes an entry to sys_registry with current timestamp, the next step is, that ke_search deletes all entries (**after** update records), which are older than this timestamp in its cleanUpIndex() function, which is hooked by our cleanUp() function.
-* Index records will be updated (instead of deleted and new created) => in function prepareStatements()
+1. On start indexing, ke_search writes an entry to sys_registry with current timestamp
+2. Index records will be updated (instead of deleted and new created) or new ones will be inserted => in function prepareStatements()
+3. ke_search now deletes all entries (**after** update records), which are older than the starting timestamp. This is done in its cleanUpIndex()-function, which is hooked by our cleanUp()-function.
+
+**This means**:
+=> If an indexer get the new records for indexing (e.g. from forum topics), a deleted entry will not exist in the result list no longer
+=> so it will not be updated in index
+=> timestamp will not change
+=> will be deleted by ke_search
+=> everything is fine :-)
 
 From the "official" documentation:
 "Full indexing goes through all the data which should be indexed (records, files, custom indexers) and checks for each record if it has been changed or if it is new. In this case the data will be updated or stored to the index. **After that** a cleanup process is started and all old data will be deleted."
