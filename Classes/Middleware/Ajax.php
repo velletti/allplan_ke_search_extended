@@ -22,6 +22,8 @@ use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Core\Bootstrap;
 
+// Todo: check, if needed, when new faq indexer ready
+
 class Ajax implements MiddlewareInterface
 {
 	/**

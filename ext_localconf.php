@@ -13,8 +13,6 @@ defined('TYPO3_MODE') or die();
 
 // Todo: Mark unused hooks
 
-// Todo: Delete deleted data also in index (e.g. cleanupBefore function)
-
 $boot = function(){
 
 	/**
