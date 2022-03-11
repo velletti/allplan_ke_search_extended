@@ -16,11 +16,13 @@ class ModifyContentFromContentElementHook
 
 	/**
 	 * Modifies the content from a content element
+	 * (used in the standard page indexer from ke_search)
 	 * @param string $bodytext
 	 * @param array $ttContentRow
-	 * @param Page $pObj
+	 * @param Page $page
+	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-	public function modifyContentFromContentElement(string &$bodytext, array &$ttContentRow, Page $pObj)
+	public function modifyContentFromContentElement(string &$bodytext, array &$ttContentRow, Page $page)
 	{
 
 		$additionalContent = FlexFormUtility::getAdditionalContentFromFlexform($ttContentRow);
