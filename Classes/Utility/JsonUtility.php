@@ -13,6 +13,8 @@ class JsonUtility
 	 * @param bool $withHeader        // with http 200 status or not ... FALSE is easier to hande the response ...
 	 * @param mixed $timeOut         // timeout in seconds
 	 * @return string|array
+	 * @author Jörg Velletti <jvelletti@allplan.com>
+	 * @author Peter Benke <pbenke@allplan.com>
 	 */
 	public static function getJsonFile(
 		string $url,

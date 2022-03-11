@@ -51,7 +51,7 @@ class TyposcriptUtility
 	 * @param false $getConstants
 	 * @return array
 	 */
-	// Todo cleanup
+	// Todo cleanup and check (used in hook)
 	public static function loadTypoScriptFromScratch($pageUid = 0, $extKey = '', $conditions = false, $getConstants = false)
 	{
 
@@ -92,12 +92,13 @@ class TyposcriptUtility
 	}
 
 	/**
-	 * Removes the dots from an typoscript array
-	 * @author Peter Benke <pbenke@allplan.com>
+	 * Removes the dots from a typoscript array
 	 * @param $array
 	 * @return array
+	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-	private static function removeDotsFromTypoScriptArray($array) {
+	private static function removeDotsFromTypoScriptArray($array): array
+	{
 
 		$newArray = [];
 

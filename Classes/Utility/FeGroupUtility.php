@@ -11,7 +11,6 @@ class FeGroupUtility
 	 * => "student"-videos should not be shown to Forum users, SP users, etc...
 	 * @param string $feGroupList
 	 * @return string
-	 * @author Jörg Velletti <jvelletti@allplan.com>
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
 	public static function getElearningFeGroupForIndex(string $feGroupList):string
@@ -38,6 +37,5 @@ class FeGroupUtility
 		return $feGroupList;
 
 	}
-
 
 }
