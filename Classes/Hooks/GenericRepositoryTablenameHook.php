@@ -4,9 +4,7 @@ namespace Allplan\AllplanKeSearchExtended\Hooks;
 /**
  * Doctrine
  */
-use Doctrine\DBAL\Driver\Exception as DoctrineDriverException;
 use Doctrine\DBAL\Exception as DoctrineException;
-use Doctrine\DBAL\FetchMode;
 
 /**
  * TYPO3
@@ -22,9 +20,7 @@ class GenericRepositoryTablenameHook
 	 * Needed for news, as on connect this table does not exist
 	 * @param string $type
 	 * @return string
-	 * @throws DoctrineDriverException
 	 * @throws DoctrineException
-	 * @author Jörg Velletti <jvelletti@allplan.com>
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
 	public function getTableName(string $type): string
@@ -43,12 +39,10 @@ class GenericRepositoryTablenameHook
 		}
 
 		// Check if a table exists, that matches the type name
-		/** @var ConnectionPool $connectionPool */
 		$connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
 		$connection = $connectionPool->getConnectionForTable($tableNameToCheck);
-		$statement = $connection->prepare('SHOW TABLES LIKE "' . $tableNameToCheck . '"');
-		$statement->execute();
-		if($statement->fetch(FetchMode::ASSOCIATIVE)){
+		$result = $connection->fetchFirstColumn('SHOW TABLES LIKE "' . $tableNameToCheck . '"');
+		if(!empty($result)){
 			return $tableNameToCheck;
 		}
 		return '';
