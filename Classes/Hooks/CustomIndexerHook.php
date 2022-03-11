@@ -4,21 +4,12 @@ namespace Allplan\AllplanKeSearchExtended\Hooks;
 /**
  * AllplanKeSearchExtended
  */
-# Todo: Sort
-use Allplan\AllplanKeSearchExtended\Indexer\Www\JvEventsIndexer;
-use Allplan\AllplanKeSearchExtended\Indexer\Miscellaneous\AllplanOnlineHelpIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\Connect\MaritElearningDocumentsIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\Connect\MaritElearningLessonsIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\Connect\MmForumIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\IndexerRunner;
-
-use Allplan\AllplanKeSearchExtended\Indexer\ContentServeIndexer;
-
-use Allplan\AllplanKeSearchExtended\Indexer\AllplanFaqIndexer;
-
-use Allplan\AllplanKeSearchExtended\Indexer\AllplanShopIndexer;
-use Allplan\AllplanKeSearchExtended\Indexer\ForumIndexer;
-
+use Allplan\AllplanKeSearchExtended\Indexer\Miscellaneous\AllplanOnlineHelpIndexer;
+use Allplan\AllplanKeSearchExtended\Indexer\Www\JvEventsIndexer;
 
 /**
  * Doctrine
@@ -45,11 +36,14 @@ class CustomIndexerHook
 	 * @return string output in the backend after indexing
 	 * @throws DoctrineDBALDriverException
 	 * @throws Exception
-	 * @author Jörg Velletti <jvelletti@allplan.com>
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
 	public function customIndexer(array &$indexerConfig, IndexerRunner &$indexerRunner): string
 	{
+
+		// Todo: Contentserve, since the new extension is online
+		// Todo: Faq, since migrated to Salesforce
+		// Todo: Shop, since online again
 
 		$content = '';
 
@@ -94,7 +88,6 @@ class CustomIndexerHook
 				);
 				break;
 
-			// Todo
 			case 'mm_forum':
 				$mmForumIndexer = GeneralUtility::makeInstance(MmForumIndexer::class, $indexerRunner);
 				$resultCount = $mmForumIndexer->startIndexing();
@@ -119,40 +112,21 @@ class CustomIndexerHook
 				);
 				break;
 
-
-
-
-/*
-			// Todo: spelling
-			// Todo: Check first, if we are on Connect
-			case 'OLD-supportfaq':
-			case 'nem_solution':
-				$faqIndexer = GeneralUtility::makeInstance(AllplanFaqIndexer::class);
-				$resCount = $faqIndexer->main($indexerConfig, $indexerObject);
-				$content = '<p><strong>Indexer *' . $indexerConfig['title'] . '*</strong>:<br>' . $resCount . ' FAQ entries where indexed.</p>';
-				break;
-
-			// Todo: spelling
-			case 'shop':
-				$shopIndexer = GeneralUtility::makeInstance(AllplanShopIndexer::class);
-				$resCount = $shopIndexer->main($indexerConfig, $indexerObject);
-				$content = '<p><strong>Indexer *' . $indexerConfig['title'] . '*</strong>:<br>' . $resCount . ' Shop entries where indexed.</p>';
-				break;
-
-			// Todo: spelling
-			case 'contentserve':
-				$contentIndexer = GeneralUtility::makeInstance(ContentServeIndexer::class);
-				$resCount = $contentIndexer->main($indexerConfig, $indexerObject);
-				$content = '<p><strong>Indexer *' . $indexerConfig['title'] . '*</strong>:<br>' . $resCount . ' Contentserve entries where indexed.</p>';
-				break;
-*/
 		}
 
 		return $content;
 
 	}
 
-	private function formatContent(string $title, string $description, $count)
+	/**
+	 * Formats the content for the index summary
+	 * @param string $title
+	 * @param string $description
+	 * @param $count
+	 * @return string
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	private function formatContent(string $title, string $description, $count): string
 	{
 		$content = '<p>';
 		$content.= 'Indexer *' . $title . '*<br>';
