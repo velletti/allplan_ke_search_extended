@@ -1,11 +1,6 @@
 <?php
 namespace Allplan\AllplanKeSearchExtended\Hooks;
 
-/**
- * AllplanKeSearchExtended
- */
-use Allplan\AllplanKeSearchExtended\Utility\EnvironmentUtility;
-
 class ModifyAddressIndexEntryHook
 {
 
@@ -20,10 +15,9 @@ class ModifyAddressIndexEntryHook
 	 * @param array $additionalFields
 	 * @param array $indexerConfig
 	 * @param array $customFields
-	 * @author Jörg Velletti <jvelletti@allplan.com>
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-	public function  modifyAddressIndexEntry(
+	public function modifyAddressIndexEntry(
 		string $title,
 		string $abstract,
 		string $fullContent,
@@ -34,7 +28,7 @@ class ModifyAddressIndexEntryHook
 		array $indexerConfig,
 		array $customFields
 	) {
-		$additionalFields['servername'] = EnvironmentUtility::getServerName();
+		// Not in use at the moment
 	}
 
 }
