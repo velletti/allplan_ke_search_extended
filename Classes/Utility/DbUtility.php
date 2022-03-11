@@ -2,11 +2,6 @@
 namespace Allplan\AllplanKeSearchExtended\Utility;
 
 /**
- * AllplanKeSearchExtended
- */
-use Allplan\AllplanKeSearchExtended\Indexer\Connect\MmForumIndexerProperties;
-
-/**
  * Doctrine
  */
 use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
@@ -142,28 +137,6 @@ class DbUtility
 	}
 
 	/**
-	 * Get the various forum indexer types as a comma separated list, wrapped in ' for sql queries
-	 * @return string
-	 * @author Peter Benke <pbenke@allplan.com>
-	 */
-	public static function getForumIndexerTypesForSql(): string
-	{
-		$mmForumIndexerProperties = GeneralUtility::makeInstance(MmForumIndexerProperties::class);
-		return "'" . $mmForumIndexerProperties::FORUM_INDEXER_TYPE_DEFAULT . "','". $mmForumIndexerProperties::FORUM_INDEXER_TYPE_SP . "','" . $mmForumIndexerProperties::FORUM_INDEXER_TYPE_LOCKED . "'";
-	}
-
-	/**
-	 * Get the various forum indexer types as a comma separated list, wrapped in ' for sql queries
-	 * @return string
-	 * @author Peter Benke <pbenke@allplan.com>
-	 */
-	public static function getForumIndexerStoragePidsForSql(): string
-	{
-		$mmForumIndexerProperties = GeneralUtility::makeInstance(MmForumIndexerProperties::class);
-		return "'" . $mmForumIndexerProperties::FORUM_INDEXER_STORAGE_PID_EN . "','". $mmForumIndexerProperties::FORUM_INDEXER_STORAGE_PID_DACH . "','" . $mmForumIndexerProperties::FORUM_INDEXER_STORAGE_PID_OTHERS . "'";
-	}
-
-	/**
 	 * Get the indexer type by a given indexer config uid (table tx_kesearch_indexerconfig)
 	 * @param int|string $uid
 	 * @return mixed|null
@@ -195,6 +168,33 @@ class DbUtility
 	}
 
 	/**
+	 * Utilities for Forum indexer
+	 * =================================================================================================================
+	 */
+
+	/**
+	 * Get the various forum indexer types as a comma separated list, wrapped in ' for sql queries
+	 * @return string
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function getForumIndexerTypesForSql(): string
+	{
+		$mmForumIndexer = IndexerUtility::getForumIndexerInstance();
+		return "'" . $mmForumIndexer::FORUM_INDEXER_TYPE_DEFAULT . "','". $mmForumIndexer::FORUM_INDEXER_TYPE_SP . "','" . $mmForumIndexer::FORUM_INDEXER_TYPE_LOCKED . "'";
+	}
+
+	/**
+	 * Get the various forum indexer types as a comma separated list, wrapped in ' for sql queries
+	 * @return string
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function getForumIndexerStoragePidsForSql(): string
+	{
+		$mmForumIndexer = IndexerUtility::getForumIndexerInstance();
+		return "'" . $mmForumIndexer::FORUM_INDEXER_STORAGE_PID_EN . "','". $mmForumIndexer::FORUM_INDEXER_STORAGE_PID_DACH . "','" . $mmForumIndexer::FORUM_INDEXER_STORAGE_PID_OTHERS . "'";
+	}
+
+	/**
 	 * Get the type and the fe_group for a forum index entry by a given forum uid
 	 * (tx_kesearch_index.type, tx_kesearch_index.fe_group)
 	 * Returns an array like:
@@ -209,7 +209,7 @@ class DbUtility
 	public static function getForumIndexerTypeAndFeGroupByForumUid($forumUid): array
 	{
 
-		$mmForumIndexerProperties = GeneralUtility::makeInstance(MmForumIndexerProperties::class);
+		$mmForumIndexer = IndexerUtility::getForumIndexerInstance();
 		$connectionPool = GeneralUtility::makeInstance( ConnectionPool::class);
 		$queryBuilder = $connectionPool->getQueryBuilderForTable('tx_mmforum_domain_model_forum_access');
 
@@ -241,7 +241,7 @@ class DbUtility
 		 */
 
 		// default
-		$type = $mmForumIndexerProperties::FORUM_INDEXER_TYPE_LOCKED;
+		$type = $mmForumIndexer::FORUM_INDEXER_TYPE_LOCKED;
 		$feGroups = [];
 		$feGroup = '';
 
@@ -250,18 +250,18 @@ class DbUtility
 			// Any user and any logged-in user
 			if(in_array($access['login_level'], [0,1])){
 
-				$type = $mmForumIndexerProperties::FORUM_INDEXER_TYPE_DEFAULT;
+				$type = $mmForumIndexer::FORUM_INDEXER_TYPE_DEFAULT;
 
 			}else{
 
 				// fe_user group 'ForumUser'
 				if($access['affected_group'] == 1){
-					$type = $mmForumIndexerProperties::FORUM_INDEXER_TYPE_DEFAULT;
+					$type = $mmForumIndexer::FORUM_INDEXER_TYPE_DEFAULT;
 				}
 
 				// fe_user group 'SP user'
 				if($access['affected_group'] == 3){
-					$type = $mmForumIndexerProperties::FORUM_INDEXER_TYPE_SP;
+					$type = $mmForumIndexer::FORUM_INDEXER_TYPE_SP;
 				}
 
 				$feGroups[] = $access['affected_group'];
@@ -270,7 +270,7 @@ class DbUtility
 		}
 
 		// Build a comma separated list of fe_user groups, if we have any
-		if($type == $mmForumIndexerProperties::FORUM_INDEXER_TYPE_LOCKED && count($feGroups) > 0){
+		if($type == $mmForumIndexer::FORUM_INDEXER_TYPE_LOCKED && count($feGroups) > 0){
 			$feGroup = implode(',' , $feGroups);
 		}
 

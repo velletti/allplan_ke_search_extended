@@ -48,8 +48,22 @@ class MmForumIndexer extends IndexerBase implements IndexerInterface
 	 * Limit the number of topics to a number for faster development
 	 * @var int|null
 	 */
-	protected ?int $nrOfTopicsOnOneRun = 10;
-	// protected ?int $nrOfTopicsOnOneRun = null;
+	// const NR_OF_TOPICS_TO_INDEX = null;
+	const FORUM_INDEXER_NR_OF_TOPICS_TO_INDEX = 500;
+
+	/**
+	 * Forum indexer types
+	 */
+	const FORUM_INDEXER_TYPE_DEFAULT = 'mm_forum';
+	const FORUM_INDEXER_TYPE_SP = 'mm_forum_sp';
+	const FORUM_INDEXER_TYPE_LOCKED = 'mm_forum_locked';
+
+	/**
+	 * Forum indexer storage pids
+	 */
+	const FORUM_INDEXER_STORAGE_PID_EN = 5004;
+	const FORUM_INDEXER_STORAGE_PID_DACH = 5003;
+	const FORUM_INDEXER_STORAGE_PID_OTHERS = 5005;
 
 
 	/**
@@ -89,8 +103,8 @@ class MmForumIndexer extends IndexerBase implements IndexerInterface
 		;
 
 		// Limited results for faster development (see class variable above)
-		if(!empty($this->nrOfTopicsOnOneRun)){
-			$queryBuilder->setMaxResults($this->nrOfTopicsOnOneRun);
+		if(!is_null(self::FORUM_INDEXER_NR_OF_TOPICS_TO_INDEX)){
+			$queryBuilder->setMaxResults((int)self::FORUM_INDEXER_NR_OF_TOPICS_TO_INDEX);
 		}
 
 		// echo $queryBuilder->getSQL() . PHP_EOL;
