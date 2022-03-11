@@ -14,6 +14,8 @@ use Allplan\AllplanKeSearchExtended\Utility\JsonUtility;
 use DateTime;
 use Exception;
 
+// Todo: delete this file
+
 class ContentServeIndexer
 {
 

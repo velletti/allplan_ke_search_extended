@@ -9,7 +9,9 @@ use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-# Todo Utility??? => better in service, library or something like that
+
+// Todo: delete this file
+
 class AllplanFaqIndexerUtility
 {
     /* @var array */

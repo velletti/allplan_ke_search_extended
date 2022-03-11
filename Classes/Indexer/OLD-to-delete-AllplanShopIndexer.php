@@ -18,6 +18,8 @@ use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
  */
 use simple_html_dom;
 
+// Todo: delete this file
+
 class AllplanShopIndexer
 {
 
