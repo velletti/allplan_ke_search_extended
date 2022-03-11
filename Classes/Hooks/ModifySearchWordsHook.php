@@ -25,7 +25,9 @@ class ModifySearchWordsHook
 	public function modifySearchWords(array &$searchWordInformation, Pluginbase &$pObj)
 	{
 
-		$searchWordInformation['wordsAgainst'] = trim( $searchWordInformation['wordsAgainst']);
+		// Todo: check this
+
+		$searchWordInformation['wordsAgainst'] = trim($searchWordInformation['wordsAgainst']);
 
 		// Set directory in search input
 		if(isset($_GET['tx_kesearch_pi1']['directory'])){
@@ -37,7 +39,7 @@ class ModifySearchWordsHook
 			}
 		}
 
-		if(strlen($searchWordInformation['wordsAgainst']) > 2 ){
+		if(strlen($searchWordInformation['wordsAgainst']) > 2){
 			$searchWordInformation['wordsAgainst'] = str_replace("+", "", $searchWordInformation['wordsAgainst']);
 
 			// @extensionScannerIgnoreLine

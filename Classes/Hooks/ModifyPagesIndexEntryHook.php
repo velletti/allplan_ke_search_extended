@@ -38,6 +38,8 @@ class ModifyPagesIndexEntryHook
 		Page &$pagesThis
 	)
 	{
+
+		// Todo: check this
 		$additionalFields['servername'] = EnvironmentUtility::getServerName();
 	}
 

@@ -14,7 +14,9 @@ class RegisterIndexerConfigurationHook
 	public function registerIndexerConfiguration(array &$params, $pObj)
 	{
 
-		// Todo: check spelling / translate the titles
+		// Todo: Contentserve, since the new extension is online
+		// Todo: Faq, since migrated to Salesforce
+		// Todo: Shop, since online again
 
 		$iconPath = 'EXT:allplan_ke_search_extended/Resources/Public/Icons/IndexerConfiguration/';
 
@@ -22,6 +24,9 @@ class RegisterIndexerConfigurationHook
 		 * Www
 		 * =============================================================================================================
 		 */
+
+		// Events (EXT:jv_events)
+		// -------------------------------------------------------------------------------------------------------------
 		$params['items'][] = [
 			'Events (EXT:jv_events)',
 			'jv_events',
@@ -33,6 +38,7 @@ class RegisterIndexerConfigurationHook
 		 * Connect
 		 * =============================================================================================================
 		 */
+
 		// Elearning lessons (videos) (EXT:marit_elearning)
 		// -------------------------------------------------------------------------------------------------------------
 		$params['items'][] = [
@@ -49,7 +55,6 @@ class RegisterIndexerConfigurationHook
 			$iconPath . 'Connect/marit-elearning-documents.png'
 		];
 
-		// Todo: Forum (EXT:mm_forum)
 		// -------------------------------------------------------------------------------------------------------------
 		$params['items'][] = [
 			'Forum (EXT:mm_forum)',
@@ -57,37 +62,11 @@ class RegisterIndexerConfigurationHook
 			$iconPath . 'Connect/mm-forum.png'
 		];
 
-		// Todo: New indexer... Downloads (EXT:nemjv_getcontent)
-		// -------------------------------------------------------------------------------------------------------------
-		// $params['items'][] = [
-		// 	'Allplan ContentServe downloads',
-		// 	'contentserve',
-		// 	$iconPath . 'indexer-content-downloads.png'
-		// ];
-		/*
-		$params['items'][] = [
-			'Downloads (EXT:nemjv_getcontent)',
-			'nemjv_getcontent',
-			$iconPath . 'Connect/nemjv-getcontent.png'
-		];
-		*/
-
-
 
 		/**
 		 * Miscellaneous
 		 * =============================================================================================================
 		 */
-
-		// Todo: Allplan FAQ
-		// -------------------------------------------------------------------------------------------------------------
-		/*
-		$params['items'][] = [
-			'Allplan FAQ',
-			'allplan_faq',
-			$iconPath . 'Miscellaneous/allplan-faq.png'
-		];
-		*/
 
 		// Allplan Online Help
 		// -------------------------------------------------------------------------------------------------------------
@@ -96,16 +75,6 @@ class RegisterIndexerConfigurationHook
 			'allplan_online_help',
 			$iconPath . 'Miscellaneous/allplan-online-help.png'
 		];
-
-		// Todo: Allplan Shop
-		// -------------------------------------------------------------------------------------------------------------
-		/*
-		$params['items'][] = [
-			'Allplan Shop',
-			'allplan_shop',
-			$iconPath . 'Miscellaneous/allplan-shop.png'
-		];
-		*/
 
 	}
 

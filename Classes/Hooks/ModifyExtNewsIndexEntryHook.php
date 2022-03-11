@@ -41,6 +41,8 @@ class ModifyExtNewsIndexEntryHook
 		array $categoryData,
 		News $news
 	) {
+
+		// Todo check this
 		$additionalFields['servername'] = EnvironmentUtility::getServerName();
 	}
 

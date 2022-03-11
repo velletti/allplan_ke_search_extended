@@ -13,11 +13,12 @@ class PageBrowserHook
 	 * Modify page browser (not in use at the moment)
 	 * @param array $markerArray
 	 * @param Pluginbase $params
-	 * @author Jörg Velletti <jvelletti@allplan.com>
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
 	public function pagebrowseAdditionalMarker(array &$markerArray, Pluginbase &$params)
 	{
+
+		// Todo: check this
 
 		$pageBrowser = '';
 

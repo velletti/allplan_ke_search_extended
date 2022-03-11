@@ -10,7 +10,8 @@ class ModifyContentIndexEntryHook
 {
 
 	/**
-	 * Modifications of the indexed data, e. g. tags
+	 * Modifications of the indexed data, e.g. tags
+	 * (used in the standard tt_content indexer from ke_search)
 	 * @param string $header
 	 * @param array $row
 	 * @param string $tags
@@ -22,6 +23,8 @@ class ModifyContentIndexEntryHook
 	 */
 	public function modifyContentIndexEntry(string $header, array &$row, string $tags, $uid, array &$additionalFields, array &$indexerConfig)
 	{
+
+		// Todo check this
 
 		$serverName = EnvironmentUtility::getServerName();
 
