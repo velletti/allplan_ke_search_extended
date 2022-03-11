@@ -47,8 +47,8 @@ class MmForumIndexer extends IndexerBase implements IndexerInterface
 	 * Limit the number of topics to a number for faster development
 	 * @var int|null
 	 */
-	// const NR_OF_TOPICS_TO_INDEX = 50;
-	const NR_OF_TOPICS_TO_INDEX = null;
+	// const FORUM_NR_OF_TOPICS_TO_INDEX = 50;
+	const FORUM_NR_OF_TOPICS_TO_INDEX = null;
 
 	/**
 	 * Forum indexer types
