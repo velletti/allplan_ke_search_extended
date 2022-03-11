@@ -40,12 +40,6 @@ class JvEventsIndexer extends IndexerBase implements IndexerInterface
 {
 
 	/**
-	 * Clean up the index before indexing starts (see more annotation details in IndexerInterface)
-	 * @author Peter Benke <pbenke@allplan.com>
-	 */
-	public function cleanUpBeforeIndexing(){}
-
-	/**
 	 * @return int
 	 * @throws DoctrineDBALDriverException
 	 * @throws Exception

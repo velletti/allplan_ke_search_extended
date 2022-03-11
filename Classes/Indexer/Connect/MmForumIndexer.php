@@ -43,13 +43,12 @@ class MmForumIndexer extends IndexerBase implements IndexerInterface
 {
 
 	/**
-	 * Todo: Reset to null
 	 * For Development
 	 * Limit the number of topics to a number for faster development
 	 * @var int|null
 	 */
-	// const NR_OF_TOPICS_TO_INDEX = null;
-	const FORUM_INDEXER_NR_OF_TOPICS_TO_INDEX = 500;
+	// const NR_OF_TOPICS_TO_INDEX = 50;
+	const NR_OF_TOPICS_TO_INDEX = null;
 
 	/**
 	 * Forum indexer types
@@ -64,17 +63,6 @@ class MmForumIndexer extends IndexerBase implements IndexerInterface
 	const FORUM_INDEXER_STORAGE_PID_EN = 5004;
 	const FORUM_INDEXER_STORAGE_PID_DACH = 5003;
 	const FORUM_INDEXER_STORAGE_PID_OTHERS = 5005;
-
-
-	/**
-	 * Clean up the index before indexing starts (see more annotation details in IndexerInterface)
-	 * Delete all topics in index, which are deleted or belong to a deleted forum
-	 * (all other topics will be updated, so we do not have to care for changed posts inside a topic here)
-	 * @author Peter Benke <pbenke@allplan.com>
-	 */
-	public function cleanUpBeforeIndexing()
-	{
-	}
 
 	/**
 	 * @return int

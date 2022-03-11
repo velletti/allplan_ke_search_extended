@@ -35,12 +35,6 @@ class AllplanOnlineHelpIndexer extends IndexerBase implements IndexerInterface
 	 */
 
 	/**
-	 * Clean up the index before indexing starts (see more annotation details in IndexerInterface)
-	 * @author Peter Benke <pbenke@allplan.com>
-	 */
-	public function cleanUpBeforeIndexing(){}
-
-	/**
 	 * Test on LOCAL:
 	 * 1) Before every start => DB:
 	 * UPDATE tx_scheduler_task SET nextexecution='1642431600', lastexecution_failure='', serialized_executions='' WHERE uid=[scheduler_task_uid];

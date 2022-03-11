@@ -97,7 +97,6 @@ class CustomIndexerHook
 			// Todo
 			case 'mm_forum':
 				$mmForumIndexer = GeneralUtility::makeInstance(MmForumIndexer::class, $indexerRunner);
-				### $mmForumIndexer->cleanUpBeforeIndexing();
 				$resultCount = $mmForumIndexer->startIndexing();
 				$content = $this->formatContent(
 					$indexerConfig['title'],
