@@ -26,6 +26,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
+// Todo: check, if needed, when new faq indexer ready
 
 class KeSearchDirectoryViewHelper extends AbstractViewHelper
 {
