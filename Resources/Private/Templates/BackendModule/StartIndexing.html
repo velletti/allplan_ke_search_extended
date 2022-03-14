@@ -3,21 +3,19 @@
 
 <f:section name="content">
     <div>
+        <h2>Modified by allplan_ke_search_extended</h2>
+        <em>(allplan_ke_search_extended/Resources/Private/Templates/BackendModule/StartIndexing.html)</em>
 
+        <div class="row">
+            <div class="col-md-6">
+                <div class="alert alert-warning">
+                    <f:translate key="LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang.xlf:backend.startIndexing.disabledButtons" />
+                </div>
+            </div>
+        </div>
 
-        <h2 class="uppercase">
-            ALLPLAN Special ... We can NOT Use default index Process ....
-
-        </h2>
-
-        <f:format.raw>
-            <allplan:keSearchUnlock>
-
-            </allplan:keSearchUnlock>
-        </f:format.raw>
-
-        <hr/>
-        <f:format.raw><allplan:keSearchIndexTable/></f:format.raw>
+        <f:comment><!-- Hide the buttons for indexing --></f:comment>
+        <f:format.raw><allplan:modifyStartIndexing>{content}</allplan:modifyStartIndexing></f:format.raw>
 
     </div>
 </f:section>

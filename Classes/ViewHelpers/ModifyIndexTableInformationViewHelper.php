@@ -19,13 +19,11 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use Closure;
 
 /**
- * ViewHelper to enrich the content data coming from ke_search inside the index table with the last index date all indexers
- * =>
- * 1) Backend - module "Faceted Search";
- * 2) Select box "Index table information"
+ * ViewHelper to modify the backend view "Index table information":
+ * Add timestamp of the latest index entry for each indexer type
  * @author Peter Benke <pbenke@allplan.com>
  */
-class EnrichIndexTableContentViewHelper extends AbstractViewHelper
+class ModifyIndexTableInformationViewHelper extends AbstractViewHelper
 {
 
 	/**

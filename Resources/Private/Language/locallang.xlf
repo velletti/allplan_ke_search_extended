@@ -55,6 +55,9 @@
 			<trans-unit id="task.indexerTask.fieldProvider.validation.error.storagePid">
 				<source>The explicit storage pid has to be integer</source>
 			</trans-unit>
+			<trans-unit id="backend.startIndexing.disabledButtons">
+				<source>The buttons for indexing are hidden, because the indexers have to run on command line</source>
+			</trans-unit>
 			<trans-unit id="backend.indexTable.latestEntry">
 				<source>Latest index entry:</source>
 			</trans-unit>
