@@ -73,7 +73,6 @@ class MmForumIndexer extends IndexerBase implements IndexerInterface
 	public function startIndexing(): int
 	{
 
-		// Todo Remove nrOfIndexRecordsOnOneRun at all places
 		// Todo delete unneeded functions in utilities
 
 		// Better variable name

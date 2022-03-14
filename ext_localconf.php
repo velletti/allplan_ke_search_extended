@@ -9,13 +9,9 @@ defined('TYPO3_MODE') or die();
 
 // Todo: Mark unused hooks
 
-// Todo: remove "Number of records, which should be indexed on one run (integer)"
-
 // Todo: Search in allplan_template / connect_template for "Todo"
 // Todo: Remove templates from allplan_template / connect_template, when new version is online
-
 // Todo: Include static typoscript of this extension
-
 // Todo: Configure extension for mailing
 
 $boot = function(){

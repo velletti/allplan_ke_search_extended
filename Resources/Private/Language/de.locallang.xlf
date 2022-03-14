@@ -15,9 +15,6 @@
 			<trans-unit id="task.indexerTask.deleteOldEntriesPeriodInDays">
 				<target>Einträge löschen, die älter als die folgende Anzahl an Tagen sind (integer)</target>
 			</trans-unit>
-			<trans-unit id="task.indexerTask.nrOfIndexRecordsOnOneRun">
-				<target>Anzahl an Datensätzen, die einem einem Lauf indiziert werden sollen (integer)</target>
-			</trans-unit>
 			<trans-unit id="task.indexerTask.indexerConfigUid">
 				<target>Indexer Konfiguration</target>
 			</trans-unit>
@@ -39,12 +36,6 @@
 
 			<trans-unit id="task.indexerTask.fieldProvider.validation.error.deleteOldEntriesPeriodInDays">
 				<target>Die Anzahl an Tagen zum Löschen der Einträge muss integer sein</target>
-			</trans-unit>
-			<trans-unit id="task.indexerTask.fieldProvider.validation.error.nrOfIndexRecordsOnOneRun">
-				<target>Die Anzahl an Datensätzen, die einem einem Lauf indiziert werden sollen, muss integer sein</target>
-			</trans-unit>
-			<trans-unit id="task.indexerTask.fieldProvider.validation.error.nrOfIndexRecordsOnOneRunHasToBeSetForIndexerConfig">
-				<target>Für diese Indexer Konfiguration muss die Anzahl an Datensätzen, die einem einem Lauf indiziert werden sollen, gesetzt sein</target>
 			</trans-unit>
 			<trans-unit id="task.indexerTask.fieldProvider.validation.error.indexerConfigUid">
 				<target>Bitte wählen Sie eine Indexer Konfiguration</target>

@@ -41,12 +41,6 @@ class IndexerTaskConfiguration
 	protected $deleteOldEntriesPeriodInDays;
 
 	/**
-	 * Number of records, which should be indexed on one run
-	 * @var int|string|null
-	 */
-	protected $nrOfIndexRecordsOnOneRun;
-
-	/**
 	 * External url for indexing and list in the frontend, e.g. for the Allplan Online Help
 	 * @var string|null
 	 */
@@ -120,22 +114,6 @@ class IndexerTaskConfiguration
 	public function setDeleteOldEntriesPeriodInDays($deleteOldEntriesPeriodInDays): void
 	{
 		$this->deleteOldEntriesPeriodInDays = $deleteOldEntriesPeriodInDays;
-	}
-
-	/**
-	 * @return int|string|null
-	 */
-	public function getNrOfIndexRecordsOnOneRun()
-	{
-		return $this->nrOfIndexRecordsOnOneRun;
-	}
-
-	/**
-	 * @param int|string|null $nrOfIndexRecordsOnOneRun
-	 */
-	public function setNrOfIndexRecordsOnOneRun($nrOfIndexRecordsOnOneRun): void
-	{
-		$this->nrOfIndexRecordsOnOneRun = $nrOfIndexRecordsOnOneRun;
 	}
 
 	/**

@@ -15,9 +15,6 @@
 			<trans-unit id="task.indexerTask.deleteOldEntriesPeriodInDays">
 				<source>Delete entries older than the following number of days (integer)</source>
 			</trans-unit>
-			<trans-unit id="task.indexerTask.nrOfIndexRecordsOnOneRun">
-				<source>Number of records, which should be indexed on one run (integer)</source>
-			</trans-unit>
 			<trans-unit id="task.indexerTask.indexerConfigUid">
 				<source>Indexer configuration</source>
 			</trans-unit>
@@ -39,12 +36,6 @@
 
 			<trans-unit id="task.indexerTask.fieldProvider.validation.error.deleteOldEntriesPeriodInDays">
 				<source>The number of days for deleting entries has to be integer</source>
-			</trans-unit>
-			<trans-unit id="task.indexerTask.fieldProvider.validation.error.nrOfIndexRecordsOnOneRun">
-				<source>The number of records on one run has to be integer</source>
-			</trans-unit>
-			<trans-unit id="task.indexerTask.fieldProvider.validation.error.nrOfIndexRecordsOnOneRunHasToBeSetForIndexerConfig">
-				<source>The number of records on one run has to be set for this type of indexer configuration</source>
 			</trans-unit>
 			<trans-unit id="task.indexerTask.fieldProvider.validation.error.indexerConfigUid">
 				<source>Please select a indexer configuration</source>
