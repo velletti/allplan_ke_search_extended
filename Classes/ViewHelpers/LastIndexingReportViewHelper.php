@@ -33,7 +33,8 @@ class LastIndexingReportViewHelper extends AbstractViewHelper
 	public function initializeArguments()
 	{
 		parent::initializeArguments();
-		$this->registerArgument('indexerType', 'string', 'Indexer type', true);
+		$this->registerArgument('searchString', 'string', 'Search string for column sys_log.details', true);
+		$this->registerArgument('notSearchString', 'string', 'Negated search string for column sys_log.details (AND...<>)', false);
 		$this->registerArgument('maxResults', 'string', 'Max results to get from database', false);
 	}
 
@@ -44,7 +45,8 @@ class LastIndexingReportViewHelper extends AbstractViewHelper
 	 */
 	public function render(): array
 	{
-		$indexerType = $this->arguments['indexerType'] ?? false;
+		$searchString = $this->arguments['searchString'] ?? false;
+		$notSearchString = $this->arguments['notSearchString'] ?? false;
 		$maxResults = $this->arguments['maxResults'] ?? 1;
 
 		$connectionPool = GeneralUtility::makeInstance( ConnectionPool::class);
@@ -61,11 +63,19 @@ class LastIndexingReportViewHelper extends AbstractViewHelper
 			)
 			->orderBy('tstamp', 'DESC')
 			->setMaxResults($maxResults);
-		if ($indexerType) {
+		if($searchString){
 			$queryBuilder->andWhere(
 				$queryBuilder->expr()->like(
 					'details',
-					$queryBuilder->quote('%' . $indexerType . '%',PDO::PARAM_STR)
+					$queryBuilder->quote('%' . $searchString . '%',PDO::PARAM_STR)
+				)
+			);
+		}
+		if($notSearchString){
+			$queryBuilder->andWhere(
+				$queryBuilder->expr()->notLike(
+					'details',
+					$queryBuilder->quote('%' . $notSearchString . '%',PDO::PARAM_STR)
 				)
 			);
 		}

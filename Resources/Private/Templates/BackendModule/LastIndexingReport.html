@@ -14,14 +14,41 @@
 
         <f:comment>
             <!-- =======================================================================================================
+            Common indexer from ke_search
+            ======================================================================================================== -->
+        </f:comment>
+
+        <f:comment><!-- Default pages --></f:comment>
+        <f:variable name="headline" value="Default pages"/>
+        <f:variable name="logEntries"><allplan:lastIndexingReport searchString="page" notSearchString="pdf" /></f:variable>
+        <f:render section="subContent" arguments="{_all}" />
+
+        <f:comment><!-- Pdf files --></f:comment>
+        <f:variable name="headline" value="Pdf files"/>
+        <f:variable name="logEntries"><allplan:lastIndexingReport searchString="pdf" /></f:variable>
+        <f:render section="subContent" arguments="{_all}" />
+
+        <f:comment><!-- News (EXT:news) --></f:comment>
+        <f:variable name="headline" value="News (EXT:news)"/>
+        <f:variable name="logEntries"><allplan:lastIndexingReport searchString="news" notSearchString="jobs" /></f:variable>
+        <f:render section="subContent" arguments="{_all}" />
+
+        <f:comment><!-- Jobs (EXT:news) --></f:comment>
+        <f:variable name="headline" value="Jobs (EXT:news)"/>
+        <f:variable name="indexer_type" value="news"/>
+        <f:variable name="logEntries"><allplan:lastIndexingReport searchString="jobs" /></f:variable>
+        <f:render section="subContent" arguments="{_all}" />
+
+
+        <f:comment>
+            <!-- =======================================================================================================
             Www
             ======================================================================================================== -->
         </f:comment>
 
         <f:comment><!-- Events (EXT:jv_events) --></f:comment>
         <f:variable name="headline" value="Events (EXT:jv_events)"/>
-        <f:variable name="indexer_type" value="jv_events"/>
-        <f:variable name="logEntries"><allplan:lastIndexingReport indexerType="{indexer_type}" /></f:variable>
+        <f:variable name="logEntries"><allplan:lastIndexingReport searchString="jv_events" /></f:variable>
         <f:render section="subContent" arguments="{_all}" />
 
 
@@ -33,20 +60,17 @@
 
         <f:comment><!-- Elearning lessons (videos) (EXT:marit_elearning) --></f:comment>
         <f:variable name="headline" value="Elearning lessons (videos) (EXT:marit_elearning)"/>
-        <f:variable name="indexer_type" value="marit_elearning_lessons"/>
-        <f:variable name="logEntries"><allplan:lastIndexingReport indexerType="{indexer_type}" /></f:variable>
+        <f:variable name="logEntries"><allplan:lastIndexingReport searchString="marit_elearning_lessons" /></f:variable>
         <f:render section="subContent" arguments="{_all}" />
 
         <f:comment><!-- Elearning documents (EXT:marit_elearning) --></f:comment>
         <f:variable name="headline" value="Elearning documents (EXT:marit_elearning)"/>
-        <f:variable name="indexer_type" value="marit_elearning_documents"/>
-        <f:variable name="logEntries"><allplan:lastIndexingReport indexerType="{indexer_type}" /></f:variable>
+        <f:variable name="logEntries"><allplan:lastIndexingReport searchString="marit_elearning_documents" /></f:variable>
         <f:render section="subContent" arguments="{_all}" />
 
         <f:comment><!-- Forum (EXT:mm_forum) --></f:comment>
         <f:variable name="headline" value="Forum (EXT:mm_forum)"/>
-        <f:variable name="indexer_type" value="mm_forum"/>
-        <f:variable name="logEntries"><allplan:lastIndexingReport indexerType="{indexer_type}" /></f:variable>
+        <f:variable name="logEntries"><allplan:lastIndexingReport searchString="mm_forum" /></f:variable>
         <f:render section="subContent" arguments="{_all}" />
 
 
@@ -58,8 +82,7 @@
 
         <f:comment><!-- Allplan Online Help --></f:comment>
         <f:variable name="headline" value="Allplan Online Help"/>
-        <f:variable name="indexer_type" value="allplan_online_help"/>
-        <f:variable name="logEntries"><allplan:lastIndexingReport indexerType="{indexer_type}" /></f:variable>
+        <f:variable name="logEntries"><allplan:lastIndexingReport searchString="allplan_online_help" /></f:variable>
         <f:render section="subContent" arguments="{_all}" />
 
 
@@ -68,25 +91,21 @@
 
 <f:section name="subContent">
     <f:if condition="{logEntries}">
-        <f:then>
-            <h3>{headline}</h3>
-            <table class="table table-striped table-hover">
+        <h3>{headline}</h3>
+        <table class="table table-striped table-hover">
+            <tr>
+                <th>Log time</th>
+                <th>Details</th>
+            </tr>
+            <f:for each="{logEntries}" as="logEntry">
                 <tr>
-                    <th>Log time</th>
-                    <th>Details</th>
+                    <td style="vertical-align:top;">
+                        <f:format.date format="d.m.y">{logEntry.tstamp}</f:format.date><br>
+                        <f:format.date format="H:i:s">{logEntry.tstamp}</f:format.date>
+                    </td>
+                    <td><pre>{logEntry.details}</pre></td>
                 </tr>
-                <f:for each="{logEntries}" as="logEntry">
-                    <tr>
-                        <td style="vertical-align:top;">
-                            <f:format.date format="d.m.y">{logEntry.tstamp}</f:format.date><br>
-                            <f:format.date format="H:i:s">{logEntry.tstamp}</f:format.date>
-                        </td>
-                        <td><pre>{logEntry.details}</pre></td>
-                    </tr>
-                </f:for>
-            </table>
-
-        </f:then>
-        <f:else><f:comment><!-- No report entries found for '{headline} (indexer_type)'.<hr> --></f:comment></f:else>
+            </f:for>
+        </table>
     </f:if>
 </f:section>
