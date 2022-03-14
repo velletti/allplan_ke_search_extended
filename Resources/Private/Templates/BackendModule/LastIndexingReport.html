@@ -4,73 +4,89 @@
 
 <f:section name="content">
     <div>
-        <h2 class="uppercase">
-            ALLPLAN special : <f:translate key="LLL:EXT:ke_search/Resources/Private/Language/locallang_mod.xml:function6" /> - CONNECT:
-        </h2>
-       <f:variable name="headline" value="Forumentries"/>
-        <f:variable name="logEntry"><allplan:keSearchReport  amount="1" search="%{headline}%"/></f:variable>
-        <f:render section="subcontent" arguments="{_all}"></f:render>
 
-        <f:variable name="headline" value="FAQs"/>
-        <f:variable name="logEntry"><allplan:keSearchReport  amount="1" search="%{headline}%"/></f:variable>
-        <f:render section="subcontent" arguments="{_all}"></f:render>
-
-        <f:variable name="headline" value="Elearning Videos"/>
-        <f:variable name="logEntry"><allplan:keSearchReport  amount="1" search="%{headline}%"/></f:variable>
-        <f:render section="subcontent" arguments="{_all}"></f:render>
-
-        <f:variable name="headline" value="Elearning PDF"/>
-        <f:variable name="logEntry"><allplan:keSearchReport  amount="1" search="%{headline}%"/></f:variable>
-        <f:render section="subcontent" arguments="{_all}"></f:render>
-
-        <f:variable name="headline" value="Contentserve"/>
-        <f:variable name="logEntry"><allplan:keSearchReport  amount="1" search="%{headline}%"/></f:variable>
-        <f:render section="subcontent" arguments="{_all}"></f:render>
+        <h2>Modified by allplan_ke_search_extended</h2>
+        <em>(allplan_ke_search_extended/Resources/Private/Templates/BackendModule/LastIndexingReport.html)</em>
 
         <h2 class="uppercase">
-            ALLPLAN special : <f:translate key="LLL:EXT:ke_search/Resources/Private/Language/locallang_mod.xml:function6" /> - WWW:
+            <f:translate key="LLL:EXT:ke_search/Resources/Private/Language/locallang_mod.xlf:function6" />
         </h2>
-        <f:variable name="headline" value="Pages"/>
-        <f:variable name="logEntry"><allplan:keSearchReport  amount="1" search="%{headline}%"/></f:variable>
-        <f:render section="subcontent" arguments="{_all}"></f:render>
 
-        <f:variable name="headline" value="EXT:news"/>
-        <f:variable name="logEntry"><allplan:keSearchReport  amount="2" search="%{headline}%"/></f:variable>
-        <f:render section="subcontent" arguments="{_all}"></f:render>
-        <f:variable name="headline" value="EXT:jv_events"/>
-        <f:variable name="logEntry"><allplan:keSearchReport  amount="1" search="%{headline}%"/></f:variable>
-        <f:render section="subcontent" arguments="{_all}"></f:render>
-        <f:variable name="headline" value="PDF files"/>
-        <f:variable name="logEntry"><allplan:keSearchReport  amount="1" search="%{headline}%"/></f:variable>
-        <f:render section="subcontent" arguments="{_all}"></f:render>
+        <f:comment>
+            <!-- =======================================================================================================
+            Www
+            ======================================================================================================== -->
+        </f:comment>
 
-        <f:variable name="headline" value="EXT:allplan help"/>
-        <f:variable name="logEntry"><allplan:keSearchReport  amount="10" search="%{headline}%"/></f:variable>
-        <f:render section="subcontent" arguments="{_all}"></f:render>
+        <f:comment><!-- Events (EXT:jv_events) --></f:comment>
+        <f:variable name="headline" value="Events (EXT:jv_events)"/>
+        <f:variable name="indexer_type" value="jv_events"/>
+        <f:variable name="logEntries"><allplan:lastIndexingReport indexerType="{indexer_type}" /></f:variable>
+        <f:render section="subContent" arguments="{_all}" />
+
+
+        <f:comment>
+            <!-- =======================================================================================================
+            Connect
+            ======================================================================================================== -->
+        </f:comment>
+
+        <f:comment><!-- Elearning lessons (videos) (EXT:marit_elearning) --></f:comment>
+        <f:variable name="headline" value="Elearning lessons (videos) (EXT:marit_elearning)"/>
+        <f:variable name="indexer_type" value="marit_elearning_lessons"/>
+        <f:variable name="logEntries"><allplan:lastIndexingReport indexerType="{indexer_type}" /></f:variable>
+        <f:render section="subContent" arguments="{_all}" />
+
+        <f:comment><!-- Elearning documents (EXT:marit_elearning) --></f:comment>
+        <f:variable name="headline" value="Elearning documents (EXT:marit_elearning)"/>
+        <f:variable name="indexer_type" value="marit_elearning_documents"/>
+        <f:variable name="logEntries"><allplan:lastIndexingReport indexerType="{indexer_type}" /></f:variable>
+        <f:render section="subContent" arguments="{_all}" />
+
+        <f:comment><!-- Forum (EXT:mm_forum) --></f:comment>
+        <f:variable name="headline" value="Forum (EXT:mm_forum)"/>
+        <f:variable name="indexer_type" value="mm_forum"/>
+        <f:variable name="logEntries"><allplan:lastIndexingReport indexerType="{indexer_type}" /></f:variable>
+        <f:render section="subContent" arguments="{_all}" />
+
+
+        <f:comment>
+            <!-- =======================================================================================================
+            Miscellaneous
+            ======================================================================================================== -->
+        </f:comment>
+
+        <f:comment><!-- Allplan Online Help --></f:comment>
+        <f:variable name="headline" value="Allplan Online Help"/>
+        <f:variable name="indexer_type" value="allplan_online_help"/>
+        <f:variable name="logEntries"><allplan:lastIndexingReport indexerType="{indexer_type}" /></f:variable>
+        <f:render section="subContent" arguments="{_all}" />
+
 
     </div>
 </f:section>
-<f:section name="subcontent">
-    <f:if condition="{logEntry}">
+
+<f:section name="subContent">
+    <f:if condition="{logEntries}">
         <f:then>
             <h3>{headline}</h3>
-            <table class="report">
+            <table class="table table-striped table-hover">
                 <tr>
-                    <td><b>log time</b></td>
-                    <td><b>details</b></td>
+                    <th>Log time</th>
+                    <th>Details</th>
                 </tr>
-                <f:for as="logEntrySingle" each="{logEntry}">
-                    <tr valign="top">
-                        <td >
-                            <f:format.date format="d.m.y" >{logEntrySingle.tstamp}</f:format.date><br />
-                            <f:format.date format="H:i:s" >{logEntrySingle.tstamp}</f:format.date>
+                <f:for each="{logEntries}" as="logEntry">
+                    <tr>
+                        <td style="vertical-align:top;">
+                            <f:format.date format="d.m.y">{logEntry.tstamp}</f:format.date><br>
+                            <f:format.date format="H:i:s">{logEntry.tstamp}</f:format.date>
                         </td>
-                        <td><pre style="word-wrap: break-word;   white-space: pre-wrap;">{logEntrySingle.details}</pre></td>
+                        <td><pre>{logEntry.details}</pre></td>
                     </tr>
                 </f:for>
             </table>
 
         </f:then>
-        <f:else>No report entries found for '{headline}'.<hr></f:else>
+        <f:else><f:comment><!-- No report entries found for '{headline} (indexer_type)'.<hr> --></f:comment></f:else>
     </f:if>
 </f:section>

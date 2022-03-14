@@ -10,6 +10,7 @@ Everything is stored in storage folders considering the same tree structure with
 3. Add a new entry to **CustomIndexerHook**
 4. Create a new Indexer inside Classes/Indexer/. Extend from **IndexerBase** and implement **IndexerInterface**
 5. Add some cleanup in **CleanupHook**, if needed
+6. Add the indexer to Resources/Private/Templates/BackendModule/LastIndexingReport.html for backend report
 
 **Footnotes**:\
 <sup>1</sup>sys_folder for the index entries:\

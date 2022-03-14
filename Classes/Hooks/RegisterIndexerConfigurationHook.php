@@ -55,6 +55,7 @@ class RegisterIndexerConfigurationHook
 			$iconPath . 'Connect/marit-elearning-documents.png'
 		];
 
+		// Forum (EXT:mm_forum)
 		// -------------------------------------------------------------------------------------------------------------
 		$params['items'][] = [
 			'Forum (EXT:mm_forum)',
