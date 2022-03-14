@@ -1,0 +1,25 @@
+<f:spaceless>
+	<ul class="pagination pull-right">
+		<f:if condition="{pagination.previous}">
+			<li>
+				<f:link.page additionalParams="{tx_kesearch_pi1: {page: pagination.previous}}" addQueryString="1" class="previous" title="{f:translate(key: 'LLL:EXT:ke_search/pi1/locallang.xml:pagebrowser_prev')}">
+					«
+				</f:link.page>
+			</li>
+		</f:if>
+		<f:for each="{pagination.pages}" as="page">
+			<li class="{f:if(condition: '{page} == {pagination.currentPage}', then: 'active current')}">
+				<f:link.page additionalParams="{tx_kesearch_pi1: {page: page}}" addQueryString="1">
+					{page}
+				</f:link.page>
+			</li>
+		</f:for>
+		<f:if condition="{pagination.next}">
+			<li>
+				<f:link.page additionalParams="{tx_kesearch_pi1: {page: pagination.next}}" addQueryString="1" class="next" title="{f:translate(key: 'LLL:EXT:ke_search/pi1/locallang.xml:pagebrowser_next')}">
+					»
+				</f:link.page>
+			</li>
+		</f:if>
+	</ul>
+</f:spaceless>

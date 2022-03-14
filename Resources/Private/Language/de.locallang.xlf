@@ -3,6 +3,9 @@
 	<file source-language="en" target-language="de" datatype="plaintext" original="messages" date="2017-12-19T10:00:00Z" product-name="pb_check_extensions">
 		<header/>
 		<body>
+			<trans-unit id="format.datetime">
+				<source>d.m.Y - H:i Uhr</source>
+			</trans-unit>
 			<trans-unit id="task.indexerTask.title">
 				<target>Indizierungsprozess für ke_search speziell für Allplan Zwecke.</target>
 			</trans-unit>
@@ -51,6 +54,9 @@
 			</trans-unit>
 			<trans-unit id="task.indexerTask.fieldProvider.validation.error.storagePid">
 				<target>Die explizite Storage-pid für die Index Einträge muss integer sein</target>
+			</trans-unit>
+			<trans-unit id="backend.indexTable.latestEntry">
+				<target>Letzter Index-Eintrag:</target>
 			</trans-unit>
 		</body>
 	</file>

@@ -1,0 +1,23 @@
+{namespace allplan = Allplan\AllplanKeSearchExtended\ViewHelpers}
+<f:layout name="Backend/Default" />
+
+<f:section name="content">
+    <div>
+
+
+        <h2 class="uppercase">
+            ALLPLAN Special ... We can NOT Use default index Process ....
+
+        </h2>
+
+        <f:format.raw>
+            <allplan:keSearchUnlock>
+
+            </allplan:keSearchUnlock>
+        </f:format.raw>
+
+        <hr/>
+        <f:format.raw><allplan:keSearchIndexTable/></f:format.raw>
+
+    </div>
+</f:section>

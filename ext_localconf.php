@@ -1,10 +1,6 @@
 <?php
 defined('TYPO3_MODE') or die();
 
-// Todo: type 'documentation' => change in css to 'marit_elearning_documents'
-// Todo: type 'lessions' => change in css to 'marit_elearning_lessons'
-// Todo: type 'allplanhelp' => change in css to 'allplan_online_help' => done in www
-
 // Todo: Sync script: Problem server_name only "connect"...?
 
 // Todo: Change git repository to git.allplan.com
@@ -12,6 +8,15 @@ defined('TYPO3_MODE') or die();
 // Todo: Configure ke_search, that we get email notices
 
 // Todo: Mark unused hooks
+
+// Todo: remove "Number of records, which should be indexed on one run (integer)"
+
+// Todo: Search in allplan_template / connect_template for "Todo"
+// Todo: Remove templates from allplan_template / connect_template, when new version is online
+
+// Todo: Include static typoscript of this extension
+
+// Todo: Configure extension for mailing
 
 $boot = function(){
 

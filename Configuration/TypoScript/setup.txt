@@ -1,0 +1,37 @@
+plugin.tx_kesearch_pi1 {
+	view {
+		templateRootPaths {
+			1 = EXT:allplan_ke_search_extended/Resources/Private/Templates/
+		}
+		partialRootPaths {
+			1 = EXT:allplan_ke_search_extended/Resources/Private/Partials/
+		}
+		layoutRootPaths {
+			1 = EXT:ke_search/Resources/Private/Layouts/
+		}
+	}
+}
+
+plugin.tx_kesearch_pi2 {
+	view {
+		templateRootPaths {
+			1 = EXT:allplan_ke_search_extended/Resources/Private/Templates/
+		}
+		partialRootPaths {
+			1 = EXT:allplan_ke_search_extended/Resources/Private/Partials/
+		}
+		layoutRootPaths {
+			1 = EXT:ke_search/Resources/Private/Layouts/
+		}
+	}
+}
+
+# Backend Module configuration
+module.tx_kesearch_web_kesearchbackendmodule {
+	view {
+		templateRootPaths {
+			10 = EXT:ke_search/Resources/Private/Templates
+			20 = EXT:allplan_ke_search_extended/Resources/Private/Templates
+		}
+	}
+}

@@ -1,0 +1,55 @@
+{namespace allplan = Allplan\AllplanTemplate\ViewHelpers}
+<f:layout name="General" />
+<!--
+=====================
+Templates/SearchForm.html
+-->
+<f:section name="content">
+
+	<div class="filter ke_searchfilter">
+
+		<form method="get" class="clearfix" id="form_kesearch_pi1" name="form_kesearch_pi1"  action="{f:uri.page(pageUid: targetpage)}">
+			<div class="fieldsets">
+				<fieldset class="kesearch_searchbox">
+					<f:if condition="{targetpage}">
+						<input type="hidden" name="id" value="{targetpage}" />
+					</f:if>
+					<f:if condition="{lparam}">
+						<input type="hidden" name="L" value="{lparam}" />
+					</f:if>
+					<f:if condition="{mpparam}">
+						<input type="hidden" name="MP" value="{mpparam}" />
+					</f:if>
+					<f:if condition="{typeparam}">
+						<input type="hidden" name="type" value="{typeparam}" />
+					</f:if>
+
+					<div class="row">
+						<div class="col-lg-12">
+							<label for="ke_search_sword">{f:translate(key: 'LLL:EXT:allplan_template/Resources/Private/Language/locallang.xlf:search.search_phrase')}: </label>
+						</div>
+						<div class="col-lg-11 col-md-11">
+							<div class="input-group">
+								<input type="text" id="ke_search_sword" class="form-control" name="tx_kesearch_pi1[sword]" value="{searchword -> f:format.raw()}" placeholder="{f:translate(key: 'LLL:EXT:allplan_template/Resources/Private/Language/locallang.xlf:search.search_phrase')}" />
+								<span class="input-group-btn">
+									<input class="button-orange-filled" type="submit" value="{f:translate(key: 'LLL:EXT:allplan_template/Resources/Private/Language/locallang.xlf:search.find')}" />
+								</span>
+							</div>
+						</div>
+					</div>
+
+					<input id="kesearchpagenumber" type="hidden" name="tx_kesearch_pi1[page]" value="{page}" />
+					<input id="resetFilters" type="hidden" name="tx_kesearch_pi1[resetFilters]" value="0" />
+					<input id="sortByField" type="hidden" name="tx_kesearch_pi1[sortByField]" value="{sortByField}" />
+					<input id="sortByDir" type="hidden" name="tx_kesearch_pi1[sortByDir]" value="{sortByDir}" />
+
+				</fieldset>
+				<f:if condition="{filters}">
+					<fieldset>
+						<f:render partial="Filters" arguments="{conf: conf, numberofresults: numberofresults, resultrows: resultrows, filters: filters}" />
+					</fieldset>
+				</f:if>
+			</div>
+		</form>
+	</div>
+</f:section>

@@ -3,6 +3,9 @@
 	<file source-language="en" datatype="plaintext" original="messages" date="2017-12-19T10:00:00Z" product-name="pb_check_extensions">
 		<header/>
 		<body>
+			<trans-unit id="format.datetime">
+				<source>Y-m-d - H:i</source>
+			</trans-unit>
 			<trans-unit id="task.indexerTask.title">
 				<source>Indexing process for ke_search especially for Allplan purposes</source>
 			</trans-unit>
@@ -51,6 +54,9 @@
 			</trans-unit>
 			<trans-unit id="task.indexerTask.fieldProvider.validation.error.storagePid">
 				<source>The explicit storage pid has to be integer</source>
+			</trans-unit>
+			<trans-unit id="backend.indexTable.latestEntry">
+				<source>Latest index entry:</source>
 			</trans-unit>
 		</body>
 	</file>

@@ -1,0 +1,35 @@
+<!--
+	=====================
+	Partials/Sorting.html
+-->
+
+<f:if condition="{conf.showSortInFrontend}">
+	<f:if condition="{conf.sortByVisitor}">
+		<div id="kesearch_ordering" class="clearfix">
+
+			<p><strong>{f:translate(key: 'LLL:EXT:ke_search/pi1/locallang.xml:label_sort')}</strong></p>
+
+			<ul class="clearfix">
+				<f:for each="{sortingLinks}" as="sortingLink">
+
+					<f:switch expression="{sortingLink.class}">
+
+						<f:case value="up">
+							<li><span class="glyphicon glyphicon-triangle-top"></span> <strong><f:format.raw>{sortingLink.url}</f:format.raw></strong></li>
+						</f:case>
+
+						<f:case value="down">
+							<li><span class="glyphicon glyphicon-triangle-bottom"></span> <strong><f:format.raw>{sortingLink.url}</f:format.raw></strong></li>
+						</f:case>
+
+						<f:case value="">
+							<li><f:format.raw>{sortingLink.url}</f:format.raw></li>
+						</f:case>
+
+					</f:switch>
+
+				</f:for>
+			</ul>
+		</div>
+	</f:if>
+</f:if>

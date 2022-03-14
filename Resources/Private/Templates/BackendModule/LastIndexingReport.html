@@ -1,0 +1,76 @@
+{namespace allplan = Allplan\AllplanKeSearchExtended\ViewHelpers}
+
+<f:layout name="Backend/Default" />
+
+<f:section name="content">
+    <div>
+        <h2 class="uppercase">
+            ALLPLAN special : <f:translate key="LLL:EXT:ke_search/Resources/Private/Language/locallang_mod.xml:function6" /> - CONNECT:
+        </h2>
+       <f:variable name="headline" value="Forumentries"/>
+        <f:variable name="logEntry"><allplan:keSearchReport  amount="1" search="%{headline}%"/></f:variable>
+        <f:render section="subcontent" arguments="{_all}"></f:render>
+
+        <f:variable name="headline" value="FAQs"/>
+        <f:variable name="logEntry"><allplan:keSearchReport  amount="1" search="%{headline}%"/></f:variable>
+        <f:render section="subcontent" arguments="{_all}"></f:render>
+
+        <f:variable name="headline" value="Elearning Videos"/>
+        <f:variable name="logEntry"><allplan:keSearchReport  amount="1" search="%{headline}%"/></f:variable>
+        <f:render section="subcontent" arguments="{_all}"></f:render>
+
+        <f:variable name="headline" value="Elearning PDF"/>
+        <f:variable name="logEntry"><allplan:keSearchReport  amount="1" search="%{headline}%"/></f:variable>
+        <f:render section="subcontent" arguments="{_all}"></f:render>
+
+        <f:variable name="headline" value="Contentserve"/>
+        <f:variable name="logEntry"><allplan:keSearchReport  amount="1" search="%{headline}%"/></f:variable>
+        <f:render section="subcontent" arguments="{_all}"></f:render>
+
+        <h2 class="uppercase">
+            ALLPLAN special : <f:translate key="LLL:EXT:ke_search/Resources/Private/Language/locallang_mod.xml:function6" /> - WWW:
+        </h2>
+        <f:variable name="headline" value="Pages"/>
+        <f:variable name="logEntry"><allplan:keSearchReport  amount="1" search="%{headline}%"/></f:variable>
+        <f:render section="subcontent" arguments="{_all}"></f:render>
+
+        <f:variable name="headline" value="EXT:news"/>
+        <f:variable name="logEntry"><allplan:keSearchReport  amount="2" search="%{headline}%"/></f:variable>
+        <f:render section="subcontent" arguments="{_all}"></f:render>
+        <f:variable name="headline" value="EXT:jv_events"/>
+        <f:variable name="logEntry"><allplan:keSearchReport  amount="1" search="%{headline}%"/></f:variable>
+        <f:render section="subcontent" arguments="{_all}"></f:render>
+        <f:variable name="headline" value="PDF files"/>
+        <f:variable name="logEntry"><allplan:keSearchReport  amount="1" search="%{headline}%"/></f:variable>
+        <f:render section="subcontent" arguments="{_all}"></f:render>
+
+        <f:variable name="headline" value="EXT:allplan help"/>
+        <f:variable name="logEntry"><allplan:keSearchReport  amount="10" search="%{headline}%"/></f:variable>
+        <f:render section="subcontent" arguments="{_all}"></f:render>
+
+    </div>
+</f:section>
+<f:section name="subcontent">
+    <f:if condition="{logEntry}">
+        <f:then>
+            <h3>{headline}</h3>
+            <table class="report">
+                <tr>
+                    <td><b>log time</b></td>
+                    <td><b>details</b></td>
+                </tr>
+                <f:for as="logEntrySingle" each="{logEntry}">
+                    <tr valign="top">
+                        <td >
+                            <f:format.date format="d.m.y" >{logEntrySingle.tstamp}</f:format.date><br />
+                            <f:format.date format="H:i:s" >{logEntrySingle.tstamp}</f:format.date>
+                        </td>
+                        <td><pre style="word-wrap: break-word;   white-space: pre-wrap;">{logEntrySingle.details}</pre></td>
+                    </tr>
+                </f:for>
+            </table>
+
+        </f:then>
+        <f:else>No report entries found for '{headline}'.<hr></f:else>
+    </f:if>
+</f:section>

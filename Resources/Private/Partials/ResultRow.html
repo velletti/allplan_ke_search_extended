@@ -1,0 +1,42 @@
+{namespace allplan = Allplan\AllplanTemplate\ViewHelpers}
+<div class="result-list-item result-list-item-type-{resultrow.type} clearfix">
+
+	<div class="date clearfix">
+		<f:if condition="{resultrow.date_timestamp} > 0">
+			<span class="day">{f:format.date(date:resultrow.date_timestamp, format:'d')}</span>
+			<span class="month-year"><allplan:format.writeDateAbbreviation month="{f:format.date(date:resultrow.date_timestamp, format:'m')}"/></span>
+			<span class="year">{f:format.date(date:resultrow.date_timestamp, format:'Y')}</span>
+		</f:if>
+	</div>
+
+	<div class="add-info">
+
+		<f:if condition="{conf.resultsNumeration}">
+			{resultrow.number}.
+		</f:if>
+		<f:format.raw>{resultrow.title}</f:format.raw>
+
+		<f:if condition="{conf.showResultUrl}">
+			<div class="url">
+				<em>Url:</em>
+				<allplan:format.stringCrop string="{resultrow.url}" strLength="100" spaceFill=" ... " />
+			</div>
+		</f:if>
+
+		<f:if condition="{resultrow.percent} > 0">
+			<f:if condition="{conf.showScore}">
+				<em>{f:translate(key: 'LLL:EXT:ke_search/pi1/locallang.xml:label_score')}:</em> {resultrow.score}<br />
+			</f:if>
+			<f:if condition="{conf.showPercentalScore}">
+				<em>{f:translate(key: 'LLL:EXT:ke_search/pi1/locallang.xml:label_score_percent')}:</em> {resultrow.percent}<br />
+			</f:if>
+		</f:if>
+		<f:if condition="{conf.showTags}">
+			<em>{f:translate(key: 'LLL:EXT:ke_search/pi1/locallang.xml:label_tags')}:</em> {resultrow.tags}<br />
+		</f:if>
+
+		<div class="teaser {resultrow.type}"><allplan:format.stripTagsAndReplaceWithSpace>{resultrow.teaser}</allplan:format.stripTagsAndReplaceWithSpace></div>
+
+	</div>
+
+</div>

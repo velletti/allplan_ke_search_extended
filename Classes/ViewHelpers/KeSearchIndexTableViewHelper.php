@@ -40,6 +40,10 @@ class KeSearchIndexTableViewHelper extends AbstractViewHelper
         $databaseConnection = Db::getDatabaseConnection($table);
         $tableStatusQuery = 'SHOW TABLE STATUS';
         $tableStatusRows = $databaseConnection->fetchAll($tableStatusQuery);
+
+        ########### print_r($tableStatusRows);
+
+
         $content = '';
 
         foreach ($tableStatusRows as $row) {

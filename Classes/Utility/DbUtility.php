@@ -28,6 +28,11 @@ class DbUtility
 {
 
 	/**
+	 * Common db utilities
+	 * =================================================================================================================
+	 */
+
+	/**
 	 * Writes into table sys_log especially for indexer entries
 	 * @see https://docs.typo3.org/m/typo3/reference-coreapi/10.4/en-us/ApiOverview/SystemLog/Index.html
 	 * @param string $title
@@ -166,6 +171,39 @@ class DbUtility
 		return $indexerConfig['type'];
 
 	}
+
+	/**
+	 * Get the latest tstamp by a given indexer type
+	 * @param string $indexerType
+	 * @return mixed|null
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function getLatestTstampByIndexerType(string $indexerType)
+	{
+		$connectionPool = GeneralUtility::makeInstance( ConnectionPool::class);
+		$queryBuilder = $connectionPool->getQueryBuilderForTable('tx_kesearch_indexerconfig');
+
+		try{
+			$result = $queryBuilder
+				->select('tstamp')
+				->from('tx_kesearch_index')
+				->where($queryBuilder->expr()->eq('type', $queryBuilder->createNamedParameter($indexerType)))
+				->from('tx_kesearch_index')
+				->orderBy('tstamp','DESC')
+				->execute()->fetchOne()
+			;
+		}catch(DoctrineDBALDriverException $e){
+			return null;
+		}
+
+		if(empty($result)){
+			return null;
+		}
+
+		return $result;
+
+	}
+
 
 	/**
 	 * Utilities for Forum indexer
