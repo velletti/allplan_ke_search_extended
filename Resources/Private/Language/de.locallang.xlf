@@ -52,6 +52,9 @@
 			<trans-unit id="backend.indexTable.latestEntry">
 				<target>Letzter Index-Eintrag:</target>
 			</trans-unit>
+			<trans-unit id="frontend.pleaseSelect">
+				<target>Bitte wählen</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

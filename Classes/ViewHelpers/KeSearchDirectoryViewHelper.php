@@ -22,20 +22,17 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
  */
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
+use TYPO3\CMS\Core\Context\LanguageAspect;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
-// Todo: check, if needed, when new faq indexer ready
-
+/**
+ * Todo: check, if viewhelper is needed, when new faq indexer ready
+ * Get the ke_search directories (tx_kesearch_index.directory) as html select box
+ * this column is used by FAQ indexer for the categories
+ */
 class KeSearchDirectoryViewHelper extends AbstractViewHelper
 {
-
-	/**
-	 *
-	 * @var boolean
-	 */
-	protected bool $escapeOutput = false;
 
 	/**
 	 * Render
@@ -45,7 +42,7 @@ class KeSearchDirectoryViewHelper extends AbstractViewHelper
 	public function render(): string
 	{
 		try{
-			$contentArray = $this->getCategories();
+			$contentArray = $this->getCategoriesAsSelectBox();
 		}catch(DoctrineDBALDriverException $e){
 			return 'Error: ' . $e;
 		}
@@ -57,9 +54,9 @@ class KeSearchDirectoryViewHelper extends AbstractViewHelper
 	 * @return array
 	 * @throws DoctrineDBALDriverException
 	 * @author Jörg Velletti <jvelletti@allplan.com>
-	 * @author Pater Benke <pbenke@allplan.com>
+	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-	public function getCategories(): array
+	public function getCategoriesAsSelectBox(): array
 	{
 
 		$contentSelect1 = '';
@@ -67,46 +64,60 @@ class KeSearchDirectoryViewHelper extends AbstractViewHelper
 		$contentSelect3 = '';
 
 		$targetUrl = $this->getTargetUrl();
-		$maxGroup = $this->getFeMaxGroup();
+		$maxFeGroups = $this->getMaxFeGroups();
 
 		$connectionPool = GeneralUtility::makeInstance( ConnectionPool::class);
 		$queryBuilder = $connectionPool->getConnectionForTable('tx_kesearch_index')->createQueryBuilder();
 
 		/*
-			we have entries in Database like :
+			we have entries in database like :
 			Allgemein
 			Allgemeine Einstellungen\Architektur
 			Allgemein\Projekt
 
 			with  ->selectLiteral(' concat(replace(directory , "\\\\" , " \\\\") ,  " \\\\" ) as directory ')
-			we get a correct sorted list (Allgemein and Allgemein\Projekt before   Allgemeine Einstellungen \Architektur
+			we get a correct sorted list (Allgemein and Allgemein\Projekt before Allgemeine Einstellungen \Architektur
 			Allgemein \
 			Allgemein \Projekt
 			Allgemeine Einstellungen \Architektur
 		*/
+		$expr = $queryBuilder->expr();
 		$rows = $queryBuilder
 			->selectLiteral('CONCAT(REPLACE(directory , "\\\\" , " \\\\") ,  " \\\\" ) AS directory')
 			->from('tx_kesearch_index')
-			->where($queryBuilder->expr()->like('targetpid', $queryBuilder->createNamedParameter($targetUrl,Connection::PARAM_STR)))
-			->andWhere($queryBuilder->expr()->neq('directory', $queryBuilder->createNamedParameter('',Connection::PARAM_STR)))
+			->where($expr->like('targetpid', $queryBuilder->createNamedParameter($targetUrl)))
+			->andWhere($expr->neq('directory', $queryBuilder->createNamedParameter('')))
 			->andWhere(
-				$queryBuilder->expr()->orX(
-					$queryBuilder->expr()->eq('fe_group', $queryBuilder->createNamedParameter('',Connection::PARAM_STR)),
-					$queryBuilder->expr()->like('fe_group', $queryBuilder->createNamedParameter($maxGroup,Connection::PARAM_STR))
+				$expr->orX(
+					$expr->eq('fe_group', $queryBuilder->createNamedParameter('')),
+					$expr->like('fe_group', $queryBuilder->createNamedParameter($maxFeGroups))
 				)
 			)
 			->groupBy('directory')
 			->orderBy('directory')
-			->execute()->fetchAllAssociative();
+			->execute()
+			->fetchAllAssociative()
+		;
+
+		#print_r([
+		#	'SQL' => $queryBuilder->getSQL(),
+		#	'$targetUrl' => $targetUrl,
+		#	'$maxFeGroups' => $maxFeGroups,
+		#]); echo PHP_EOL;
+
 
 		$directory = false;
 
+		// Categories found
 		if($rows && count($rows) > 0){
+
+			// If directory (category) is given by GET (ajax)
 			$params = GeneralUtility::_GET('tx_kesearch_pi1');
 			if(is_array($params) && array_key_exists('directory', $params) && strlen($params['directory']) > 0){
-				$directory = GeneralUtility::trimExplode("\\",trim(urldecode($params['directory'])));
+				$directory = GeneralUtility::trimExplode("\\", trim(urldecode($params['directory'])));
 			}
-			$contentSelect1.= '<option></option>';
+
+			$contentSelect1.= '<option>' . LanguageUtility::translate('frontend.pleaseSelect') . '</option>';
 			$lastOption = '#-#';
 			foreach ($rows as $row){
 				$thisOption = $this->getOption($row['directory']);
@@ -118,12 +129,12 @@ class KeSearchDirectoryViewHelper extends AbstractViewHelper
 						}
 						$contentSelect1.= '<option value="' . urlencode($thisOption) . '" ' . $selected . '>' . $thisOption . ' </option>';
 					}
-					$lastOption =  $thisOption;
+					$lastOption = $thisOption;
 				}
 			}
 
-			// Todo simplify code with function
 
+			// Selectbox Level 2
 			if(is_array($directory) && count($directory) > 0){
 				$lastOption = '#-#';
 				foreach($rows as $row){
@@ -141,6 +152,8 @@ class KeSearchDirectoryViewHelper extends AbstractViewHelper
 						}
 					}
 				}
+
+				// Selectbox Level 3
 				if(is_array($directory) && count($directory) > 1){
 					$lastOption = '#-#';
 					foreach($rows as $row){
@@ -165,17 +178,17 @@ class KeSearchDirectoryViewHelper extends AbstractViewHelper
 		$lng = LanguageUtility::getSysLanguageUid();
 		$pid = $GLOBALS['TSFE']->id;
 
-		// Todo simplify code
+		// Build the select box(es)
 
 		$content = [];
 		if($contentSelect1){
-			$content['select1'] = '<select name="tx_kesearch_pi1[directory1]" onchange="allplan_kesearch_change(this);return true;" data-pid="' . $pid . '" data-lng="' . $lng . '" data-level="1" data-cat="tx_kesearch_pi1[directory1]" class="form-control kesearch-directory kesearch-directory1">' . $contentSelect1 . '</select>';
+			$content['select1'] = '<select style="margin-bottom:5px;" name="tx_kesearch_pi1[directory1]" onchange="allplan_kesearch_change(this);return true;" data-pid="' . $pid . '" data-lng="' . $lng . '" data-level="1" data-cat="tx_kesearch_pi1[directory1]" class="form-control kesearch-directory kesearch-directory1">' . $contentSelect1 . '</select>';
 		} else {
 			$content['select1'] = '';
 		}
 		if($contentSelect2){
-			$content['select2'] = '<select name="tx_kesearch_pi1[directory2]" onchange="allplan_kesearch_change(this);return true;" data-pid="' . $pid . '" data-lng="' . $lng . '" data-level="2" data-cat="tx_kesearch_pi1[directory2]" class="form-control kesearch-directory kesearch-directory2">'
-				. "<option value=\"" . urlencode($directory[0] ) . "\"></option>"
+			$content['select2'] = '<select style="margin-bottom:5px;" name="tx_kesearch_pi1[directory2]" onchange="allplan_kesearch_change(this);return true;" data-pid="' . $pid . '" data-lng="' . $lng . '" data-level="2" data-cat="tx_kesearch_pi1[directory2]" class="form-control kesearch-directory kesearch-directory2">'
+				. "<option value=\"" . urlencode($directory[0] ) . "\">" . LanguageUtility::translate("frontend.pleaseSelect") . "</option>"
 				. $contentSelect2
 				. '</select>';
 		} else {
@@ -183,7 +196,7 @@ class KeSearchDirectoryViewHelper extends AbstractViewHelper
 		}
 		if ($contentSelect3){
 			$content['select3'] = '<select name="tx_kesearch_pi1[directory3]" onchange="allplan_kesearch_change(this);return true;" data-pid="' . $pid . '" data-lng="' . $lng . '" data-level="3" data-cat="tx_kesearch_pi1[directory3]" class="form-control kesearch-directory kesearch-directory3">'
-				. "<option value=\"" . urlencode($directory[0] . "\\" . $directory[1] ) . "\"></option>"
+				. "<option value=\"" . urlencode($directory[0] . "\\" . $directory[1] ) . "\">" . LanguageUtility::translate("frontend.pleaseSelect") . "</option>"
 				. $contentSelect3
 				. '</select>';
 		} else {
@@ -200,11 +213,13 @@ class KeSearchDirectoryViewHelper extends AbstractViewHelper
 	 * @param int $level
 	 * @param array|bool $replace
 	 * @return string
+	 * @author Jörg Velletti <jvelletti@allplan.com>
+	 * @author Peter Benke <pbenke@allplan.com>
 	 */
 	private function getOption(string $option, int $level=0, $replace = false): string
 	{
 		$options= GeneralUtility::trimExplode("\\", $option);
-		if( $level == 0){
+		if($level == 0){
 			return $options[0];
 		}
 		if(count($options ) > 0){
@@ -223,21 +238,23 @@ class KeSearchDirectoryViewHelper extends AbstractViewHelper
 	/**
 	 * Get the maximal fe user groups for select from current user
 	 * @return string
+	 * @author Jörg Velletti <jvelletti@allplan.com>
+	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-	private function getFeMaxGroup(): string
+	private function getMaxFeGroups(): string
 	{
 		if($GLOBALS['TSFE']->fe_user && is_array($GLOBALS['TSFE']->fe_user->user)){
-			$usergroups = GeneralUtility::trimExplode(',', $GLOBALS['TSFE']->fe_user->user['usergroup']);
-			if(in_array('38', $usergroups)){
+			$maxFeGroups = GeneralUtility::trimExplode(',', $GLOBALS['TSFE']->fe_user->user['usergroup']);
+			if(in_array('38', $maxFeGroups)){
 				return '38%';
 			}
-			if(in_array("7", $usergroups)){
+			if(in_array('7', $maxFeGroups)){
 				return '38,7%';
 			}
-			if(in_array("4", $usergroups)){
+			if(in_array('4', $maxFeGroups)){
 				return '38,7,4%';
 			}
-			if(in_array("3", $usergroups)){
+			if(in_array('3', $maxFeGroups)){
 				return '38,7,4,3';
 			}
 		}
@@ -247,6 +264,8 @@ class KeSearchDirectoryViewHelper extends AbstractViewHelper
 	/**
 	 * Get the target url for select
 	 * @return string
+	 * @author Jörg Velletti <jvelletti@allplan.com>
+	 * @author Peter Benke <pbenke@allplan.com>
 	 */
 	private function getTargetUrl(): string
 	{
@@ -257,31 +276,40 @@ class KeSearchDirectoryViewHelper extends AbstractViewHelper
 		}
 
 		try{
+			/** @var LanguageAspect $languageAspect */
 			$languageAspect = GeneralUtility::makeInstance(Context::class)->getAspect('language');
 			if($lng == 0){
-				$lng =  $languageAspect->getId() ;
+				$lng =  $languageAspect->getId();
 			}
 		}catch(AspectNotFoundException $e){
 			// Nothing here
 		}
 
-		switch ($lng) {
+		switch($lng){
 			case 1:
 			case 6:
 			case 7:
-				return 'https://connect.allplan.com/de%' ;
+				$abbr = 'de';
+				break;
 			case 2:
-				return 'https://connect.allplan.com/it%' ;
+				$abbr = 'it';
+				break;
 			case 3:
-				return 'https://connect.allplan.com/cz%' ;
+				$abbr = 'cz';
+				break;
 			case 4:
-				return 'https://connect.allplan.com/fr%' ;
+				$abbr = 'fr';
+				break;
 			case 18:
-				return 'https://connect.allplan.com/es%' ;
+				$abbr = 'es';
+				break;
 			case 14:
 			default:
-				return 'https://connect.allplan.com/en%';
+				$abbr = 'en';
+
 		}
+
+		return 'https://connect.allplan.com/' . $abbr . '%';
 
 	}
 
