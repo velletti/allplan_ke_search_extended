@@ -26,7 +26,6 @@ class ModifyExtNewsIndexEntryHook
 	 * @param array $indexerConfig
 	 * @param array $categoryData
 	 * @param News $news
-	 * @author Jörg Velletti <jvelletti@allplan.com>
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
 	public function modifyExtNewsIndexEntry(
@@ -41,9 +40,7 @@ class ModifyExtNewsIndexEntryHook
 		array $categoryData,
 		News $news
 	) {
-
-		// Todo check this
-		$additionalFields['servername'] = EnvironmentUtility::getServerName();
+		$additionalFields['tx_allplan_ke_search_extended_server_name'] = EnvironmentUtility::getServerName();
 	}
 
 }
