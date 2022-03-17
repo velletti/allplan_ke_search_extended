@@ -24,7 +24,6 @@ class ModifyPagesIndexEntryHook
 	 * @param array $indexerConfig
 	 * @param array $indexEntryDefaultValues
 	 * @param Page $pagesThis
-	 * @author Jörg Velletti <jvelletti@allplan.com>
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
 	public function modifyPagesIndexEntry(
@@ -38,9 +37,7 @@ class ModifyPagesIndexEntryHook
 		Page &$pagesThis
 	)
 	{
-
-		// Todo: check this
-		$additionalFields['servername'] = EnvironmentUtility::getServerName();
+		$additionalFields['tx_allplan_ke_search_extended_server_name'] = EnvironmentUtility::getServerName();
 	}
 
 }
