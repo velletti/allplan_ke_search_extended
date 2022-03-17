@@ -16,6 +16,7 @@ class ModifyPagesIndexEntryHook
 
 	/**
 	 * Modifies the page data just before it will be saved into database
+	 * tx_kesearch_index.type = 'page'
 	 * @param int|string $uid
 	 * @param array $pageContent
 	 * @param string $tags

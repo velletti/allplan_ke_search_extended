@@ -16,6 +16,7 @@ class ModifyExtNewsIndexEntryHook
 
 	/**
 	 * Modifies the news data just before it will be saved into database
+	 * tx_kesearch_index.type = 'news'
 	 * @param string $title
 	 * @param string $abstract
 	 * @param string $fullContent
