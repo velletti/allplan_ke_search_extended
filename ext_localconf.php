@@ -9,7 +9,7 @@ defined('TYPO3_MODE') or die();
 
 // Todo: Mark unused hooks
 
-// Todo: Search in allplan_template / connect_template for "Todo"
+// Todo: Search in allplan_template / connect_template for "Todo allplan_ke_search_extended"
 // Todo: Remove templates from allplan_template / connect_template, when new version is online
 // Todo: Include static typoscript from ke_search
 // Todo: Include static typoscript from this extension after typoscript from ke_search
