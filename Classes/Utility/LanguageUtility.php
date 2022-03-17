@@ -6,6 +6,7 @@ namespace Allplan\AllplanKeSearchExtended\Utility;
  */
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
+use TYPO3\CMS\Core\Context\LanguageAspect;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -22,18 +23,18 @@ class LanguageUtility
 	public static function getSysLanguageUid(): int
 	{
 
-		// Todo better code
-		if (class_exists(\TYPO3\CMS\Core\Context\Context::class)) {
+		if (class_exists(Context::class)) {
 
 			try{
+				/** @var LanguageAspect $languageAspect */
 				$languageAspect = GeneralUtility::makeInstance(Context::class)->getAspect('language');
 				if (GeneralUtility::_GP('L') && intval(GeneralUtility::_GP('L') > 0)){
 					return intval(GeneralUtility::_GP('L'));
 				}
-				// Todo: Check IDE warning
 				return $languageAspect->getId();
 			}catch(AspectNotFoundException $e){
 				return 0;
+
 			}
 
 		} else {
