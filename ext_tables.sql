@@ -1,5 +1,7 @@
 
 # Todo Rename columns TYPO3 conform (tx...)
+# 
+# TEST JV 
 #
 # Table structure for table 'tx_kesearch_allplan_url_ids'
 #
