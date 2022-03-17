@@ -30,6 +30,18 @@ class EnvironmentUtility
 	}
 
 	/**
+	 * Get the server protocol and host for the websites
+	 * www.allplan.com
+	 * connect.allplan.com
+	 * @return string
+	 * @author Peter Benke <pbenke@allplan.com>
+	 */
+	public static function getServerProtocolAndHost(): string
+	{
+		return 'https://' . self::getServerName() . 'allplan.com';
+	}
+
+	/**
 	 * Checks, if current environment is a dev environment
 	 * @return bool
 	 * @author Peter Benke <pbenke@allplan.com>

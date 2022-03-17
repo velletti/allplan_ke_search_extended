@@ -142,8 +142,8 @@ class GetQueryPartsHook
 			$debugOutput.= '<hr>';
 			$debugOutput.= print_r($queryParts, true);
 
-			// echo $debugOutput; die("__FILE__" . __FILE__ . " __LINE__" . __LINE__);
-			mail('pbenke@allplan.com', 'Faq debug output', print_r(['Debug' => $debugOutput], true));
+			echo $debugOutput; die("__FILE__" . __FILE__ . " __LINE__" . __LINE__);
+			// mail('pbenke@allplan.com', 'Faq debug output', print_r(['Debug' => $debugOutput], true));
 
 		}
 

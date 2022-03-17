@@ -16,6 +16,7 @@ class ModifyExtNewsIndexEntryHook
 
 	/**
 	 * Modifies the news data just before it will be saved into database
+	 * tx_kesearch_index.type = 'news'
 	 * @param string $title
 	 * @param string $abstract
 	 * @param string $fullContent
@@ -26,7 +27,6 @@ class ModifyExtNewsIndexEntryHook
 	 * @param array $indexerConfig
 	 * @param array $categoryData
 	 * @param News $news
-	 * @author Jörg Velletti <jvelletti@allplan.com>
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
 	public function modifyExtNewsIndexEntry(
@@ -41,9 +41,7 @@ class ModifyExtNewsIndexEntryHook
 		array $categoryData,
 		News $news
 	) {
-
-		// Todo check this
-		$additionalFields['servername'] = EnvironmentUtility::getServerName();
+		$additionalFields['tx_allplan_ke_search_extended_server_name'] = EnvironmentUtility::getServerName();
 	}
 
 }

@@ -10,8 +10,9 @@ class ModifyContentIndexEntryHook
 {
 
 	/**
-	 * Modifications of the indexed data, e.g. tags
-	 * (used in the standard tt_content indexer from ke_search)
+	 * Modifies the content data just before it will be saved into database
+	 * tx_kesearch_index.type = 'content'
+	 * Not in use at the moment
 	 * @param string $header
 	 * @param array $row
 	 * @param string $tags
@@ -24,12 +25,8 @@ class ModifyContentIndexEntryHook
 	public function modifyContentIndexEntry(string $header, array &$row, string $tags, $uid, array &$additionalFields, array &$indexerConfig)
 	{
 
-		// Todo check this
-
-		$serverName = EnvironmentUtility::getServerName();
-
-		$additionalFields['servername'] = $serverName;
-		$row['pid'] =  $serverName . '/index.php?id=' . $row['pid'] . '&L=' . $row['sys_language_uid'];
+		$additionalFields['tx_allplan_ke_search_extended_server_name'] = EnvironmentUtility::getServerName();
+		$row['pid'] =  EnvironmentUtility::getServerProtocolAndHost() . '/?id=' . $row['pid'] . '&L=' . $row['sys_language_uid'];
 
 	}
 

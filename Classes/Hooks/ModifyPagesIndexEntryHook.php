@@ -16,6 +16,7 @@ class ModifyPagesIndexEntryHook
 
 	/**
 	 * Modifies the page data just before it will be saved into database
+	 * tx_kesearch_index.type = 'page'
 	 * @param int|string $uid
 	 * @param array $pageContent
 	 * @param string $tags
@@ -24,7 +25,6 @@ class ModifyPagesIndexEntryHook
 	 * @param array $indexerConfig
 	 * @param array $indexEntryDefaultValues
 	 * @param Page $pagesThis
-	 * @author Jörg Velletti <jvelletti@allplan.com>
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
 	public function modifyPagesIndexEntry(
@@ -38,9 +38,7 @@ class ModifyPagesIndexEntryHook
 		Page &$pagesThis
 	)
 	{
-
-		// Todo: check this
-		$additionalFields['servername'] = EnvironmentUtility::getServerName();
+		$additionalFields['tx_allplan_ke_search_extended_server_name'] = EnvironmentUtility::getServerName();
 	}
 
 }
