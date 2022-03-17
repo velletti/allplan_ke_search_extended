@@ -14,9 +14,10 @@ class RegisterIndexerConfigurationHook
 	public function registerIndexerConfiguration(array &$params, $pObj)
 	{
 
-		// Todo: Contentserve, since the new extension is online
-		// Todo: Faq, since migrated to Salesforce
-		// Todo: Shop, since online again
+		// Todo:
+		// Contentserve, since the new extension is online
+		// Faq, since migrated to Salesforce
+		// Shop, since online again
 
 		$iconPath = 'EXT:allplan_ke_search_extended/Resources/Public/Icons/IndexerConfiguration/';
 
