@@ -1,14 +1,9 @@
-{namespace allplan = Allplan\AllplanTemplate\ViewHelpers}
-<!--
-	=====================
-	Partials/Filters/Checkbox.html
--->
-
-    <legend>{filter.title}</legend>
-    <div class="checkbox" id="ke-events_filter_tags_{filter.id}">
-        <f:for each="{filter.checkboxOptions}" as="option">
-            <label>
-                <input type="checkbox" name="{filter.name}[{option.key}]" id="{option.id}" value="{option.tag}" {f:if(condition: '{option.selected}', then: ' checked="checked"')} />{option.title}<f:if condition="{option.results}"><f:if condition="{filter.shownumberofresults}"> ({option.results})</f:if></f:if>
-            </label>
-        </f:for>
-    </div>
+<legend>{filter.title}</legend>
+<div class="checkbox" id="ke-events_filter_tags_{filter.id}">
+    <f:for each="{filter.checkboxOptions}" as="option">
+        <label>
+            <input onchange="$('#form_kesearch_pi1').submit();" type="checkbox" name="{option.key}" id="{option.id}" value="{option.tag}" {f:if(condition: '{option.selected}', then: ' checked="checked"')} {f:if(condition: '{option.disabled}', then: 'disabled = "disabled"')} />
+            {option.title}<f:if condition="{option.results}"><f:if condition="{filter.shownumberofresults} && {option.results}"> ({option.results})</f:if></f:if>
+        </label>
+    </f:for>
+</div>

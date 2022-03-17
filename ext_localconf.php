@@ -11,7 +11,8 @@ defined('TYPO3_MODE') or die();
 
 // Todo: Search in allplan_template / connect_template for "Todo"
 // Todo: Remove templates from allplan_template / connect_template, when new version is online
-// Todo: Include static typoscript of this extension
+// Todo: Include static typoscript from ke_search
+// Todo: Include static typoscript from this extension after typoscript from ke_search
 // Todo: Configure extension for mailing
 
 $boot = function(){

@@ -1,9 +1,3 @@
-<!--
-	=====================
-	Partials/ResultRows.html
--->
-
-<div class="clearer"> </div>
 <div id="kesearch_num_results">{numberofresults} {f:translate(key: 'LLL:EXT:allplan_template/Resources/Private/Language/locallang.xlf:search.results')}:</div>
 <f:render partial="Sorting" arguments="{conf: conf, numberofresults: numberofresults, sortingLinks: sortingLinks}" />
 <f:if condition="{conf.pagebrowserOnTop}">

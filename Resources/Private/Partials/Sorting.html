@@ -1,13 +1,8 @@
-<!--
-	=====================
-	Partials/Sorting.html
--->
-
 <f:if condition="{conf.showSortInFrontend}">
 	<f:if condition="{conf.sortByVisitor}">
 		<div id="kesearch_ordering" class="clearfix">
 
-			<p><strong>{f:translate(key: 'LLL:EXT:ke_search/pi1/locallang.xml:label_sort')}</strong></p>
+			<p><strong>{f:translate(key: 'LLL:EXT:ke_search/Resources/Private/Language/locallang_searchbox.xlf:label_sort')}</strong></p>
 
 			<ul class="clearfix">
 				<f:for each="{sortingLinks}" as="sortingLink">

@@ -1,9 +1,4 @@
-{namespace allplan = Allplan\AllplanTemplate\ViewHelpers}
 <f:layout name="General" />
-<!--
-=====================
-Templates/SearchForm.html
--->
 <f:section name="content">
 
 	<div class="filter ke_searchfilter">
@@ -25,7 +20,7 @@ Templates/SearchForm.html
 					</f:if>
 
 					<div class="row">
-						<div class="col-lg-12">
+						<div class="col-lg-12"><!-- Todo: put to allplan_ke_search_extended -->
 							<label for="ke_search_sword">{f:translate(key: 'LLL:EXT:allplan_template/Resources/Private/Language/locallang.xlf:search.search_phrase')}: </label>
 						</div>
 						<div class="col-lg-11 col-md-11">
