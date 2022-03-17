@@ -23,6 +23,7 @@ class GetQueryPartsHook
 
 	/**
 	 * Modifies the last part of query building
+	 * Used by Allplan Faq
 	 * @param array $queryParts
 	 * @param Db|object $pibase
 	 * @param string|null $searchwordQuoted
@@ -49,6 +50,8 @@ class GetQueryPartsHook
 		$debug[] = "line: " . __LINE__  . " queryParts is array";
 
 		$hookData = null;
+
+		// If typoscript is set (Allplan faq)
 		if(is_array($settings) && array_key_exists("getQueryPartsHook", $settings)){
 
 			$debug[] = "line: " . __LINE__ . " found getQueryPartsHook in settings";
