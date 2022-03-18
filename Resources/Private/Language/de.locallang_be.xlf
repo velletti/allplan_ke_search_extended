@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" target-language="de" datatype="plaintext" original="messages">
+		<header/>
+		<body>
+			<trans-unit id="task.indexerTask.title">
+				<target>Indizierungsprozess für ke_search speziell für Allplan Zwecke.</target>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.description">
+				<target>Fügt dem Scheduler weitere Felder hinzu. Sie können zwischen verschiedenen Allplan Indexer Typen wählen.</target>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.deleteOldEntriesPeriodInDays">
+				<target>Einträge löschen, die älter als die folgende Anzahl an Tagen sind (integer)</target>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.indexerConfigUid">
+				<target>Indexer Konfiguration</target>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.sysLanguageUid">
+				<target>Sprache</target>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.sysLanguageUid.default">
+				<target>Sprache des indizierten Datensatzes (Standard)</target>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.sysLanguageUid.allLanguages">
+				<target>Alle Sprachen</target>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.externUrl">
+				<target>Externe Url für die Indizierung und die Ausgabe im Frontend, z.B. für die Allplan Online Hilfe</target>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.storagePid">
+				<target>Explizite Storage-pid für die Index Einträge (Standard: leer => Storage-pid der Indexer Konfiguration wird verwendet)</target>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.fieldProvider.validation.error.deleteOldEntriesPeriodInDays">
+				<target>Die Anzahl an Tagen zum Löschen der Einträge muss integer sein</target>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.fieldProvider.validation.error.indexerConfigUid">
+				<target>Bitte wählen Sie eine Indexer Konfiguration</target>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.fieldProvider.validation.error.externUrl">
+				<target>Die externe Url is nicht gültig</target>
+			</trans-unit>
+			<trans-unit id="task.indexerTask.fieldProvider.validation.error.storagePid">
+				<target>Die explizite Storage-pid für die Index Einträge muss integer sein</target>
+			</trans-unit>
+
+			<trans-unit id="module.startIndexing.disabledButtons">
+				<source>Die Buttons für die Indizierung sind ausgeblendet, da die Indexer auf der Command line laufen müssen</source>
+			</trans-unit>
+			<trans-unit id="module.indexTable.latestEntry">
+				<target>Letzter Index-Eintrag:</target>
+			</trans-unit>
+			<trans-unit id="module.format.datetime">
+				<source>d.m.Y - H:i Uhr</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

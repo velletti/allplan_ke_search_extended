@@ -1,59 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.0">
-	<file source-language="en" datatype="plaintext" original="messages" date="2017-12-19T10:00:00Z" product-name="pb_check_extensions">
+	<file source-language="en" datatype="plaintext" original="messages">
 		<header/>
 		<body>
-			<trans-unit id="format.datetime">
-				<source>Y-m-d - H:i</source>
+			<trans-unit id="search.search_phrase">
+				<source>Your search phrase</source>
 			</trans-unit>
-			<trans-unit id="task.indexerTask.title">
-				<source>Indexing process for ke_search especially for Allplan purposes</source>
+			<trans-unit id="search.find">
+				<source>Find</source>
 			</trans-unit>
-			<trans-unit id="task.indexerTask.description">
-				<source>Adds additional fields to scheduler task, you can select between various Allplan indexer types.</source>
+			<trans-unit id="search.result">
+				<source>Result</source>
 			</trans-unit>
-			<trans-unit id="task.indexerTask.deleteOldEntriesPeriodInDays">
-				<source>Delete entries older than the following number of days (integer)</source>
+			<trans-unit id="search.results">
+				<source>results</source>
 			</trans-unit>
-			<trans-unit id="task.indexerTask.indexerConfigUid">
-				<source>Indexer configuration</source>
+			<trans-unit id="search.noResultsFound">
+				<source>No results found</source>
 			</trans-unit>
-			<trans-unit id="task.indexerTask.sysLanguageUid">
-				<source>Language</source>
+			<trans-unit id="search.tooShort">
+				<source>Search words under length of 3 characters are not processed.</source>
 			</trans-unit>
-			<trans-unit id="task.indexerTask.sysLanguageUid.default">
-				<source>Language from indexed record (default)</source>
-			</trans-unit>
-			<trans-unit id="task.indexerTask.sysLanguageUid.allLanguages">
-				<source>All languages</source>
-			</trans-unit>
-			<trans-unit id="task.indexerTask.externUrl">
-				<source>External url for indexing and list in the frontend, e.g. for the Allplan Online Help</source>
-			</trans-unit>
-			<trans-unit id="task.indexerTask.storagePid">
-				<source>Explicit storage pid for the index entries (default: empty => storage pid of the indexer configuration)</source>
-			</trans-unit>
-
-			<trans-unit id="task.indexerTask.fieldProvider.validation.error.deleteOldEntriesPeriodInDays">
-				<source>The number of days for deleting entries has to be integer</source>
-			</trans-unit>
-			<trans-unit id="task.indexerTask.fieldProvider.validation.error.indexerConfigUid">
-				<source>Please select a indexer configuration</source>
-			</trans-unit>
-			<trans-unit id="task.indexerTask.fieldProvider.validation.error.externUrl">
-				<source>The external url is not valid</source>
-			</trans-unit>
-			<trans-unit id="task.indexerTask.fieldProvider.validation.error.storagePid">
-				<source>The explicit storage pid has to be integer</source>
-			</trans-unit>
-			<trans-unit id="backend.startIndexing.disabledButtons">
-				<source>The buttons for indexing are hidden, because the indexers have to run on command line</source>
-			</trans-unit>
-			<trans-unit id="backend.indexTable.latestEntry">
-				<source>Latest index entry:</source>
-			</trans-unit>
-			<trans-unit id="frontend.pleaseSelect">
+			<trans-unit id="pleaseSelect">
 				<source>Please select</source>
+			</trans-unit>
+			<trans-unit id="dateFormat.month.abbreviation.01">
+				<source>Jan</source>
+			</trans-unit>
+			<trans-unit id="dateFormat.month.abbreviation.02">
+				<source>Feb</source>
+			</trans-unit>
+			<trans-unit id="dateFormat.month.abbreviation.03">
+				<source>Mar</source>
+			</trans-unit>
+			<trans-unit id="dateFormat.month.abbreviation.04">
+				<source>Apr</source>
+			</trans-unit>
+			<trans-unit id="dateFormat.month.abbreviation.05">
+				<source>May</source>
+			</trans-unit>
+			<trans-unit id="dateFormat.month.abbreviation.06">
+				<source>Jun</source>
+			</trans-unit>
+			<trans-unit id="dateFormat.month.abbreviation.07">
+				<source>Jul</source>
+			</trans-unit>
+			<trans-unit id="dateFormat.month.abbreviation.08">
+				<source>Aug</source>
+			</trans-unit>
+			<trans-unit id="dateFormat.month.abbreviation.09">
+				<source>Sep</source>
+			</trans-unit>
+			<trans-unit id="dateFormat.month.abbreviation.10">
+				<source>Oct</source>
+			</trans-unit>
+			<trans-unit id="dateFormat.month.abbreviation.11">
+				<source>Nov</source>
+			</trans-unit>
+			<trans-unit id="dateFormat.month.abbreviation.12">
+				<source>Dec</source>
 			</trans-unit>
 		</body>
 	</file>

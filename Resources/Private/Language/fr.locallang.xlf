@@ -1,64 +1,64 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
-	<file source-language="en" target-language="de" datatype="plaintext" original="messages">
+	<file source-language="en" target-language="fr" datatype="plaintext" original="messages">
 		<header/>
 		<body>
 			<trans-unit id="search.search_phrase">
-				<target>Suchbegriff</target>
+				<target>Votre recherche</target>
 			</trans-unit>
 			<trans-unit id="search.find">
-				<target>Suchen</target>
+				<target>Rechercher</target>
 			</trans-unit>
 			<trans-unit id="search.result">
-				<target>Ergebnis</target>
+				<target>Résultats</target>
 			</trans-unit>
 			<trans-unit id="search.results">
-				<target>Ergebnisse</target>
+				<target>Résultats</target>
 			</trans-unit>
 			<trans-unit id="search.noResultsFound">
-				<target>Keine Ergebnisse gefunden</target>
+				<target>Aucun résultat trouvé</target>
 			</trans-unit>
 			<trans-unit id="search.tooShort">
-				<target>Suchbegriffe unter einer Länge von drei Buchstaben werden ignoriert.</target>
+				<target>Les mots inférieurs à 3 caractères ne sont pas pris en compte.</target>
 			</trans-unit>
 			<trans-unit id="pleaseSelect">
-				<target>Bitte wählen</target>
+				<target>Sélectionnez</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.01">
 				<target>Jan</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.02">
-				<target>Feb</target>
+				<target>Fev</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.03">
-				<target>Mär</target>
+				<target>Mar</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.04">
-				<target>Apr</target>
+				<target>Avr</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.05">
 				<target>Mai</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.06">
-				<target>Jun</target>
+				<target>Juin</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.07">
-				<target>Jul</target>
+				<target>Juil</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.08">
-				<target>Aug</target>
+				<target>Août</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.09">
-				<target>Sep</target>
+				<target>Sept</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.10">
-				<target>Okt</target>
+				<target>Oct</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.11">
 				<target>Nov</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.12">
-				<target>Dez</target>
+				<target>Dec</target>
 			</trans-unit>
 		</body>
 	</file>

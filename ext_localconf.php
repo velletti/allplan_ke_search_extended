@@ -96,8 +96,8 @@ $boot = function(){
 	 */
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\Allplan\AllplanKeSearchExtended\Task\IndexerTask::class] = [
 		'extension' => 'allplan_ke_search_extended',
-		'title' => 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang.xlf:task.indexerTask.title',
-		'description' => 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang.xlf:task.indexerTask.description',
+		'title' => 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_be.xlf:task.indexerTask.title',
+		'description' => 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_be.xlf:task.indexerTask.description',
 		'additionalFields' => 'Allplan\AllplanKeSearchExtended\Task\IndexerTaskAdditionalFieldProvider'
 	];
 

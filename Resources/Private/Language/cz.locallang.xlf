@@ -1,64 +1,64 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
-	<file source-language="en" target-language="de" datatype="plaintext" original="messages">
+	<file source-language="en" target-language="cz" datatype="plaintext" original="messages">
 		<header/>
 		<body>
 			<trans-unit id="search.search_phrase">
-				<target>Suchbegriff</target>
+				<target>Váš hledaný výraz</target>
 			</trans-unit>
 			<trans-unit id="search.find">
-				<target>Suchen</target>
+				<target>Hledat</target>
 			</trans-unit>
 			<trans-unit id="search.result">
-				<target>Ergebnis</target>
+				<target>Výsledek</target>
 			</trans-unit>
 			<trans-unit id="search.results">
-				<target>Ergebnisse</target>
+				<target>Výsledky</target>
 			</trans-unit>
 			<trans-unit id="search.noResultsFound">
-				<target>Keine Ergebnisse gefunden</target>
+				<target>Nebyly nalezneny žádné výsledky</target>
 			</trans-unit>
 			<trans-unit id="search.tooShort">
-				<target>Suchbegriffe unter einer Länge von drei Buchstaben werden ignoriert.</target>
+				<target>Hledání slov s méně než 3 znaky není podporováno.</target>
 			</trans-unit>
 			<trans-unit id="pleaseSelect">
-				<target>Bitte wählen</target>
+				<target>Vyberte prosím</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.01">
-				<target>Jan</target>
+				<target>Led</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.02">
-				<target>Feb</target>
+				<target>Úno</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.03">
-				<target>Mär</target>
+				<target>Bře</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.04">
-				<target>Apr</target>
+				<target>Dub</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.05">
-				<target>Mai</target>
+				<target>Kvě</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.06">
-				<target>Jun</target>
+				<target>ČVN</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.07">
-				<target>Jul</target>
+				<target>ČVC</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.08">
-				<target>Aug</target>
+				<target>SRP</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.09">
-				<target>Sep</target>
+				<target>Zář</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.10">
-				<target>Okt</target>
+				<target>Říj</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.11">
-				<target>Nov</target>
+				<target>Lis</target>
 			</trans-unit>
 			<trans-unit id="dateFormat.month.abbreviation.12">
-				<target>Dez</target>
+				<target>Pro</target>
 			</trans-unit>
 		</body>
 	</file>

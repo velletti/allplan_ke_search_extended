@@ -2,9 +2,9 @@
 namespace Allplan\AllplanKeSearchExtended\ViewHelpers\Format;
 
 /**
- * AllplanTemplate
+ * AllplanKeSearchExtended
  */
-use Allplan\AllplanTemplate\Utility\ArrayUtility;
+use Allplan\AllplanKeSearchExtended\Utility\ArrayUtility;
 
 /**
  * TYPO3Fluid
@@ -19,8 +19,7 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperInterface;
 use Closure;
 
 /**
- * Class StripTagsAndReplaceWithSpaceViewHelper
- * @package Allplan\AllplanTemplate\ViewHelpers
+ * Strip tags and replace with spaces
  * @author Peter Benke <pbenke@allplan.com>
  */
 class StripTagsAndReplaceWithSpaceViewHelper extends AbstractViewHelper implements ViewHelperInterface

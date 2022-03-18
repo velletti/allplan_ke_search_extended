@@ -80,12 +80,19 @@ class LanguageUtility
 	/**
 	 * Translate a given string
 	 * @param string $key
+	 * @param string $view
 	 * @return string|null
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-	public static function translate(string $key): ?string
+	public static function translate(string $key, string $view = 'backend'): ?string
 	{
-		return LocalizationUtility::translate($key, 'allplan_ke_search_extended');
+
+		$prefix = 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_be.xlf:';
+		if($view != 'backend'){
+			$prefix = '';
+		}
+
+		return LocalizationUtility::translate($prefix . $key, 'allplan_ke_search_extended');
 	}
 
 }

@@ -28,13 +28,14 @@ class ModifySearchWordsHook
 		// print_r(['start' => $searchWordInformation]);
 
 		// If GET parameter 'directory' is set (Allplan faq) => urldecode 'wordsAgainst' and 'sword'
-		if(isset($_GET['tx_kesearch_pi1']['directory'])){
+		$directory = trim(GeneralUtility::_GP('tx_kesearch_pi1')['directory']);
+		if(!empty($directory)){
 
-			if ($searchWordInformation['wordsAgainst'] == '') {
-				$searchWordInformation['wordsAgainst'] = urldecode(trim($_GET['tx_kesearch_pi1']['directory']));
+			if ($searchWordInformation['wordsAgainst'] == ''){
+				$searchWordInformation['wordsAgainst'] = urldecode($directory);
 			}
-			if ($searchWordInformation['sword'] == '') {
-				$searchWordInformation['sword'] = urldecode(trim($_GET['tx_kesearch_pi1']['directory']));
+			if ($searchWordInformation['sword'] == ''){
+				$searchWordInformation['sword'] = urldecode($directory);
 			}
 		}
 

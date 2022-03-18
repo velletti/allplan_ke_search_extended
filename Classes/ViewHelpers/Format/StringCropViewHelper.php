@@ -2,9 +2,9 @@
 namespace Allplan\AllplanKeSearchExtended\ViewHelpers\Format;
 
 /**
- * AllplanTemplate
+ * AllplanKeSearchExtended
  */
-use Allplan\AllplanTemplate\Utility\ArrayUtility;
+use Allplan\AllplanKeSearchExtended\Utility\ArrayUtility;
 
 /**
  * TYPO3Fluid
@@ -17,7 +17,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
  * https://wwwv10.allplan.com.ddev.site/de/termine/alle-termine/events-detail/event/event/show/allplan-advanced-engineering-2022-10-19/
  * =>
  * https://wwwv10.allplan.com.ddev.site/de/termine/alle-termine/events-...d-engineering-2022-10-19/
- * @package Allplan\AllplanTemplate\ViewHelpers
  * @author Peter Benke <pbenke@allplan.com>
  */
 class StringCropViewHelper extends AbstractViewHelper
