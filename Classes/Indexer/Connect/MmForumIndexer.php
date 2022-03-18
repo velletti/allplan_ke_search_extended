@@ -73,8 +73,6 @@ class MmForumIndexer extends IndexerBase implements IndexerInterface
 	public function startIndexing(): int
 	{
 
-		// Todo delete unneeded functions in utilities
-
 		// Better variable name
 		/** @var KeSearchIndexerRunner|IndexerRunner $indexerRunner */
 		$indexerRunner = $this->pObj;

@@ -2,18 +2,29 @@
 namespace Allplan\AllplanKeSearchExtended\Middleware;
 
 /**
+ * AllplanKeSearchExtended
+ */
+use Allplan\AllplanKeSearchExtended\ViewHelpers\KeSearchDirectoryViewHelper;
+
+/**
+ * TYPO3
+ */
+use TYPO3\CMS\Core\Http\Response;
+use TYPO3\CMS\Core\Http\Stream;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
+/**
+ * Doctrine
+ */
+use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
+
+/**
  * Psr
  */
-// Todo sort
-use Allplan\AllplanKeSearchExtended\ViewHelpers\KeSearchDirectoryViewHelper;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use TYPO3\CMS\Core\Http\Response;
-use TYPO3\CMS\Core\Http\Stream;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 
 /**
  * Gets the select box(es) for the FAQ in Connect (page uid [14081])
