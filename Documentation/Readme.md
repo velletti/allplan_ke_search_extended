@@ -29,7 +29,7 @@ E.g.: Allplan Online Help DE => Is shown on Germany, Austria and Switzerland => 
 
 ### Notes
 
-1. On start indexing, ke_search writes an entry to sys_registry with current timestamp
+1. On start indexing, ke_search writes an entry to sys_registry with current timestamp for locking (**IndexerTask**)
 2. Index records will be updated (instead of deleted and new created) or new ones will be inserted => in function prepareStatements()
 3. ke_search now deletes all entries (**after** update records), which are older than the starting timestamp. This is done in its cleanUpIndex()-function, which is hooked by our cleanUp()-function.
 
