@@ -2,9 +2,9 @@
 namespace Allplan\AllplanKeSearchExtended\ViewHelpers\Format;
 
 /**
- * AllplanTemplate
+ * AllplanKeSearchExtended
  */
-use Allplan\AllplanTemplate\Utility\ArrayUtility;
+use Allplan\AllplanKeSearchExtended\Utility\ArrayUtility;
 
 /**
  * TYPO3Fluid
@@ -17,9 +17,8 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
- * WriteDateAbbreviationViewHelper
+ * Writes a month as string, e.g. 'April' by a given number, e.g. 04
  * Class WriteDateAbbreviationViewHelper
- * @package Allplan\AllplanTemplate\ViewHelpers
  * @author Peter Benke <pbenke@allplan.com>
  */
 class WriteDateAbbreviationViewHelper extends AbstractViewHelper{
@@ -35,14 +34,14 @@ class WriteDateAbbreviationViewHelper extends AbstractViewHelper{
 	}
 
 	/**
-	 * @return string
+	 * @return string|null
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-	public function render(): string
+	public function render(): ?string
 	{
 
 		$month = ArrayUtility::getValueByKey($this->arguments, 'month');
-		return LocalizationUtility::translate('dateFormat.month.abbreviation.' . $month, 'allplan_template');
+		return LocalizationUtility::translate('dateFormat.month.abbreviation.' . $month, 'allplan_ke_search_extended');
 
 	}
 

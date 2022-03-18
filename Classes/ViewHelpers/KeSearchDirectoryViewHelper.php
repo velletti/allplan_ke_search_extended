@@ -117,7 +117,7 @@ class KeSearchDirectoryViewHelper extends AbstractViewHelper
 				$directory = GeneralUtility::trimExplode("\\", trim(urldecode($params['directory'])));
 			}
 
-			$contentSelect1.= '<option>' . LanguageUtility::translate('frontend.pleaseSelect') . '</option>';
+			$contentSelect1.= '<option>' . LanguageUtility::translate('pleaseSelect', 'frontend') . '</option>';
 			$lastOption = '#-#';
 			foreach ($rows as $row){
 				$thisOption = $this->getOption($row['directory']);
@@ -188,7 +188,7 @@ class KeSearchDirectoryViewHelper extends AbstractViewHelper
 		}
 		if($contentSelect2){
 			$content['select2'] = '<select style="margin-bottom:5px;" name="tx_kesearch_pi1[directory2]" onchange="allplan_kesearch_change(this);return true;" data-pid="' . $pid . '" data-lng="' . $lng . '" data-level="2" data-cat="tx_kesearch_pi1[directory2]" class="form-control kesearch-directory kesearch-directory2">'
-				. "<option value=\"" . urlencode($directory[0] ) . "\">" . LanguageUtility::translate("frontend.pleaseSelect") . "</option>"
+				. "<option value=\"" . urlencode($directory[0] ) . "\">" . LanguageUtility::translate('pleaseSelect', 'frontend') . "</option>"
 				. $contentSelect2
 				. '</select>';
 		} else {
@@ -196,7 +196,7 @@ class KeSearchDirectoryViewHelper extends AbstractViewHelper
 		}
 		if ($contentSelect3){
 			$content['select3'] = '<select name="tx_kesearch_pi1[directory3]" onchange="allplan_kesearch_change(this);return true;" data-pid="' . $pid . '" data-lng="' . $lng . '" data-level="3" data-cat="tx_kesearch_pi1[directory3]" class="form-control kesearch-directory kesearch-directory3">'
-				. "<option value=\"" . urlencode($directory[0] . "\\" . $directory[1] ) . "\">" . LanguageUtility::translate("frontend.pleaseSelect") . "</option>"
+				. "<option value=\"" . urlencode($directory[0] . "\\" . $directory[1] ) . "\">" . LanguageUtility::translate('pleaseSelect', 'frontend') . "</option>"
 				. $contentSelect3
 				. '</select>';
 		} else {

@@ -79,8 +79,8 @@ class ModifyIndexTableInformationViewHelper extends AbstractViewHelper
 			// Now get the latest index entry of every indexer type and add it as formatted date
 			for($i=0; $i<count($matches); $i++){
 
-				$latestEntry = LanguageUtility::translate('backend.indexTable.latestEntry') . ': ';
-				$latestEntry.= date(LanguageUtility::translate('format.datetime'), DbUtility::getLatestTstampByIndexerType($matches[1][$i]));
+				$latestEntry = LanguageUtility::translate('module.indexTable.latestEntry') . ': ';
+				$latestEntry.= date(LanguageUtility::translate('module.format.datetime'), DbUtility::getLatestTstampByIndexerType($matches[1][$i]));
 
 				$content = str_replace(
 					$matches[0][$i],

@@ -62,7 +62,7 @@ class IndexerTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
 
 		}
 
-		$localLangPrefix = 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang.xlf:task.indexerTask.';
+		$localLangPrefix = 'LLL:EXT:allplan_ke_search_extended/Resources/Private/Language/locallang_be.xlf:task.indexerTask.';
 
 		return[
 
