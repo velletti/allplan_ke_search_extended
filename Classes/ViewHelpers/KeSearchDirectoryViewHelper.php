@@ -27,7 +27,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
 /**
- * Todo: check, if viewhelper is needed, when new faq indexer ready
  * Get the ke_search directories (tx_kesearch_index.directory) as html select box
  * this column is used by FAQ indexer for the categories
  */
