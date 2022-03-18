@@ -1,12 +1,6 @@
-
-# Todo Rename columns TYPO3 conform (tx...)
-# 
-# TEST JV 
-#
-# Table structure for table 'tx_kesearch_allplan_url_ids'
-#
-
--- Todo: TYPO3 conform table name
+-- Table structure for table 'tx_kesearch_allplan_url_ids'
+-- (Used for Allplan faq)
+-- Todo: TYPO3 conform table name, new column names, if we have the new version of Allplan faq
 CREATE TABLE tx_kesearch_allplan_url_ids (
     uid int(11) NOT NULL auto_increment,
     pid int(11) DEFAULT '0' NOT NULL,

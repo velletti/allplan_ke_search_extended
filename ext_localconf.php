@@ -1,19 +1,16 @@
 <?php
 defined('TYPO3_MODE') or die();
 
-// Todo: Sync script: Problem server_name only "connect"...?
-
-// Todo: Change git repository to git.allplan.com
-
-// Todo: Configure ke_search, that we get email notices
-
-// Todo: Mark unused hooks
-
-// Todo: Search in allplan_template / connect_template for "Todo allplan_ke_search_extended"
-// Todo: Remove templates from allplan_template / connect_template, when new version is online
-// Todo: Include static typoscript from ke_search
-// Todo: Include static typoscript from this extension after typoscript from ke_search
-// Todo: Configure extension for mailing
+/**
+ * Todo:
+ * - Sync script: Problem server_name only "connect"...?
+ * - Change git repository to git.allplan.com
+ * - Configure ke_search, that we get email notices
+ * - Search in allplan_template / connect_template for "Todo allplan_ke_search_extended"
+ * - Remove templates from allplan_template / connect_template, when new version is online
+ * - Include static typoscript from ke_search
+ * - Include static typoscript from this extension after typoscript from ke_search
+ */
 
 $boot = function(){
 
