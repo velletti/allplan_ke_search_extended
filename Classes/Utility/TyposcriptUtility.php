@@ -22,37 +22,16 @@ class TyposcriptUtility
 
 	/**
 	 * Loads the typoscript from scratch
-	 * @author Jörg Velletti <jvelletti@allplan.com>
-	 * @author Peter Benke <pbenke@allplan.com>
-	 * @param int $pageUid
+	 * @param string|int $pageUid
 	 * @param string $extKey
-	 * @param mixed $conditions array with Constants Conditions if needed
-     *                          this
-     *                          The Condition must be either :
-     *                          a) one of the following Common Vars: (i did not test this, but found it in source !)
-     *                         'usergroup' , 'treeLevel' , PIDupinRootline' or  'PIDinRootline':
-     *                         f.e. : array( 'usergroup=2,4' )
-     *
-     *                          or ( this is tested)
-     *                          b) the exact Condition from YOUR Constants.ts file
-     *                          f.e. [globalVar = GP:L = 1] or [globalString = IENV:HTTP_HOST = dev.domain.com]
-     *                          As this must be an array, also multiple Conditions can be handed over:
-     *                          f.e. array( [globalVar = GP:L = 1] , [globalString = IENV:HTTP_HOST = yoursub.domain.com] )
-     *
-	 * @param bool $getConstants default=false,  will return  Constants (all or those from an extension) instaed of Setup
+	 * @param mixed $conditions
+	 * @param bool $getConstants default=false, will return constants (all or those from an extension) instead of setup
 	 * @return array
 	 * @throws Exception
+	 * @author Jörg Velletti <jvelletti@allplan.com>
+	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-
-	/**
-	 * @param int $pageUid
-	 * @param string $extKey
-	 * @param false $conditions
-	 * @param false $getConstants
-	 * @return array
-	 */
-	// Todo cleanup and check (used in hook)
-	public static function loadTypoScriptFromScratch($pageUid = 0, $extKey = '', $conditions = false, $getConstants = false)
+	public static function loadTypoScriptFromScratch($pageUid = 0, string $extKey = '', $conditions = false, bool $getConstants = false): array
 	{
 
 		/**
@@ -60,7 +39,7 @@ class TyposcriptUtility
 		 * @var RootlineUtility $rootLineUtility
 		 */
 		$extendedTemplateService = GeneralUtility::makeInstance(ExtendedTemplateService::class);
-		$rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $pageUid);
+		$rootLineUtility = GeneralUtility::makeInstance(RootlineUtility::class, (int)$pageUid);
 
 		$rootLine = $rootLineUtility->get();
 
