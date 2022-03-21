@@ -43,7 +43,6 @@ class CustomIndexerHook
 	{
 
 		// Todo:
-		// Contentserve, since the new extension is online
 		// Faq, since migrated to Salesforce
 		// Shop, since online again
 
