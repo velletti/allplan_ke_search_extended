@@ -40,6 +40,15 @@ class RegisterIndexerConfigurationHook
 		 * =============================================================================================================
 		 */
 
+		// Allplan content
+		// -------------------------------------------------------------------------------------------------------------
+		$params['items'][] = [
+			'Allplan content (EXT:allplan_content)',
+			'allplan_content',
+			// Todo: create icon
+			$iconPath . 'Connect/allplan-content.png'
+		];
+
 		// Elearning lessons (videos) (EXT:marit_elearning)
 		// -------------------------------------------------------------------------------------------------------------
 		$params['items'][] = [

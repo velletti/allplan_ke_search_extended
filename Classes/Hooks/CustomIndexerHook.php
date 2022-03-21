@@ -4,6 +4,7 @@ namespace Allplan\AllplanKeSearchExtended\Hooks;
 /**
  * AllplanKeSearchExtended
  */
+use Allplan\AllplanKeSearchExtended\Indexer\Connect\AllplanContentIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\Connect\MaritElearningDocumentsIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\Connect\MaritElearningLessonsIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\Connect\MmForumIndexer;
@@ -69,6 +70,16 @@ class CustomIndexerHook
 			 * Connect
 			 * =============================================================================================================
 			 */
+			case 'allplan_content':
+				$allplanContentIndexer = GeneralUtility::makeInstance(AllplanContentIndexer::class, $indexerRunner);
+				$resultCount = $allplanContentIndexer->startIndexing();
+				$content = $this->formatContent(
+					$indexerConfig['title'],
+					'Allplan content (EXT:allplan_content)',
+					$resultCount
+				);
+				break;
+
 			case 'marit_elearning_lessons':
 				$maritElearningLessonsIndexer = GeneralUtility::makeInstance(MaritElearningLessonsIndexer::class, $indexerRunner);
 				$resultCount = $maritElearningLessonsIndexer->startIndexing();
