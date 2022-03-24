@@ -134,7 +134,7 @@ class MaritElearningDocumentsIndexer extends IndexerBase implements IndexerInter
 		$language = IndexerUtility::getLanguage($indexerRunner, $record['sys_language_uid']); // sys_language_uid
 		$startTime = 0;
 		$endTime = 0;
-		$feGroup = FeGroupUtility::getElearningFeGroupForIndex($record['fe_group']);
+		$feGroup = FeGroupUtility::getFeGroupsForIndex($record['fe_group']);
 		$debugOnly = false;
 		$additionalFields = [
 			'orig_uid' => $record['uid'],

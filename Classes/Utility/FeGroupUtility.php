@@ -5,15 +5,14 @@ class FeGroupUtility
 {
 
 	/**
-	 * => For marit elearning videos
 	 * Get the fe_group, which should be written into tx_kesearch_index by a given comma separated list of fe_groups
-	 * Only internal videos or "student"-videos will get a fe_group, all others return an empty string
-	 * => "student"-videos should not be shown to Forum users, SP users, etc...
+	 * Only internal records or "student"-records will get a fe_group, all others return an empty string
+	 * => "student"-records should not be shown to Forum users, SP users, etc...
 	 * @param string $feGroupList
 	 * @return string
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-	public static function getElearningFeGroupForIndex(string $feGroupList):string
+	public static function getFeGroupsForIndex(string $feGroupList):string
 	{
 
 		$feGroups = explode(',', $feGroupList);
