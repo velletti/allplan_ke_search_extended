@@ -109,7 +109,12 @@ class JvEventsIndexer extends IndexerBase implements IndexerInterface
 		$pid = IndexerUtility::getStoragePid($indexerRunner, $indexerConfig); // storage pid, where the indexed data should be stored
 		$title = FormatUtility::cleanStringForIndex($record['name']); // title in the result list
 		$type = $indexerConfig['type']; // content type (to differ in frontend (css class))
-		$targetPid = $indexerConfig['targetpid']; // target pid for the detail link / external url
+		// Absolute url here, so we can use this record on connect as well as on www
+		$targetPid = EnvironmentUtility::getServerProtocolAndHost() . '/?id=' . $record['targetpid'] . '&' . implode('&', [
+				'tx_jvevents_events[event]=' . intval($record['uid']),
+				'tx_jvevents_events[action]=show',
+				'tx_jvevents_events[controller]=Event'
+			]); // target pid for the detail link / external url
 		$content = FormatUtility::buildContentForIndex([
 			$record['name'],
 			$record['teaser'],
@@ -123,11 +128,7 @@ class JvEventsIndexer extends IndexerBase implements IndexerInterface
 			$record['organizer_desc'],
 		]); // below the title in the result list
 		$tags = ''; // tags
-		$params = '&' . implode('&', [
-			'tx_jvevents_events[event]=' . intval($record['uid']),
-			'tx_jvevents_events[action]=show',
-			'tx_jvevents_events[controller]=Event'
-		]); // additional parameters for the link in frontend
+		$params = '_blank'; // additional parameters for the link in frontend
 		$abstract = FormatUtility::cleanStringForIndex($record['teaser']);
 		$language = IndexerUtility::getLanguage($indexerRunner, $record['sys_language_uid']); // sys_language_uid
 		$startTime = 0;

@@ -152,7 +152,9 @@ class MmForumIndexer extends IndexerBase implements IndexerInterface
 		$pid = IndexerUtility::getStoragePid($indexerRunner, $indexerConfig, (int)$record['sys_language_uid']); // storage pid, where the indexed data should be stored
 		$title = FormatUtility::cleanStringForIndex($record['topic_subject']); // title in the result list
 		$type = $typeAndFeGroup['type']; // content type (to differ in frontend (css class))
-		$targetPid = 'https://connect.allplan.com/index.php?id=' . $record['forum_displayed_pid'] . '&' . implode('&', [
+
+		// Absolute url here, so we can use this record on connect as well as on www
+		$targetPid = EnvironmentUtility::getServerProtocolAndHost() . '/?id=' . $record['forum_displayed_pid'] . '&' . implode('&', [
 				'tx_mmforum_pi1[forum]=' . intval($record['forum_uid']),
 				'tx_mmforum_pi1[topic]=' . intval($record['topic_uid']),
 				'tx_mmforum_pi1[action]=show',
@@ -166,7 +168,7 @@ class MmForumIndexer extends IndexerBase implements IndexerInterface
 			DbUtility::getForumTopicTagsByTopicUid($record['topic_uid'])
 		]);
 		$tags = '#forum#'; // tags
-		$params = ''; // additional parameters for the link in frontend
+		$params = '_blank'; // additional parameters for the link in frontend
 		$abstract = ''; // not used here
 		// $language = see above...
 		$startTime = 0;

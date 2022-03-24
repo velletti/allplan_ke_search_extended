@@ -103,8 +103,8 @@ class MaritElearningLessonsIndexer extends IndexerBase implements IndexerInterfa
 		$title = FormatUtility::cleanStringForIndex($record['title']); // title in the result list
 		$type = $indexerConfig['type']; // content type (to differ in frontend (css class))
 
-		// Always Connect is ok (also Campus records)
-		$targetPid = 'https://connect.allplan.com/index.php?id=' . $indexerConfig['targetpid'] . '&' . implode('&', [
+		// Absolute url here, so we can use this record on connect as well as on www
+		$targetPid = EnvironmentUtility::getServerProtocolAndHost() . '/?id=' . $indexerConfig['targetpid'] . '&' . implode('&', [
 			'tx_maritelearning_pi1[lesson]=' . intval($record['uid']),
 			'tx_maritelearning_pi1[action]=single',
 			'tx_maritelearning_pi1[controller]=Lesson'
