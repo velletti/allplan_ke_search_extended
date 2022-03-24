@@ -11,6 +11,7 @@ Everything is stored in storage folders considering the same tree structure with
 4. Create a new Indexer inside Classes/Indexer/. Extend from **IndexerBase** and implement **IndexerInterface**
 5. Add some cleanup in **CleanupHook**, if needed
 6. Add the indexer to Resources/Private/Templates/BackendModule/LastIndexingReport.html for backend report
+7. Consider the new indexer type in shell scripts on Connect / Www: keSearchIndexImportExport.sh
 
 **Footnotes**:\
 <sup>1</sup>sys_folder for the index entries:\

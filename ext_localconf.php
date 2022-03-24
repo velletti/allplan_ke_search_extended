@@ -3,11 +3,13 @@ defined('TYPO3_MODE') or die();
 
 /**
  * Todo:
- * - Sync script: Problem server_name only "connect"...?
  * - Change git repository to git.allplan.com
- * - Configure ke_search, that we get email notices
+ *
+ * When new version is online on www/connect:
+ * ---------------------------------------------------------------------------------------
  * - Search in allplan_template / connect_template for "Todo allplan_ke_search_extended"
- * - Remove templates from allplan_template / connect_template, when new version is online
+ * - Search in keSearchIndexImportExport.sh on www and connect for "Todo allplan_ke_search_extended"
+ * - Remove templates from allplan_template / connect_template
  * - Include static typoscript from ke_search
  * - Include static typoscript from this extension after typoscript from ke_search
  */
