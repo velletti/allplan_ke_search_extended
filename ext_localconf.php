@@ -21,37 +21,49 @@ $boot = function(){
 	 * =================================================================================================================
 	 */
 
-	// Add custom indexers to the TCA of the indexer-configuration
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['registerIndexerConfiguration'][] =
-		\Allplan\AllplanKeSearchExtended\Hooks\RegisterIndexerConfigurationHook::class;
+	// Hook for additional markers in result row
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['additionalResultMarker'][] =
+		\Allplan\AllplanKeSearchExtended\Hooks\AdditionalResultMarkerHook::class;
+
+	// Cleanup for counting and deleting old index records
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['cleanup'][] =
+		\Allplan\AllplanKeSearchExtended\Hooks\CleanupHook::class;
 
 	// Index custom content
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['customIndexer'][] =
 		\Allplan\AllplanKeSearchExtended\Hooks\CustomIndexerHook::class;
 
-	// Modify the page content fields (own columns in tt_content)
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyPageContentFields'][] =
-		\Allplan\AllplanKeSearchExtended\Hooks\ModifyPageContentFieldsHook::class;
+	// Hook to add a custom types
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['GenericRepositoryTablename'][] =
+		\Allplan\AllplanKeSearchExtended\Hooks\GenericRepositoryTablenameHook::class;
+
+	// Modifies the last part of query building
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['getQueryParts'][] =
+		\Allplan\AllplanKeSearchExtended\Hooks\GetQueryPartsHook::class;
+
+	// Change any variable while initializing the plugin
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['initials'][] =
+		\Allplan\AllplanKeSearchExtended\Hooks\InitialsHook::class;
+
+	// Modifies the tt_address data just before it will be saved into database
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyAddressIndexEntry'][] =
+		\Allplan\AllplanKeSearchExtended\Hooks\ModifyAddressIndexEntryHook::class;
 
 	// Modify content from these custom field(s)
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyContentFromContentElement'][] =
 		\Allplan\AllplanKeSearchExtended\Hooks\ModifyContentFromContentElementHook::class;
 
-	// Extend the indexer table with own columns
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['registerAdditionalFields'][] =
-		\Allplan\AllplanKeSearchExtended\Hooks\RegisterAdditionalFieldsHook::class;
-
 	// Modifies the indexed data, e.g. tags
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyContentIndexEntry'][] =
 		\Allplan\AllplanKeSearchExtended\Hooks\ModifyContentIndexEntryHook::class;
 
-	// Modifies the page data just before it will be saved into database
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyPagesIndexEntry'][] =
-		\Allplan\AllplanKeSearchExtended\Hooks\ModifyPagesIndexEntryHook::class;
+	// Modifies the news data just before it will be saved into database
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyExtNewsIndexEntry'][] =
+		\Allplan\AllplanKeSearchExtended\Hooks\ModifyExtNewsIndexEntryHook::class;
 
 	// Modifies the tt_address data just before it will be saved into database
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyAddressIndexEntry'][] =
-		\Allplan\AllplanKeSearchExtended\Hooks\ModifyAddressIndexEntryHook::class;
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFileIndexEntry'][] =
+		\Allplan\AllplanKeSearchExtended\Hooks\ModifyFileIndexEntryHook::class;
 
 	// Modifies the search filters
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFilters'][] =
@@ -61,33 +73,25 @@ $boot = function(){
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFlexFormData'][] =
 		\Allplan\AllplanKeSearchExtended\Hooks\ModifyFlexFormDataHook::class;
 
-	// Modifies the news data just before it will be saved into database
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyExtNewsIndexEntry'][] =
-		\Allplan\AllplanKeSearchExtended\Hooks\ModifyExtNewsIndexEntryHook::class;
+	// Modify the page content fields (own columns in tt_content)
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyPageContentFields'][] =
+		\Allplan\AllplanKeSearchExtended\Hooks\ModifyPageContentFieldsHook::class;
 
-	// Hook for additional markers in result row
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['additionalResultMarker'][] =
-		\Allplan\AllplanKeSearchExtended\Hooks\AdditionalResultMarkerHook::class;
-
-	// Modifies the last part of query building
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['getQueryParts'][] =
-		\Allplan\AllplanKeSearchExtended\Hooks\GetQueryPartsHook::class;
-
-	// Hook to add a custom types
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['GenericRepositoryTablename'][] =
-		\Allplan\AllplanKeSearchExtended\Hooks\GenericRepositoryTablenameHook::class;
+	// Modifies the page data just before it will be saved into database
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyPagesIndexEntry'][] =
+		\Allplan\AllplanKeSearchExtended\Hooks\ModifyPagesIndexEntryHook::class;
 
 	// Modifies the search input
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifySearchWords'][] =
 		\Allplan\AllplanKeSearchExtended\Hooks\ModifySearchWordsHook::class;
 
-	// Cleanup for counting and deleting old index records
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['cleanup'][] =
-		\Allplan\AllplanKeSearchExtended\Hooks\CleanupHook::class;
+	// Extend the indexer table with own columns
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['registerAdditionalFields'][] =
+		\Allplan\AllplanKeSearchExtended\Hooks\RegisterAdditionalFieldsHook::class;
 
-	// Change any variable while initializing the plugin
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['initials'][] =
-		\Allplan\AllplanKeSearchExtended\Hooks\InitialsHook::class;
+	// Add custom indexers to the TCA of the indexer-configuration
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['registerIndexerConfiguration'][] =
+		\Allplan\AllplanKeSearchExtended\Hooks\RegisterIndexerConfigurationHook::class;
 
 	/**
 	 * Scheduler task
