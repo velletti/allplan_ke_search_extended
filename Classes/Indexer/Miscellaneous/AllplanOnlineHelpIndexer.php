@@ -62,7 +62,10 @@ class AllplanOnlineHelpIndexer extends IndexerBase implements IndexerInterface
 		$json = JsonUtility::getJsonFile($externUrl);
 
 		// Check, if we have a valid json-array
-		if(is_array($json) && $json['error'] > 0){
+		if(!is_array($json)){
+			return 0;
+		}
+		if($json['error'] > 0){
 			return 0;
 		}
 
