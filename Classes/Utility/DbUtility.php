@@ -181,7 +181,7 @@ class DbUtility
 	public static function getLatestTstampByIndexerType(string $indexerType)
 	{
 		$connectionPool = GeneralUtility::makeInstance( ConnectionPool::class);
-		$queryBuilder = $connectionPool->getQueryBuilderForTable('tx_kesearch_indexerconfig');
+		$queryBuilder = $connectionPool->getQueryBuilderForTable('tx_kesearch_index');
 
 		try{
 			$result = $queryBuilder
@@ -203,6 +203,38 @@ class DbUtility
 		return $result;
 
 	}
+
+    /**
+     * Get the latest tstamp by a given indexer type
+     * @param string $indexerType
+     * @return mixed|null
+     * @author Peter Benke <pbenke@allplan.com>
+     */
+    public static function getLatestSortdateByIndexerType(string $indexerType)
+    {
+        $connectionPool = GeneralUtility::makeInstance( ConnectionPool::class);
+        $queryBuilder = $connectionPool->getQueryBuilderForTable('tx_kesearch_index');
+
+        try{
+            $result = $queryBuilder
+                ->select('sortdate')
+                ->from('tx_kesearch_index')
+                ->where($queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter($indexerType)))
+                ->from('tx_kesearch_index')
+                ->orderBy('sortdate','DESC')
+                ->execute()->fetchOne()
+            ;
+        }catch(DoctrineDBALDriverException $e){
+            return null;
+        }
+
+        if(empty($result)){
+            return null;
+        }
+
+        return $result;
+
+    }
 
 
 	/**

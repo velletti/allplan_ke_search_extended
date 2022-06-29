@@ -5,6 +5,7 @@ namespace Allplan\AllplanKeSearchExtended\Hooks;
  * AllplanKeSearchExtended
  */
 use Allplan\AllplanKeSearchExtended\Indexer\Connect\AllplanContentIndexer;
+use Allplan\AllplanKeSearchExtended\Indexer\Connect\FaqIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\Connect\MaritElearningDocumentsIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\Connect\MaritElearningLessonsIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\Connect\MmForumIndexer;
@@ -108,6 +109,16 @@ class CustomIndexerHook
 					$resultCount
 				);
 				break;
+
+            case 'supportfaq':
+                $faqIndexer = GeneralUtility::makeInstance(FaqIndexer::class, $indexerRunner);
+                $resultCount = $faqIndexer->startIndexing();
+                $content = $this->formatContent(
+                    $indexerConfig['title'],
+                    'Faq (Salesforce: knowledgebase articles)',
+                    $resultCount
+                );
+                break;
 
 			/**
 			 * Miscellaneous

@@ -72,6 +72,13 @@ class RegisterIndexerConfigurationHook
 			$iconPath . 'Connect/mm-forum.png'
 		];
 
+        // Allplan Support FAQ
+        // -------------------------------------------------------------------------------------------------------------
+        $params['items'][] = [
+            'FAQ - Knowledgebase Articles',
+            'supportfaq',
+            $iconPath . 'Miscellaneous/allplan-online-help.png'
+        ];
 
 		/**
 		 * Miscellaneous
