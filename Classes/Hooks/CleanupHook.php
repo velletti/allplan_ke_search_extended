@@ -54,13 +54,19 @@ class CleanupHook
 
 		// pid and type
 		// -------------------------------------------------------------------------------------------------------------
-		// Special case: Forum indexer (multiple indexer types and storage pids, same in connect and www)
-		if(IndexerUtility::isForumIndexerType($indexerConfig['type'])){
+		// Special case: Forum /FAQ indexer (multiple indexer types and storage pids, same in connect and www)
+		if(IndexerUtility::isForumIndexerType($indexerConfig['type'])) {
 
-			$deleteConditions[] = "`pid` IN (" . DbUtility::getForumIndexerStoragePidsForSql() . ")";
-			$deleteConditions[] = "`type` IN (" . DbUtility::getForumIndexerTypesForSql() . ")";
-			// do not consider language
-			$language  = null;
+            $deleteConditions[] = "`pid` IN (" . DbUtility::getForumIndexerStoragePidsForSql() . ")";
+            $deleteConditions[] = "`type` IN (" . DbUtility::getForumIndexerTypesForSql() . ")";
+            // do not consider language
+            $language = null;
+
+        }else if(IndexerUtility::isFaqIndexerType($indexerConfig['type'])) {
+            $deleteConditions[] = "`pid` IN (" . DbUtility::getFaqIndexerStoragePidsForSql() . ")";
+            $deleteConditions[] = "`type` IN (" . DbUtility::getFaqIndexerTypesForSql() . ")";
+            // do not consider language
+            $language = null;
 
 		// all the other indexers
 		}else{

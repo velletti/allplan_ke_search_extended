@@ -4,6 +4,8 @@ namespace Allplan\AllplanKeSearchExtended\Utility;
 /**
  * AllplanKeSearchExtended
  */
+
+use Allplan\AllplanKeSearchExtended\Indexer\Connect\FaqIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\Connect\MmForumIndexer;
 use Allplan\AllplanKeSearchExtended\Indexer\IndexerRunner;
 use Allplan\AllplanKeSearchExtended\Task\IndexerTaskConfiguration;
@@ -91,6 +93,23 @@ class IndexerUtility
 			}
 
 		}
+        // Special case indexer type: faq  (with different storage folders)
+        if(self::isFaqIndexerType($indexerType) && !is_null($sysLanguageUid)){
+            switch((int)$sysLanguageUid){
+                // FR
+                case 4:
+                    return FaqUtility::FAQ_INDEXER_STORAGE_PID_FR;
+
+                // DACH
+                case 1:
+                    return FaqUtility::FAQ_INDEXER_STORAGE_PID_DACH;
+
+                // OTHER languages
+                default:
+                    return FaqUtility::FAQ_INDEXER_STORAGE_PID_EN ;
+            }
+
+        }
 
 		// All other indexer types
 		$pid = $indexerConfig['pid'];
@@ -124,6 +143,27 @@ class IndexerUtility
 		return false;
 	}
 
+    /**
+     * Checks, if a given type is a forum indexer type
+     * (for forum, we have multiple indexer types)
+     * @param string $type
+     * @return bool
+     * @author Peter Benke <pbenke@allplan.com>
+     */
+    public static function isFaqIndexerType(string $type): bool
+    {
+        if(in_array($type, [
+            FaqUtility::FAQ_INDEXER_TYPE_DEFAULT ,
+            FaqUtility::FAQ_INDEXER_TYPE_BETA,
+            FaqUtility::FAQ_INDEXER_TYPE_SP,
+            FaqUtility::FAQ_INDEXER_TYPE_NEM ,
+            FaqUtility::FAQ_INDEXER_TYPE_LOCKED ,
+        ])){
+            return true;
+        }
+        return false;
+    }
+
 	/**
 	 * Gets an instance from the forum indexer, mainly used to have access to its constants
 	 * @return MmForumIndexer
@@ -135,5 +175,18 @@ class IndexerUtility
 		$indexerRunner = GeneralUtility::makeInstance(IndexerRunner::class, $taskConfiguration);
 		return GeneralUtility::makeInstance(MmForumIndexer::class, $indexerRunner);
 	}
+
+    /**
+     * Gets an instance from the forum indexer, mainly used to have access to its constants
+     * @return FaqIndexer
+     * @author Peter Benke <pbenke@allplan.com>
+     * @author Jörg Velletti <jvelletti@allplan.com>
+     */
+    public static function getFAQIndexerInstance(): FaqIndexer
+    {
+        $taskConfiguration = GeneralUtility::makeInstance(IndexerTaskConfiguration::class);
+        $indexerRunner = GeneralUtility::makeInstance(IndexerRunner::class, $taskConfiguration);
+        return GeneralUtility::makeInstance(FaqIndexer::class, $indexerRunner);
+    }
 
 }

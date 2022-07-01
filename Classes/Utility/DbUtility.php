@@ -37,26 +37,29 @@ class DbUtility
 	 * @see https://docs.typo3.org/m/typo3/reference-coreapi/10.4/en-us/ApiOverview/SystemLog/Index.html
 	 * @param string $title
 	 * @param int|string $numberOfRecords
+	 * @param string|null $details
+	 * @param string|null $logData
 	 * @throws Exception
 	 * @author Peter Benke <pbenke@allplan.com>
 	 */
-	public static function saveIndexerResultInSysLog(string $title, $numberOfRecords)
+	public static function saveIndexerResultInSysLog(string $title, $numberOfRecords , string $details= '' , $logData = '' )
 	{
 		if(empty($title)){
 			throw new Exception('Write indexer result to sys_log: No title given');
 		}
-		if($numberOfRecords == ''){
-			throw new Exception('Write indexer result to sys_log: No number of records given');
+		if(!is_integer($numberOfRecords) && $numberOfRecords == ''){
+			throw new Exception('Write indexer result to sys_log: No number of records given' . $details );
 		}
 		$record = [
 			'action' => 1,
 			'tablename' => 'tx_kesearch_index',
 			'error' => 0,
 			'event_pid' => 0,
-			'details' => $title,
+			'details' => $title . " " . $details,
 			'tstamp' => time(),
 			'type' => 1,
-			'message' => 'Inserted / updated ' . $numberOfRecords . ' entries',
+			'message' => 'Inserted / updated ' . $numberOfRecords . ' entries' . $logData ,
+			'log_data' => $logData ,
 		];
 		$connectionPool = GeneralUtility::makeInstance( ConnectionPool::class);
 		$queryBuilder = $connectionPool->getConnectionForTable('sys_log')->createQueryBuilder();
@@ -263,6 +266,30 @@ class DbUtility
 		$mmForumIndexer = IndexerUtility::getForumIndexerInstance();
 		return "'" . $mmForumIndexer::FORUM_INDEXER_STORAGE_PID_EN . "','". $mmForumIndexer::FORUM_INDEXER_STORAGE_PID_DACH . "','" . $mmForumIndexer::FORUM_INDEXER_STORAGE_PID_OTHERS . "'";
 	}
+
+    /**
+     * Get the various forum indexer types as a comma separated list, wrapped in ' for sql queries
+     * @return string
+     * @author Peter Benke <pbenke@allplan.com>
+     */
+    public static function getFaqIndexerTypesForSql(): string
+    {
+
+        return "'" . FaqUtility::FAQ_INDEXER_TYPE_DEFAULT  . "','". FaqUtility::FAQ_INDEXER_TYPE_SP . "','" .FaqUtility::FAQ_INDEXER_TYPE_BETA .  "','" . FaqUtility::FAQ_INDEXER_TYPE_NEM .  "','" . FaqUtility::FAQ_INDEXER_TYPE_LOCKED  .   "' "  ;
+    }
+
+    /**
+     * Get the various forum indexer types as a comma separated list, wrapped in ' for sql queries
+     * @return string
+     * @author Peter Benke <pbenke@allplan.com>
+     * @author Jörg Velletti <jvelletti@allplan.com>
+     */
+    public static function getFaqIndexerStoragePidsForSql(): string
+    {
+        return "'" .  FaqUtility::FAQ_INDEXER_STORAGE_PID_DACH . "','".  FaqUtility::FAQ_INDEXER_STORAGE_PID_EN . "','" .  FaqUtility::FAQ_INDEXER_STORAGE_PID_FR . "'";
+    }
+
+
 
 	/**
 	 * Get the type and the fe_group for a forum index entry by a given forum uid

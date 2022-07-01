@@ -53,7 +53,7 @@ class FaqIndexer extends IndexerBase implements IndexerInterface
 	 * Limit the number of topics to a number for faster development
 	 * @var int|null
 	 */
-	const FAQ_INDEXER_NR_OF_TOPICS_TO_INDEX = 5 ;
+	const FAQ_INDEXER_NR_OF_TOPICS_TO_INDEX = 500 ;
 
 	/**
 	 * Forum indexer types
@@ -80,36 +80,76 @@ class FaqIndexer extends IndexerBase implements IndexerInterface
 		/** @var KeSearchIndexerRunner|IndexerRunner $indexerRunner */
 		$indexerRunner = $this->pObj;
 		$indexerConfig = $this->indexerConfig;
-
+        $starttime = time() ;
 		$latest = DbUtility::getLatestSortdateByIndexerType( self::FAQ_INDEXER_TYPE_DEFAULT . "%" ) ;
 
         $knowledgeBases = new KnowledgeBases( GetConfig::read() ) ;
 
 
-		$result = $knowledgeBases->getKnowledgeBasesModifiedAfterDate( DateUtility::convertTimestampToSalesforceDate($latest) , self::FAQ_INDEXER_NR_OF_TOPICS_TO_INDEX ) ;
+		$result = $knowledgeBases->getKnowledgeBasesModifiedAfterDate(
+            DateUtility::convertTimestampToSalesforceDate( $latest , false ) ,
+            self::FAQ_INDEXER_NR_OF_TOPICS_TO_INDEX , 0 , 'Online' , '' , true ) ;
+
 		$count = 0;
+		$errorCount = 0;
+        $details = "\n" . ' modified after: '  .  DateUtility::convertTimestampToSalesforceDate($latest , false )  ;
+        $details .= "\n" . " Query:  " . $knowledgeBases->getLatestQuery() . " | ";
+        $logdata = '' ;
+
 		if($result){
             /** @var Knowledgebase  $recordObj */
             foreach ($result as $recordObj ){
+                if ( $count ==  0 ) {
+                    $details .= "\n" . " First: " . $recordObj->getId() ;
+                }
+                if( $recordObj  ) {
+                    if( !$recordObj->getTitle()  ) {
+                        $recordObj->setText("Missing Title") ;
+                    }
+                    if(  !$recordObj->getText() ) {
+                        $recordObj->setText("Missing Text") ;
+                    }
+                    $record = FaqUtility::getRecordAsArray($recordObj , self::FAQ_DEFAULT_TAG ) ;
 
-                $record = FaqUtility::getRecordAsArray($recordObj , self::FAQ_DEFAULT_TAG ) ;
+                    try{
+                        // Todo : remove Entry from Index.
+                        // IMPORTANT as the TYPE can change from "Available for All" to "restricted to Support"
+                        // and insert7Update compairs also the TYPE
+                        // Write record to index
+                        if($this->storeInKeSearchIndex($record, $indexerRunner, $indexerConfig)){
+                            $count++;
 
-                var_dump($record);
-                die;
+                        } else {
+                            $errorCount++;
+                            $logdata .= " Error on ID: " . $recordObj->getId() . "\n";
+                        }
+                    } catch (\TYPO3\CMS\Core\Type\Exception $e) {
+                        // nothing
+                        $errorCount++;
+                        $logdata .= " Exception: " . $e->getMessage() . " on ID: ". $recordObj->getId() . "\n";
+                    }
+                }
 
-				// Write record to index
-				if($this->storeInKeSearchIndex($record, $indexerRunner, $indexerConfig)){
-					$count++;
-				}
 
 			}
-		}
+            if ($count > 0 ) {
+                $details .= "\n" . " Last: " . $recordObj->getId() . " ( " . $recordObj->getLastPublishedDateAsString() . " ) ";
+            }
 
-		// Write to sys_log
-		DbUtility::saveIndexerResultInSysLog(
-			'Indexer: Forum (EXT:mm_forum)',
-			$count
-		);
+		}
+        if (   $errorCount ) {
+            $details .= "\n" . "Errors on  " . $errorCount . " entries (see sys_log) "  ;
+        }
+        $details .= "\n" . "( took " . ( time() - $starttime ) . " seconds) "  ;
+        // Write to sys_log
+        DbUtility::saveIndexerResultInSysLog(
+            'Indexer: Forum (EXT:FAQ from Salesforce)',
+            $count ,
+            ' Inserted/updated:  ' . $count . " FAQs. " . "\n" . $details ,
+            $logdata
+        );
+
+
 
 		return $count;
 
@@ -127,54 +167,25 @@ class FaqIndexer extends IndexerBase implements IndexerInterface
 	public function storeInKeSearchIndex(array $record, IndexerRunner $indexerRunner, array $indexerConfig)
 	{
 
-		// Set the fields
-		$pid = IndexerUtility::getStoragePid($indexerRunner, $indexerConfig, (int)$record['sys_language_uid']); // storage pid, where the indexed data should be stored
-		$title = FormatUtility::cleanStringForIndex($record['topic_subject']); // title in the result list
-		$type = $typeAndFeGroup['type']; // content type (to differ in frontend (css class))
-		$targetPid = 'https://connect.allplan.com/index.php?id=' . $record['forum_displayed_pid'] . '&' . implode('&', [
-				'tx_mmforum_pi1[forum]=' . intval($record['forum_uid']),
-				'tx_mmforum_pi1[topic]=' . intval($record['topic_uid']),
-				'tx_mmforum_pi1[action]=show',
-				'tx_mmforum_pi1[controller]=Topic',
-				'L=' . intval($record['sys_language_uid']),
-			]); // target pid for the detail link / external url
-		$content = FormatUtility::buildContentForIndex([
-			$record['forum_title'],
-			$record['topic_subject'],
-			$record['post_contents'],
-			DbUtility::getForumTopicTagsByTopicUid($record['topic_uid'])
-		]);
-		$tags = '#forum#'; // tags
-		$params = ''; // additional parameters for the link in frontend
-		$abstract = ''; // not used here
-		// $language = see above...
-		$startTime = 0;
-		$endTime = 0;
-		$feGroup = $typeAndFeGroup['fe_group'];
 		$debugOnly = false;
-		$additionalFields = [
-			'orig_uid' => $record['topic_uid'],
-			// We take the column sortdate to store the original tstamp of the post
-			'sortdate' => intval($record['post_last_post_tstamp']),
-			'tx_allplan_ke_search_extended_server_name' => EnvironmentUtility::getServerName(),
-		];
+
 
 		// Call the function from ke_search
 		return $indexerRunner->storeInIndex(
-			$pid,
-			$title,
-			$type,
-			$targetPid,
-			$content,
-			$tags,
-			$params,
-			$abstract,
-			$language,
-			$startTime,
-			$endTime,
-			$feGroup,
+            $record['pid'] ,
+			$record['title'],
+			$record['type'],
+			$record['targetPid'],
+			$record['content'],
+			$record['tags'],
+			$record['params'],
+			$record['abstract'],
+			$record['language'],
+			$record['startTime'],
+			$record['endTime'],
+			$record['feGroup'],
 			$debugOnly,
-			$additionalFields
+			$record['additionalFields']
 		);
 
 	}
