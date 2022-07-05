@@ -53,7 +53,7 @@ class FaqIndexer extends IndexerBase implements IndexerInterface
 	 * Limit the number of topics to a number for faster development
 	 * @var int|null
 	 */
-	const FAQ_INDEXER_NR_OF_TOPICS_TO_INDEX = 500 ;
+	const FAQ_INDEXER_NR_OF_TOPICS_TO_INDEX = 5 ;
 
 	/**
 	 * Forum indexer types
