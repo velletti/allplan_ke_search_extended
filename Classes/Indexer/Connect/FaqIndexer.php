@@ -53,7 +53,7 @@ class FaqIndexer extends IndexerBase implements IndexerInterface
 	 * Limit the number of topics to a number for faster development
 	 * @var int|null
 	 */
-	const FAQ_INDEXER_NR_OF_TOPICS_TO_INDEX = 5 ;
+	const FAQ_INDEXER_NR_OF_TOPICS_TO_INDEX = 50 ;
 
 	/**
 	 * Forum indexer types
@@ -81,14 +81,17 @@ class FaqIndexer extends IndexerBase implements IndexerInterface
 		$indexerRunner = $this->pObj;
 		$indexerConfig = $this->indexerConfig;
         $starttime = time() ;
-		$latest = DbUtility::getLatestSortdateByIndexerType( self::FAQ_INDEXER_TYPE_DEFAULT . "%" ) ;
+		$latestEntry = DbUtility::getLatestSortdateAndOrigUidByIndexerType( self::FAQ_INDEXER_TYPE_DEFAULT . "%" ) ;
+        $latest = $latestEntry["sortdate"];
+        // like "000004044"
+        $latestNo =  str_pad( $latestEntry["orig_uid"], 10, "0", STR_PAD_LEFT); ;
 
         $knowledgeBases = new KnowledgeBases( GetConfig::read() ) ;
 
 
 		$result = $knowledgeBases->getKnowledgeBasesModifiedAfterDate(
             DateUtility::convertTimestampToSalesforceDate( $latest , false ) ,
-            self::FAQ_INDEXER_NR_OF_TOPICS_TO_INDEX , 0 , 'Online' , '' , true ) ;
+            self::FAQ_INDEXER_NR_OF_TOPICS_TO_INDEX , 0 , 'Online' , '' , true , $latestNo ) ;
 
 		$count = 0;
 		$errorCount = 0;
@@ -109,6 +112,8 @@ class FaqIndexer extends IndexerBase implements IndexerInterface
                     if(  !$recordObj->getText() ) {
                         $recordObj->setText("Missing Text") ;
                     }
+                    $recordObj->setText($knowledgeBases->replaceImageUrlsWithData( $recordObj->getId() , $recordObj->getText() ) ) ;
+                    $recordObj->setLinkedFiles( $knowledgeBases->getContentVersionsByDocumentLinksEntityId( $recordObj->getId() ));
                     $record = FaqUtility::getRecordAsArray($recordObj , self::FAQ_DEFAULT_TAG ) ;
 
                     try{

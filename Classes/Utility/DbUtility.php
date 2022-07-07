@@ -220,7 +220,7 @@ class DbUtility
 
         try{
             $result = $queryBuilder
-                ->select('sortdate')
+                ->select('sortdate' )
                 ->from('tx_kesearch_index')
                 ->where($queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter($indexerType)))
                 ->from('tx_kesearch_index')
@@ -289,6 +289,39 @@ class DbUtility
         return "'" .  FaqUtility::FAQ_INDEXER_STORAGE_PID_DACH . "','".  FaqUtility::FAQ_INDEXER_STORAGE_PID_EN . "','" .  FaqUtility::FAQ_INDEXER_STORAGE_PID_FR . "'";
     }
 
+
+    /**
+     * Get the latest tstamp by a given indexer type
+     * @param string $indexerType
+     * @return mixed|null
+     * @author Peter Benke <pbenke@allplan.com>
+     */
+    public static function getLatestSortdateAndOrigUidByIndexerType(string $indexerType)
+    {
+        $connectionPool = GeneralUtility::makeInstance( ConnectionPool::class);
+        $queryBuilder = $connectionPool->getQueryBuilderForTable('tx_kesearch_index');
+
+        try{
+            $result = $queryBuilder
+                ->select('sortdate' , 'orig_uid')
+                ->from('tx_kesearch_index')
+                ->where($queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter($indexerType)))
+                ->from('tx_kesearch_index')
+                ->orderBy('sortdate','DESC')
+                ->addOrderBy( 'orig_uid' , 'DESC' )
+                ->execute()->fetchAssociative()
+            ;
+        }catch(DoctrineDBALDriverException $e){
+            return null;
+        }
+
+        if(empty($result)){
+            return null;
+        }
+
+        return $result;
+
+    }
 
 
 	/**

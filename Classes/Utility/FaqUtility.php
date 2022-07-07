@@ -119,19 +119,19 @@ class FaqUtility
     {
         switch( strtolower( $lang ) ) {
             case "de":
-                return array("lang" => 1 , "indexlang" => -1 , "pid" => self::FAQ_INDEXER_STORAGE_PID_DACH ) ;
+                return array("lang" => 1 , "langiso2" => $lang , "indexlang" => -1 , "pid" => self::FAQ_INDEXER_STORAGE_PID_DACH ) ;
             case "it":
-                return array("lang" => 2 , "indexlang" => 2 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
+                return array("lang" => 2 , "langiso2" => $lang , "indexlang" => 2 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
             case "cz":
-                return array("lang" => 3 , "indexlang" => 3 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
+                return array("lang" => 3 ,"langiso2" => $lang , "indexlang" => 3 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
             case "fr":
-                return array("lang" => 4 , "indexlang" => 4 , "pid" => self::FAQ_INDEXER_STORAGE_PID_FR  ) ;
+                return array("lang" => 4 , "langiso2" => $lang ,"indexlang" => 4 , "pid" => self::FAQ_INDEXER_STORAGE_PID_FR  ) ;
             case "es":
-                return array("lang" => 18 , "indexlang" => 18 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
+                return array("lang" => 18 , "langiso2" => $lang ,"indexlang" => 18 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
             case "ru":
-                return array("lang" => 14 , "indexlang" => 14 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
+                return array("lang" => 14 , "langiso2" => $lang ,"indexlang" => 14 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
             default:
-                return array("lang" => 0 , "indexlang" => 0 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
+                return array("lang" => 0 , "langiso2" => "en" ,"indexlang" => 0 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
         }
     }
 
@@ -153,31 +153,43 @@ class FaqUtility
 
         $record['title'] = $recordObj->getTitle()  ;
         $record['type'] = $tagTypeAndFeGroup['type']  ;
-        // Todo generate correct DOMAIN
-        $record['targetPid'] = "ToDo ... DOMAIN .... /knowledge1/s/article/" . $recordObj->getUrlName(). "?language=" . $recordObj->getLanguage();
+        $record['targetPid'] = "https://connect.allplan.com/" . $syslangAndPid['langiso2'] . "/faqid/" . $recordObj->getArticleNumber() . ".html";
 
-        $record['content'] = "Permission: " . $recordObj->getPermission()  ;
-        $record['content'] .= "Software: " . $recordObj->getSoftwareVersions()  ;
-        $record['content'] .= "Status: " . $recordObj->getPublishStatus()  ;
-        $record['content'] .= $recordObj->getText()  ;
-        // ToDo JVE: Add Download Links after Text Content.
-
-        $record['tags']     = $defaultTag . $tagTypeAndFeGroup['tags']  ;
-        $record['params']   = "_blank" ;
         $record['directory'] =   $recordObj->getDirectory() ;
         $record['language'] = $syslangAndPid['indexlang'] ;
-        $record['abstract']   = $recordObj->getSoftwareVersions() . "\n" . strip_tags( $recordObj->getText() ) ;
+        $record['abstract']   = substr( strip_tags( $recordObj->getText() ) , 0 , 200 ) ;
         $record['startTime']   =  $recordObj->getLastPublishedDate()  ;
         $record['endTime']   = $recordObj->getDeprecated() ? (time() - 3600) : 0 ;
-
         $record['feGroup']   = $tagTypeAndFeGroup['feGroup'] ;
 
         $record['additionalFields']  = [
             'orig_uid' => intval( $recordObj->getArticleNumber() ) ,
             // We take the column sortdate to store the original tstamp of the post
             'sortdate' => intval( $recordObj->getLastPublishedDate() ),
+            'directory' =>  $recordObj->getDirectory() ,
             'tx_allplan_ke_search_extended_server_name' => EnvironmentUtility::getServerName(),
         ];
+
+        $record['versions'] =  $recordObj->getSoftwareVersions()  ;
+        $record['permissions'] =  $recordObj->getPermission()   ;
+        $record['status'] =  $recordObj->getPublishStatus()   ;
+        $record['deprecated'] =  $recordObj->getDeprecated()   ;
+        $record['linkedFiles'] =  $recordObj->getLinkedFiles()   ;
+
+        // ToDo 7.7.2022 jve: add Download Links
+
+        // now all relevant Fields we need are collected so we can later on scho FAQ with all additional infos
+        $record['content']    = json_encode( $record ) ;
+
+        $record['content'] .= $recordObj->getText()  ;
+        // ToDo JVE: Add Download Links after Text Content.
+
+        $record['tags']     = $defaultTag . $tagTypeAndFeGroup['tags']  ;
+        $record['params']   = "_blank" ;
+
+
+
+
         return $record ;
     }
 
