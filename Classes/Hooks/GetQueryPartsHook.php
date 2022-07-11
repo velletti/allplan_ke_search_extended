@@ -47,15 +47,21 @@ class GetQueryPartsHook
 		$resultPage = $pibase->conf['resultPage'];
 
 		$settings = TyposcriptUtility::loadTypoScriptFromScratch($resultPage,'tx_kesearch_pi1');
-		$debug[] = 'Line: ' . __LINE__  . ' queryParts is array';
+		$debug[] = 'Line: ' . __LINE__  . is_array( $queryParts ) ?  ' queryParts is array' : '' ;
 
 		$tsConfigQueryParts = null;
 
 		// If typoscript is set (Allplan faq)
-		if(is_array($settings) && array_key_exists('getQueryPartsHook', $settings)){
+        // JVE 8.7.2022 : as Peter has renamed this setting, it  BRAKES FAQ Search.
+        // so now i Check now BOTH "p" and "P" variants
 
-			$debug[] = 'Line: ' . __LINE__ . ' "getQueryPartsHook" is configured in typoscript';
-			$tsConfigQueryParts = $settings['getQueryPartsHook'];
+		if( is_array($settings) && array_key_exists('getQuerypartsHook', $settings)) {
+            $tsConfigQueryParts = $settings['getQuerypartsHook'];
+        } else if( is_array($settings) && array_key_exists('getQueryPartsHook', $settings)) {
+            $tsConfigQueryParts = $settings['getQueryPartsHook'];
+        }
+        if( is_array($tsConfigQueryParts)) {
+			$debug[] = 'Line: ' . __LINE__ . ' "getQuery(P)artsHook" is configured in typoscript';
 
 			// If we have a WHERE-condition in typoscript set => consider top10
 			if(is_array($tsConfigQueryParts) && array_key_exists('where', $tsConfigQueryParts)) {
@@ -137,12 +143,16 @@ class GetQueryPartsHook
 
 			$debugOutput = '<hr><pre>Typoscript config query parts:';
 			$debugOutput.= print_r($tsConfigQueryParts, true);
-			$debugOutput.= '<hr>';
+			$debugOutput.= '<hr>Debug<br>';
 			$debugOutput.= print_r($debug, true);
-			$debugOutput.= '<hr>';
+			$debugOutput.= '<hr>QueryParts:<br>';
 			$debugOutput.= print_r($queryParts, true);
-
-			echo $debugOutput; die("__FILE__" . __FILE__ . " __LINE__" . __LINE__);
+            $debugOutput.= '<hr>settings[getQueryPartsHook] :<br>';
+            $debugOutput.= print_r($settings['getQueryPartsHook'], true);
+            $debugOutput.= print_r($settings, true);
+            $debugOutput.= "<br>" ;
+			echo $debugOutput;
+            die("__FILE__" . __FILE__ . " __LINE__" . __LINE__);
 			// mail('pbenke@allplan.com', 'Faq debug output', print_r(['Debug' => $debugOutput], true));
 
 		}

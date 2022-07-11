@@ -150,10 +150,11 @@ class FaqUtility
 
         $record = [];
         $record['pid'] = $syslangAndPid['pid'] ;
+        $record['sfid'] = $recordObj->getId()  ;
 
         $record['title'] = $recordObj->getTitle()  ;
         $record['type'] = $tagTypeAndFeGroup['type']  ;
-        $record['targetPid'] = "https://connect.allplan.com/" . $syslangAndPid['langiso2'] . "/faqid/" . $recordObj->getArticleNumber() . ".html";
+        $record['targetPid'] = "https://connect.allplan.com/" . $syslangAndPid['langiso2'] . "/faqid/sc-" . $recordObj->getArticleNumber() . ".html";
 
         $record['directory'] =   $recordObj->getDirectory() ;
         $record['language'] = $syslangAndPid['indexlang'] ;
@@ -176,12 +177,12 @@ class FaqUtility
         $record['deprecated'] =  $recordObj->getDeprecated()   ;
         $record['linkedFiles'] =  $recordObj->getLinkedFiles()   ;
 
-        // ToDo 7.7.2022 jve: add Download Links
+        $record['content'] = $recordObj->getText()  ;
 
         // now all relevant Fields we need are collected so we can later on scho FAQ with all additional infos
         $record['content']    = json_encode( $record ) ;
 
-        $record['content'] .= $recordObj->getText()  ;
+
         // ToDo JVE: Add Download Links after Text Content.
 
         $record['tags']     = $defaultTag . $tagTypeAndFeGroup['tags']  ;

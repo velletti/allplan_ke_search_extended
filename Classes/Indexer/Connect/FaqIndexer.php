@@ -53,10 +53,10 @@ class FaqIndexer extends IndexerBase implements IndexerInterface
 	 * Limit the number of topics to a number for faster development
 	 * @var int|null
 	 */
-	const FAQ_INDEXER_NR_OF_TOPICS_TO_INDEX = 50 ;
+	const FAQ_INDEXER_NR_OF_TOPICS_TO_INDEX = 250 ;
 
 	/**
-	 * Forum indexer types
+	 * Faq indexer types
 	 */
 	const FAQ_INDEXER_TYPE_DEFAULT = 'supportfaq';
 
@@ -84,7 +84,8 @@ class FaqIndexer extends IndexerBase implements IndexerInterface
 		$latestEntry = DbUtility::getLatestSortdateAndOrigUidByIndexerType( self::FAQ_INDEXER_TYPE_DEFAULT . "%" ) ;
         $latest = $latestEntry["sortdate"];
         // like "000004044"
-        $latestNo =  str_pad( $latestEntry["orig_uid"], 10, "0", STR_PAD_LEFT); ;
+        // like "000006057"
+        $latestNo =  str_pad( $latestEntry["orig_uid"], 9, "0", STR_PAD_LEFT); ;
 
         $knowledgeBases = new KnowledgeBases( GetConfig::read() ) ;
 
@@ -148,7 +149,7 @@ class FaqIndexer extends IndexerBase implements IndexerInterface
         $details .= "\n" . "( took " . ( time() - $starttime ) . " seconds) "  ;
         // Write to sys_log
         DbUtility::saveIndexerResultInSysLog(
-            'Indexer: Forum (EXT:FAQ from Salesforce)',
+            'Indexer: Faqs (knowledge_base articles from Salesforce)',
             $count ,
             ' Inserted/updated:  ' . $count . " FAQs. " . "\n" . $details ,
             $logdata
