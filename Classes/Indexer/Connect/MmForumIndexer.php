@@ -181,6 +181,8 @@ class MmForumIndexer extends IndexerBase implements IndexerInterface
 			'sortdate' => intval($record['post_last_post_tstamp']),
 			'tx_allplan_ke_search_extended_server_name' => EnvironmentUtility::getServerName(),
 		];
+        // remove any indexed entry first as type can change  will seach and delte any "mm_forum%"
+        DbUtility::deleteIndexedRecord( intval( $record['topic_uid'] )  ,  $pid , self::FORUM_INDEXER_TYPE_DEFAULT ,  $language ) ;
 
 		// Call the function from ke_search
 		return $indexerRunner->storeInIndex(

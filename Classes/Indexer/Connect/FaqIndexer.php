@@ -98,11 +98,14 @@ class FaqIndexer extends IndexerBase implements IndexerInterface
 		$errorCount = 0;
         $details = "\n" . ' modified after: '  .  DateUtility::convertTimestampToSalesforceDate($latest , false )  ;
         $details .= "\n" . " Query:  " . $knowledgeBases->getLatestQuery() . " | ";
-        $logdata = '' ;
 
+        $logdata = '' ;
+        $faqNeededToImport = 0 ;
 		if($result){
+            $faqNeededToImport = $result['max']['records'][0]['expr0'] ;
+            $details .= "\n" . " faqNeededToImport:  " .  var_export( $result['max']['records'][0] , true) . " | ";
             /** @var Knowledgebase  $recordObj */
-            foreach ($result as $recordObj ){
+            foreach ($result['faqs'] as $recordObj ){
                 if ( $count ==  0 ) {
                     $details .= "\n" . " First: " . $recordObj->getId() ;
                 }
@@ -118,9 +121,9 @@ class FaqIndexer extends IndexerBase implements IndexerInterface
                     $record = FaqUtility::getRecordAsArray($recordObj , self::FAQ_DEFAULT_TAG ) ;
 
                     try{
-                        // Todo : remove Entry from Index.
-                        // IMPORTANT as the TYPE can change from "Available for All" to "restricted to Support"
-                        // and insert7Update compairs also the TYPE
+                        // remove any indexed entry first as type can change
+                        DbUtility::deleteIndexedRecord( intval( $recordObj->getArticleNumber() )  ,  $record['pid'] , "supportfaq" ,  $record['language']) ;
+
                         // Write record to index
                         if($this->storeInKeSearchIndex($record, $indexerRunner, $indexerConfig)){
                             $count++;
@@ -151,7 +154,7 @@ class FaqIndexer extends IndexerBase implements IndexerInterface
         DbUtility::saveIndexerResultInSysLog(
             'Indexer: Faqs (knowledge_base articles from Salesforce)',
             $count ,
-            ' Inserted/updated:  ' . $count . " FAQs. " . "\n" . $details ,
+            ' Inserted/updated:  ' . $count . " of " . $faqNeededToImport . " FAQs. " . "\n" . $details ,
             $logdata
         );
 

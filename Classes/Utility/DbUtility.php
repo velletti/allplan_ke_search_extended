@@ -9,6 +9,9 @@ use Doctrine\DBAL\Driver\Exception as DoctrineDBALDriverException;
 /**
  * TYPO3
  */
+
+use Tpwd\KeSearch\Lib\Db;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\QueryGenerator;
@@ -544,5 +547,30 @@ class DbUtility
 		return $queryBuilder;
 
 	}
+
+    /**
+     * try to find any already indexed record of type supportfaq, supportfapsp ,  supportfaqnem or supportfaqlocked
+     * @param int $orig_uid
+     * @param int $pid
+     * @param string  $type
+     * @param int $language
+     * @return boolean true if record was found, false if not
+     */
+    public static function deleteIndexedRecord(int $orig_uid, int $pid, string $type, int $language )
+    {
+        $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $queryBuilder = $connectionPool->getQueryBuilderForTable('tx_kesearch_index');
+
+        $queryBuilder
+            ->delete('tx_kesearch_index')
+            ->where(
+                $queryBuilder->expr()->eq('orig_uid', $queryBuilder->quote($orig_uid, Connection::PARAM_INT)),
+                $queryBuilder->expr()->eq('pid', $queryBuilder->quote($pid, Connection::PARAM_INT)),
+                $queryBuilder->expr()->like('type', $queryBuilder->quote( $type . "%" , Connection::PARAM_STR)),
+                $queryBuilder->expr()->eq('language', $queryBuilder->quote($language, Connection::PARAM_INT))
+            )
+            ->execute() ;
+
+    }
 
 }

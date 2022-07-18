@@ -3,6 +3,8 @@ namespace Allplan\AllplanKeSearchExtended\Utility;
 
 
 use Allplan\Library\Salesforce\Model\Knowledgebase;
+use Tpwd\KeSearch\Lib\Db;
+use TYPO3\CMS\Core\Database\Connection;
 
 class FaqUtility
 {
@@ -81,6 +83,7 @@ class FaqUtility
                 break;
 
             case "InternalSupportOnly":
+            case "internalsupportonly":
             default:
                 $single['type'] = self::FAQ_INDEXER_TYPE_LOCKED;
                 $single['feGroup'] = '38';
@@ -108,6 +111,30 @@ class FaqUtility
 		return $single ;
 
 	}
+
+    /**
+     * try to find any already indexed record of type supportfaq, supportfapsp ,  supportfaqnem or supportfaqlocked
+     * @param int $orig_uid
+     * @param int $pid
+     * @param int $language
+     * @return boolean true if record was found, false if not
+     */
+    public static function deleteIndexedRecord(int $orig_uid, int $pid, int $language)
+    {
+        $queryBuilder = Db::getQueryBuilder('tx_kesearch_index');
+
+        $queryBuilder
+            ->delete('tx_kesearch_index')
+            ->where(
+                $queryBuilder->expr()->eq('orig_uid', $queryBuilder->quote($orig_uid, Connection::PARAM_INT)),
+                $queryBuilder->expr()->eq('pid', $queryBuilder->quote($pid, Connection::PARAM_INT)),
+                $queryBuilder->expr()->like('type', $queryBuilder->quote( "supportfaq%", Connection::PARAM_STR)),
+                $queryBuilder->expr()->eq('language', $queryBuilder->quote($language, Connection::PARAM_INT))
+            )
+            ->execute() ;
+
+    }
+
 
     /**
      * Get the content of a pdf file, given by a sys_file.uid
