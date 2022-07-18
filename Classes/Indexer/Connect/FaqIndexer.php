@@ -82,10 +82,16 @@ class FaqIndexer extends IndexerBase implements IndexerInterface
 		$indexerConfig = $this->indexerConfig;
         $starttime = time() ;
 		$latestEntry = DbUtility::getLatestSortdateAndOrigUidByIndexerType( self::FAQ_INDEXER_TYPE_DEFAULT . "%" ) ;
-        $latest = $latestEntry["sortdate"];
-        // like "000004044"
-        // like "000006057"
-        $latestNo =  str_pad( $latestEntry["orig_uid"], 9, "0", STR_PAD_LEFT); ;
+        if( $latestEntry ) {
+            $latest = $latestEntry["sortdate"];
+            // like "000004044"
+            // like "000006057"
+            $latestNo =  str_pad( $latestEntry["orig_uid"], 9, "0", STR_PAD_LEFT); ;
+        } else {
+            $latest = 1;
+            $latestNo =  "000000000" ;
+        }
+
 
         $knowledgeBases = new KnowledgeBases( GetConfig::read() ) ;
 

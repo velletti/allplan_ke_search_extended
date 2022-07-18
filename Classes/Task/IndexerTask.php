@@ -98,7 +98,7 @@ class IndexerTask extends AbstractTask
 		// this is a helper to delete all records which are older than starting timestamp in registry
 		// this also prevents starting the indexer twice
 		$nameSpace = 'allplan_ke_search_extended';
-		$registryKey = 'startingTStamp_of_indexerUid:' . $this->taskUid;
+		$registryKey = 'startingTStamp_of_indexerUid:' . $this->taskUid . ":Env" . $_ENV['TYPO3_CONTEXT'];
 		$this->setRegistryLockRecord($indexerRunner, $nameSpace, $registryKey);
 
 		// Start the indexer
