@@ -95,10 +95,11 @@ class FaqIndexer extends IndexerBase implements IndexerInterface
 
         $knowledgeBases = new KnowledgeBases( GetConfig::read() ) ;
 
-
+        $beforeQuery = time() ;
 		$result = $knowledgeBases->getKnowledgeBasesModifiedAfterDate(
             DateUtility::convertTimestampToSalesforceDate( $latest , false ) ,
             self::FAQ_INDEXER_NR_OF_TOPICS_TO_INDEX , 0 , 'Online' , '' , true , $latestNo ) ;
+        $queryTime = time() - $beforeQuery ;
 
 		$count = 0;
 		$errorCount = 0;
@@ -109,6 +110,15 @@ class FaqIndexer extends IndexerBase implements IndexerInterface
         $faqNeededToImport = 0 ;
 		if($result){
             $faqNeededToImport = $result['max']['records'][0]['expr0'] ;
+            DbUtility::saveIndexerResultInSysLog(
+                '[ke_search] Indexer started: Faqs (knowledge_base articles from Salesforce). ',
+                $faqNeededToImport ,
+                'We still need to import: ' .  $faqNeededToImport . " FAQs. Search Query took " . $queryTime  . " Seconds \n"  ,
+                $logdata
+            );
+
+
+
             $details .= "\n" . " faqNeededToImport:  " .  var_export( $result['max']['records'][0] , true) . " | ";
             /** @var Knowledgebase  $recordObj */
             foreach ($result['faqs'] as $recordObj ){
@@ -129,7 +139,7 @@ class FaqIndexer extends IndexerBase implements IndexerInterface
                     try{
                         // remove any indexed entry first as type can change
                         DbUtility::deleteIndexedRecord( intval( $recordObj->getArticleNumber() )  ,  $record['pid'] , "supportfaq" ,  $record['language']) ;
-
+                        DbUtility::migrateRatingRecord( $recordObj->getBisherigeID() , $recordObj->getArticleNumber()) ;
                         // Write record to index
                         if($this->storeInKeSearchIndex($record, $indexerRunner, $indexerConfig)){
                             $count++;
@@ -158,7 +168,7 @@ class FaqIndexer extends IndexerBase implements IndexerInterface
         $details .= "\n" . "( took " . ( time() - $starttime ) . " seconds) "  ;
         // Write to sys_log
         DbUtility::saveIndexerResultInSysLog(
-            'Indexer: Faqs (knowledge_base articles from Salesforce)',
+            '[ke_search] Indexer finished: Faqs (knowledge_base articles from Salesforce)',
             $count ,
             ' Inserted/updated:  ' . $count . " of " . $faqNeededToImport . " FAQs. " . "\n" . $details ,
             $logdata

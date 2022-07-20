@@ -573,4 +573,39 @@ class DbUtility
 
     }
 
+    public static function migrateRatingRecord(?string $BisherigeId , string $NewArticleNumber )  {
+        if( ! $BisherigeId || ! $NewArticleNumber ) {
+            return null ;
+        }
+        $connectionPool = GeneralUtility::makeInstance( ConnectionPool::class);
+        $queryBuilder = $connectionPool->getQueryBuilderForTable('tx_ratings_data');
+        $updateBuilder = $connectionPool->getQueryBuilderForTable('tx_ratings_data');
+        $queryBuilder
+            ->select(
+                'uid' , 'reference'
+            )
+            ->from('tx_ratings_data')
+            ->where( $queryBuilder->expr()->eq('reference',
+                $queryBuilder->createNamedParameter( "tx_nem_solution_" . trim($BisherigeId) ,PDO::PARAM_STR)))
+        ;
+
+        try{
+            $ratings = $queryBuilder->execute()->fetchAllAssociative();
+            if( $ratings ) {
+                foreach ($ratings as $rating ) {
+                    // Cut leading 000000 from ArticleNumber as articleNumber will be stored to orig_uid (int field)
+                    $updateBuilder->update('tx_ratings_data')
+                        ->set( 'reference' , "tx_nem_solution_sc_" . intval( $NewArticleNumber ) )
+                        ->where(  $updateBuilder->expr()->eq('uid', $queryBuilder->quote( $rating['uid'], Connection::PARAM_INT)) )
+                        ->execute() ;
+                }
+            }
+
+        }catch(DoctrineDBALDriverException $e){
+            return null;
+        }
+
+        return null;
+    }
+
 }

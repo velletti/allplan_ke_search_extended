@@ -108,7 +108,7 @@ class GetQueryPartsHook
 						}
 					}
 					$queryParts['WHERE'] .= " ) ";
-					$queryParts['ORDERBY'] = "top10 DESC";
+					$queryParts['ORDERBY'] = "tx_allplan_ke_search_extended_top_10 DESC ";
 				}
 			}
 

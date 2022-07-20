@@ -112,29 +112,6 @@ class FaqUtility
 
 	}
 
-    /**
-     * try to find any already indexed record of type supportfaq, supportfapsp ,  supportfaqnem or supportfaqlocked
-     * @param int $orig_uid
-     * @param int $pid
-     * @param int $language
-     * @return boolean true if record was found, false if not
-     */
-    public static function deleteIndexedRecord(int $orig_uid, int $pid, int $language)
-    {
-        $queryBuilder = Db::getQueryBuilder('tx_kesearch_index');
-
-        $queryBuilder
-            ->delete('tx_kesearch_index')
-            ->where(
-                $queryBuilder->expr()->eq('orig_uid', $queryBuilder->quote($orig_uid, Connection::PARAM_INT)),
-                $queryBuilder->expr()->eq('pid', $queryBuilder->quote($pid, Connection::PARAM_INT)),
-                $queryBuilder->expr()->like('type', $queryBuilder->quote( "supportfaq%", Connection::PARAM_STR)),
-                $queryBuilder->expr()->eq('language', $queryBuilder->quote($language, Connection::PARAM_INT))
-            )
-            ->execute() ;
-
-    }
-
 
     /**
      * Get the content of a pdf file, given by a sys_file.uid
@@ -186,16 +163,17 @@ class FaqUtility
         $record['directory'] =   $recordObj->getDirectory() ;
         $record['language'] = $syslangAndPid['indexlang'] ;
         $record['abstract']   = substr( strip_tags( $recordObj->getText() ) , 0 , 200 ) ;
-        $record['startTime']   =  $recordObj->getLastPublishedDate()  ;
+        $record['startTime']   = max( $recordObj->getLastPublishedDate() , $recordObj->getLastPublishedDateOfTranslation() ) ;
         $record['endTime']   = $recordObj->getDeprecated() ? (time() - 3600) : 0 ;
         $record['feGroup']   = $tagTypeAndFeGroup['feGroup'] ;
 
         $record['additionalFields']  = [
             'orig_uid' => intval( $recordObj->getArticleNumber() ) ,
             // We take the column sortdate to store the original tstamp of the post
-            'sortdate' => intval( $recordObj->getLastPublishedDate() ),
+            'sortdate' => intval( $recordObj->getLastModifiedDate() )  ,
             'directory' =>  $recordObj->getDirectory() ,
             'tx_allplan_ke_search_extended_server_name' => EnvironmentUtility::getServerName(),
+            'tx_allplan_ke_search_extended_top_10' => $recordObj->getArticleCaseAttachCount() ,
         ];
 
         $record['versions'] =  $recordObj->getSoftwareVersions()  ;
