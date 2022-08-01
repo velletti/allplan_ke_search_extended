@@ -162,6 +162,7 @@ class FaqUtility
 
         $record['directory'] =   $recordObj->getDirectory() ;
         $record['language'] = $syslangAndPid['indexlang'] ;
+        $record['servicecloud_lang'] = $recordObj->getLanguage() ;
         $record['abstract']   = substr( strip_tags( $recordObj->getText() ) , 0 , 200 ) ;
         $record['startTime']   = max( $recordObj->getLastPublishedDate() , $recordObj->getLastPublishedDateOfTranslation() ) ;
         $record['endTime']   = $recordObj->getDeprecated() ? (time() - 3600) : 0 ;
