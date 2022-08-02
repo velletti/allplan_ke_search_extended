@@ -96,14 +96,16 @@ class FaqIndexer extends IndexerBase implements IndexerInterface
         $knowledgeBases = new KnowledgeBases( GetConfig::read() ) ;
 
         $beforeQuery = time() ;
-		$result = $knowledgeBases->getKnowledgeBasesModifiedAfterDate(
+
+            $result = $knowledgeBases->getKnowledgeBasesModifiedAfterDate(
             DateUtility::convertTimestampToSalesforceDate( $latest , false ) ,
             self::FAQ_INDEXER_NR_OF_TOPICS_TO_INDEX , 0 , 'Online' , '' , true , $latestNo ) ;
         $queryTime = time() - $beforeQuery ;
 
+        $details = "\n" . 'Using this Instance:' . $knowledgeBases->getInstanceUrlFromTokenData() ;
 		$count = 0;
 		$errorCount = 0;
-        $details = "\n" . ' modified after: '  .  DateUtility::convertTimestampToSalesforceDate($latest , false )  ;
+        $details .= "\n" . ' modified after: '  .  DateUtility::convertTimestampToSalesforceDate($latest , false )  ;
         $details .= "\n" . " Query:  " . $knowledgeBases->getLatestQuery() . " | ";
 
         $logdata = '' ;
