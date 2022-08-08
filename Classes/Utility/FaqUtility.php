@@ -130,7 +130,7 @@ class FaqUtility
                 return array("lang" => 2 , "langiso2" => $lang , "indexlang" => 2 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
             case "cs":
             case "cz":
-                return array("lang" => 3 ,"langiso2" => $lang , "indexlang" => 3 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
+                return array("lang" => 3 ,"langiso2" => "cz" , "indexlang" => 3 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
 
             case "es":
                 return array("lang" => 18 , "langiso2" => $lang ,"indexlang" => 18 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
