@@ -124,12 +124,14 @@ class FaqUtility
         switch( strtolower( $lang ) ) {
             case "de":
                 return array("lang" => 1 , "langiso2" => $lang , "indexlang" => -1 , "pid" => self::FAQ_INDEXER_STORAGE_PID_DACH ) ;
-            case "it":
-                return array("lang" => 2 , "langiso2" => $lang , "indexlang" => 2 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
-            case "cz":
-                return array("lang" => 3 ,"langiso2" => $lang , "indexlang" => 3 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
             case "fr":
                 return array("lang" => 4 , "langiso2" => $lang ,"indexlang" => 4 , "pid" => self::FAQ_INDEXER_STORAGE_PID_FR  ) ;
+            case "it":
+                return array("lang" => 2 , "langiso2" => $lang , "indexlang" => 2 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
+            case "cs":
+            case "cz":
+                return array("lang" => 3 ,"langiso2" => $lang , "indexlang" => 3 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
+
             case "es":
                 return array("lang" => 18 , "langiso2" => $lang ,"indexlang" => 18 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
             case "ru":
