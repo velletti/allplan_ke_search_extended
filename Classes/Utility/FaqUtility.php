@@ -161,6 +161,7 @@ class FaqUtility
         $record['targetPid'] = "https://connect.allplan.com/" . $syslangAndPid['langiso2'] . "/faqid/sc-" . $recordObj->getArticleNumber() . ".html";
 
         $record['directory'] =   $recordObj->getDirectory() ;
+        $record['legacyId'] =   $recordObj->getBisherigeID() ;
         $record['language'] = $syslangAndPid['indexlang'] ;
         $record['servicecloud_lang'] = $recordObj->getLanguage() ;
         $record['abstract']   = substr( strip_tags( $recordObj->getText() ) , 0 , 200 ) ;
