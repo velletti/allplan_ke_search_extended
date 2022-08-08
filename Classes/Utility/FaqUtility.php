@@ -3,6 +3,8 @@ namespace Allplan\AllplanKeSearchExtended\Utility;
 
 
 use Allplan\Library\Salesforce\Model\Knowledgebase;
+use Allplan\NemConnections\Utility\MigrationUtility;
+use phpDocumentor\Reflection\Types\Integer;
 use Tpwd\KeSearch\Lib\Db;
 use TYPO3\CMS\Core\Database\Connection;
 
@@ -138,6 +140,24 @@ class FaqUtility
                 return array("lang" => 14 , "langiso2" => $lang ,"indexlang" => 14 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
             default:
                 return array("lang" => 0 , "langiso2" => "en" ,"indexlang" => 0 , "pid" => self::FAQ_INDEXER_STORAGE_PID_EN  ) ;
+        }
+    }
+    /**
+     * Get the content of a pdf file, given by a sys_file.uid
+     * @return int
+     * @author Jörg Velletti <jvelletti@allplan.com>
+     */
+    public static function getLangByContext( ):int
+    {
+        $lng = MigrationUtility::getSysLanguageUid()   ;
+        switch(  $lng  ) {
+            case 1 :
+            case 6 :
+            case 7 :
+                return -1 ;
+
+            default:
+                return $lng ;
         }
     }
 
