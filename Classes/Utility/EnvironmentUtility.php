@@ -38,7 +38,7 @@ class EnvironmentUtility
 	 */
 	public static function getServerProtocolAndHost(): string
 	{
-		return 'https://' . self::getServerName() . 'allplan.com';
+		return 'https://' . self::getServerName() . '.allplan.com';
 	}
 
 	/**
