@@ -63,9 +63,20 @@ class AllplanOnlineHelpIndexer extends IndexerBase implements IndexerInterface
 
 		// Check, if we have a valid json-array
 		if(!is_array($json)){
+            // Write to sys_log
+            DbUtility::saveIndexerResultInSysLog(
+                'Indexer: Allplan Online Help',
+                0,
+                "No valid json from URL " . $externUrl
+            );
 			return 0;
 		}
 		if($json['error'] > 0){
+            DbUtility::saveIndexerResultInSysLog(
+                'Indexer: Allplan Online Help',
+                0,
+                "No valid json from URL " . $externUrl . " - error No: " . $json['error']
+            );
 			return 0;
 		}
 
