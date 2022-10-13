@@ -59,19 +59,8 @@ class AllplanOnlineHelpIndexer extends IndexerBase implements IndexerInterface
 		$externUrl = $schedulerTaskConfig->getExternUrl() . 'search.json';
 		$indexerConfig = $this->indexerConfig;
 
-		$json = JsonUtility::getJsonFile($externUrl);
-
-		// Check, if we have a valid json-array
-		if(!is_array($json)){
-            // Write to sys_log
-            DbUtility::saveIndexerResultInSysLog(
-                'Indexer: Allplan Online Help',
-                0,
-                "No valid json from URL " . $externUrl
-            );
-			return 0;
-		}
-		if($json['error'] > 0){
+		$json = JsonUtility::getJsonFile($externUrl );
+		if(is_array($json) && $json['error'] > 0){
             DbUtility::saveIndexerResultInSysLog(
                 'Indexer: Allplan Online Help',
                 0,
