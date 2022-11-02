@@ -14,9 +14,9 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 /**
  * Class UrlCropViewHelper
  * Crops an url like e.g.:
- * https://wwwv10.allplan.com.ddev.site/de/termine/alle-termine/events-detail/event/event/show/allplan-advanced-engineering-2022-10-19/
+ * https://wwwv11.allplan.com.ddev.site/de/termine/alle-termine/events-detail/event/event/show/allplan-advanced-engineering-2022-10-19/
  * =>
- * https://wwwv10.allplan.com.ddev.site/de/termine/alle-termine/events-...d-engineering-2022-10-19/
+ * https://wwwv11.allplan.com.ddev.site/de/termine/alle-termine/events-...d-engineering-2022-10-19/
  * @author Peter Benke <pbenke@allplan.com>
  */
 class StringCropViewHelper extends AbstractViewHelper
